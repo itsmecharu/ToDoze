@@ -26,7 +26,7 @@ include 'config/database.php';
                 <input type="password" placeholder="Confirm your password" required>
                 <button type="submit">Sign Up</button>
             </form>
-            <p>Already have an account? <a href="signin.html" class="sign-in-link">Sign In</a></p>
+            <p>Already have an account? <a href="signin.php" class="sign-in-link">Sign In</a></p>
         </div>
     </div>
 </body>

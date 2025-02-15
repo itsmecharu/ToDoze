@@ -15,35 +15,40 @@
                 <div>
                     <div class="nav__brand">
                         <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                        <a href="#" class="nav__logo">ToDoze</a>
+                        <a href="index.php" class="nav__logo">ToDoze</a>
                     </div>
                     <div class="nav__list">
-                        <a href="#" class="nav__link active">
+                        <a href="dash.php" class="nav__link active">
                             <ion-icon name="home-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Dashboard</span>
                         </a>
 
-                        <a href="#" class="nav__link">
+                        <a href="task.php" class="nav__link">
                             <ion-icon name="add-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Task</span>
                         </a>
 
-                        <div  class="nav__link collapse">
+                        <a href="project.php"  class="nav__link">
                             <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Projects</span>
-                        </div>
+                        </a>
 
-                        <a href="#" class="nav__link">
+                        <a href="analytics.php" class="nav__link">
                             <ion-icon name="pie-chart-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Analytics</span>
                         </a>
-                        <div class="nav__link collapse">
+
+                        
+                        <a href="profile.php" class="nav__link">
+                            
                             <ion-icon name="people-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Profile</span>
 
-                        </div>
+                        </a>
                        
                     </div>
+            
+
                 </div>
 
                 <a href="index.php" class="nav__link">

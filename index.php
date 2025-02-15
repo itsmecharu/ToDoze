@@ -12,8 +12,8 @@
             <img src="img/logo.png" alt="Logo">
         </div>
         <ul class="nav-links">
-            <li><a href="signin.html" class="login">Log In</a></li>
-            <li><a href="signup.html" class="signup">Sign Up</a></li>
+            <li><a href="signin.php" class="login">Log In</a></li>
+            <li><a href="signup.php" class="signup">Sign Up</a></li>
         </ul>
     </nav>
     <section class="hero">

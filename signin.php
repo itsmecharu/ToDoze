@@ -26,10 +26,10 @@ include 'config/database.php';
             <form>
                 <input type="email" placeholder="Enter your email" required>
                 <input type="password" placeholder="Enter your password" required>
-                <button type="submit">Sign In</button>
+                <button type="submit">Sign In<a href="dash.php"></a></button>
             </form>
             <!-- <a href="#" class="forgot-password">Forgot your password?</a> -->
-            <p>Don't have an account? <a href="signup.html" class="sign-up-link">Sign Up</a></p>
+            <p>Don't have an account? <a href="signup.php" class="sign-up-link">Sign Up</a></p>
         </div>
     </div>
 </body>
