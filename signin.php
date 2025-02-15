@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+include 'config/database.php';
+
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
