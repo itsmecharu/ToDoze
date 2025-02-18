@@ -67,7 +67,8 @@ $sql = "CREATE TABLE IF NOT EXISTS tasks(
     taskid INT PRIMARY KEY AUTO_INCREMENT,
     taskname VARCHAR(30) NOT NULL,
     taskdescription VARCHAR(255),
-    taskdate DATETIME,
+    taskdate DATE,
+    taskreminder DATETIME,
     taskstatus VARCHAR(30) NOT NULL,
     taskcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
@@ -81,7 +82,7 @@ $sql = "CREATE TABLE IF NOT EXISTS projects(
     projectid INT PRIMARY KEY AUTO_INCREMENT,
     projectname VARCHAR(30) NOT NULL,
     projectdescription VARCHAR(255),
-    projectdate DATETIME,
+    projectdate DATE,
     projectstatus VARCHAR(30) NOT NULL,
     projectcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
@@ -113,7 +114,7 @@ $sql = "CREATE TABLE IF NOT EXISTS project_tasks(
     projectid INT,
     p_taskname VARCHAR(255) NOT NULL,
     p_taskdescription VARCHAR(255),
-    p_taskdate DATETIME,                   -- Due date of the task
+    p_taskdate DATE,                   -- Due date of the task
     p_taskreminder DATETIME,               -- Reminder date and time
     
     -- p_taskcompleted TINYINT(1) DEFAULT 0,  -- 0 = Not Completed, 1 = Completed
