@@ -34,7 +34,8 @@ $sql = "CREATE TABLE IF NOT EXISTS users(
     userid INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(30) NOT NULL,
     useremail VARCHAR(50) NOT NULL,                    
-    userpassword VARCHAR(255) NOT NULL
+    userpassword VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
 
 if (mysqli_query($conn, $sql)) {
@@ -62,22 +63,7 @@ if (mysqli_query($conn, $sql)) {
 } else {
     echo "Error inserting admin user: " . mysqli_error($conn);
 }
-//table for tasks
-$sql = "CREATE TABLE IF NOT EXISTS tasks(
-    taskid INT PRIMARY KEY AUTO_INCREMENT,
-    taskname VARCHAR(30) NOT NULL,
-    taskdescription VARCHAR(255),
-    taskdate DATE,
-    taskreminder DATETIME,
-    taskstatus VARCHAR(30) NOT NULL,
-    taskcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)";
-if (mysqli_query($conn, $sql)) {
-    //echo "Table 'project_tasks' created successfully.<br>";
-} else {
-    echo "Error creating 'tasks' table: " . mysqli_error($conn) . "<br>";
-}
-//table for project
+
 $sql = "CREATE TABLE IF NOT EXISTS projects(
     projectid INT PRIMARY KEY AUTO_INCREMENT,
     projectname VARCHAR(30) NOT NULL,
@@ -107,20 +93,23 @@ if (mysqli_query($conn, $sql)) {
 } else {
     echo "Error creating 'project_members' table: " . mysqli_error($conn) . "<br>";
 }
-
-// Create table for project tasks (Tasks within projects)
-$sql = "CREATE TABLE IF NOT EXISTS project_tasks(
-    project_taskid INT PRIMARY KEY AUTO_INCREMENT,
-    projectid INT,
-    p_taskname VARCHAR(255) NOT NULL,
-    p_taskdescription VARCHAR(255),
-    p_taskdate DATE,                   -- Due date of the task
-    p_taskreminder DATETIME,               -- Reminder date and time
-    
-    -- p_taskcompleted TINYINT(1) DEFAULT 0,  -- 0 = Not Completed, 1 = Completed
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE CASCADE
+// Create unified tasks table
+$sql = "CREATE TABLE IF NOT EXISTS tasks(
+    taskid INT PRIMARY KEY AUTO_INCREMENT,
+    projectid INT NULL,
+    userid INT NOT NULL,
+    assigned_to INT NULL,
+    taskname VARCHAR(255) NOT NULL,
+    taskdescription VARCHAR(255),
+    taskdate DATE,
+    taskreminder DATETIME,
+    taskstatus VARCHAR(30) NOT NULL,
+    taskcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE CASCADE,
+    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
+    FOREIGN KEY (assigned_to) REFERENCES users(userid) ON DELETE SET NULL
 )";
+
 if (mysqli_query($conn, $sql)) {
     //echo "Table 'project_tasks' created successfully.<br>";
 } else {

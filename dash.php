@@ -15,7 +15,7 @@
                 <div>
                     <div class="nav__brand">
                         <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                        <a href="index.php" class="nav__logo">ToDoze</a>
+                        <span class="nav__logo">ToDoze</span>
                     </div>
                     <div class="nav__list">
                         <a href="dash.php" class="nav__link active">
