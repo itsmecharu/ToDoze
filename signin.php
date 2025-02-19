@@ -8,34 +8,58 @@ $useremail_err = $userpassword_err = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $useremail = trim($_POST['useremail']);
     $userpassword = trim($_POST['userpassword']);
-
-    // Prepared statement for security
-    $stmt = mysqli_prepare($conn, "SELECT userid, userpassword FROM users WHERE useremail = ?");
+    
+    // First, check if the email belongs to an admin
+    $stmt = mysqli_prepare($conn, "SELECT admin_userid, admin_userpassword FROM admin WHERE admin_useremail = ?");
     mysqli_stmt_bind_param($stmt, "s", $useremail);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_store_result($stmt);
 
-    // Check if user exists
     if (mysqli_stmt_num_rows($stmt) > 0) {
-        mysqli_stmt_bind_result($stmt, $userid, $hashed_password);
+        // Admin found
+        mysqli_stmt_bind_result($stmt, $admin_userid, $hashedadmin_userpassword);
         mysqli_stmt_fetch($stmt);
 
-        // Verify password
-        if (password_verify($userpassword, $hashed_password)) {
-            $_SESSION['userid'] = $userid;
-            $_SESSION['useremail'] = $useremail;
-            header("Location: dash.php");
+        // Verify admin password
+        if (password_verify($userpassword, $hashedadmin_userpassword)) {
+            // Admin credentials are correct
+            $_SESSION['admin_userid'] = $admin_userid;
+            $_SESSION['admin_useremail'] = $useremail;
+            header("Location: admin/admindashboard.php"); // Redirect to admin dashboard
             exit();
         } else {
-            $userpassword_err = "Incorrect password.";
+            $userpassword_err = "Incorrect password for admin.";
         }
     } else {
-        $useremail_err = "Email not registered.";
+        // If not admin, check if it's a normal user
+        $stmt = mysqli_prepare($conn, "SELECT userid, userpassword FROM users WHERE useremail = ?");
+        mysqli_stmt_bind_param($stmt, "s", $useremail);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+
+        if (mysqli_stmt_num_rows($stmt) > 0) {
+            // User found
+            mysqli_stmt_bind_result($stmt, $userid, $hashed_password);
+            mysqli_stmt_fetch($stmt);
+
+            // Verify password
+            if (password_verify($userpassword, $hashed_password)) {
+                $_SESSION['userid'] = $userid;
+                $_SESSION['useremail'] = $useremail;
+                header("Location: dash.php"); // Redirect to user dashboard
+                exit();
+            } else {
+                $userpassword_err = "Incorrect password for user.";
+            }
+        } else {
+            $useremail_err = "Email not registered.";
+        }
     }
 
     mysqli_stmt_close($stmt);
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

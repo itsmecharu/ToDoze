@@ -45,6 +45,13 @@
                             <span class="nav__name">Profile</span>
 
                         </a>
+
+                        <a href="review.php" class="nav__link">
+                            
+                            <ion-icon name="people-outline" class="nav__icon"></ion-icon>
+                            <span class="nav__name">review</span>
+
+                        </a>
                        
                     </div>
             

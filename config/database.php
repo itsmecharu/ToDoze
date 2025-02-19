@@ -44,25 +44,34 @@ if (mysqli_query($conn, $sql)) {
     echo "Error creating 'users' table: " . mysqli_error($conn);
 }
 
-// Create table for Admin
+// Create admin table with hashed password storage
 $sql = "CREATE TABLE IF NOT EXISTS admin(
-    adminid INT PRIMARY KEY AUTO_INCREMENT,
-    adminusername VARCHAR(30) NOT NULL,
-    adminpassword VARCHAR(255) NOT NULL
+    admin_userid INT PRIMARY KEY AUTO_INCREMENT,
+    admin_useremail VARCHAR(30) NOT NULL,
+    admin_userpassword VARCHAR(255) NOT NULL
 )";
 if (mysqli_query($conn, $sql)) {
-    // echo "Table 'sadmin' created successfully.";
+    // echo "Table 'admin' created successfully.";
 } else {
-    echo "Error creating 'sadmin' table: " . mysqli_error($conn);
+    echo "Error creating 'admin' table: " . mysqli_error($conn);
 }
 
+// Hash the admin password before inserting
+$hashedadmin_userpassword = password_hash('admin123', PASSWORD_DEFAULT);
+
 // Insert default admin user (INSERT IGNORE ensures no duplicate entry if it already exists)
-$sql = "INSERT IGNORE INTO admin (adminid, adminusername, adminpassword) VALUES (1,'admin123', 'admin123')";
-if (mysqli_query($conn, $sql)) {
+$sql = "INSERT IGNORE INTO admin (admin_userid, admin_useremail, admin_userpassword) VALUES (1, 'admin123@gmail.com', ?)";
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "s", $hashedadmin_userpassword);
+if (mysqli_stmt_execute($stmt)) {
     // echo "Admin user inserted successfully.";
 } else {
     echo "Error inserting admin user: " . mysqli_error($conn);
 }
+
+mysqli_stmt_close($stmt);
+
+
 
 $sql = "CREATE TABLE IF NOT EXISTS projects(
     projectid INT PRIMARY KEY AUTO_INCREMENT,
@@ -115,4 +124,21 @@ if (mysqli_query($conn, $sql)) {
 } else {
     echo "Error creating 'project_tasks' table: " . mysqli_error($conn) . "<br>";
 }
+ 
+//create table for review
+$sql = "CREATE TABLE IF NOT EXISTS reviews (
+    reviewid INT PRIMARY KEY AUTO_INCREMENT,
+    userid INT NOT NULL,
+    review TEXT NOT NULL,
+    rating INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE
+)";  
+
+if (mysqli_query($conn, $sql)) {
+    // echo "'reviews' table created successfully.<br>";
+} else {
+    echo "Error creating 'reviews' table: " . mysqli_error($conn) . "<br>";
+}
+
 
