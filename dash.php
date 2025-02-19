@@ -70,7 +70,8 @@
 <!-- Add Task Form (Initially Hidden) -->
 <section class="add-task-form" id="addTaskForm" style="display: none;">
     <h2>Add New Task</h2>
-    <input type="text" id="taskDescription" placeholder="Task Description" required>
+    <input type="text" id="taskname" placeholder="Task Name" required>
+    <textarea name="taskdescription" id="textDescription" placeholder="write sub Tasks"></textarea>
     <input type="date" id="setDate" required>
     <input type="date" id="dueDate" required>
     <button onclick="addTask()">Add Task</button>
