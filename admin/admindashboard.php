@@ -15,7 +15,7 @@ if (!isset($_SESSION['admin_userid'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="../css/dash.css">
+    <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
     <div class="container">
