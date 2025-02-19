@@ -9,7 +9,7 @@ if (!isset($_SESSION['admin_userid'])) {
 }
 
 // Fetch all reviews from the database
-$sql = "SELECT users.username, reviews.review, reviews.rating, reviews.created_at 
+$sql = "SELECT users.userid,users.username, reviews.review, reviews.rating, reviews.created_at 
         FROM reviews 
         JOIN users ON reviews.userid = users.userid 
         ORDER BY reviews.created_at DESC";
@@ -23,7 +23,7 @@ $result = mysqli_query($conn, $sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Reviews</title>
-    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/dash.css">
 </head>
 <body>
     <div class="review-container">
@@ -33,6 +33,7 @@ $result = mysqli_query($conn, $sql);
             <table>
                 <thead>
                     <tr>
+                        <th>Userid</th>
                         <th>Username</th>
                         <th>Rating</th>
                         <th>Review</th>
@@ -42,6 +43,7 @@ $result = mysqli_query($conn, $sql);
                 <tbody>
                     <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                         <tr>
+                            <td><?php echo htmlspecialchars($row['userid']); ?></td>
                             <td><?php echo htmlspecialchars($row['username']); ?></td>
                             <td><?php echo str_repeat("⭐", $row['rating']); ?></td>
                             <td><?php echo nl2br(htmlspecialchars($row['review'])); ?></td>

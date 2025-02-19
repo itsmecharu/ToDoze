@@ -288,3 +288,46 @@ a{
 .toggle-form-btn:hover {
   background-color: #0C5DF4;
 }
+  /* check  */
+  /* Admin Dashboard Links Container */
+.dashboard-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Creates 3 equal-width columns */
+  gap: 20px; /* Adds space between the squares */
+  max-width: 900px; /* Controls the maximum width of the grid */
+  margin: 0 auto; /* Centers the grid on the page */
+  padding: 20px;
+}
+
+/* Individual Link Square */
+.nav__link {
+  display: flex;
+  flex-direction: column; /* Aligns the icon and name vertically */
+  justify-content: center;
+  align-items: center;
+  background-color: var(--first-color); /* Background color for the square */
+  color: var(--white-color);
+  width: 200px; /* Width of each square */
+  height: 200px; /* Height of each square */
+  border-radius: 10px; /* Optional: rounded corners */
+  transition: background-color 0.3s ease;
+  text-align: center;
+  font-size: 1.2rem;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.nav__link:hover {
+  background-color: var(--sub-color); /* Hover effect */
+}
+
+.nav__icon {
+  font-size: 3rem; /* Larger icon size */
+  margin-bottom: 10px; /* Space between icon and name */
+}
+
+/* Name below the icon */
+.nav__name {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
