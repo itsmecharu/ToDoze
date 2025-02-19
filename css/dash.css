@@ -150,3 +150,141 @@ a{
 .rotate{
   transform: rotate(180deg);
 }
+
+/* add task css */
+.add-task-form {
+  max-width: 600px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+.add-task-form input {
+  width: calc(100% - 22px);
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.add-task-form textarea{
+  
+  width: calc(100% - 22px);
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+
+}
+.add-task-form button {
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.add-task-form button:hover {
+  background-color: #2980b9;
+}
+
+/* Task List */
+.task-list {
+  max-width: 600px;
+  margin: 20px auto;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.task {
+  background-color: #ecf0f1;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+.task h3 {
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.task p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.task button {
+  padding: 5px 10px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.task button:hover {
+  background-color: #c0392b;
+}
+
+.status-select {
+  padding: 5px;
+  border-radius: 5px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+/* Task Summary Section */
+.task-summary {
+  max-width: 600px;
+  margin: 20px auto;
+  display: flex;
+  justify-content: space-around;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.task-summary div {
+  text-align: center;
+}
+
+.task-summary h3 {
+  color: #333;
+}
+
+/* Graph Section */
+.graph-section {
+  max-width: 600px;
+  margin: 20px auto;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* toggle the add task form */
+/* Toggle Form Button */
+.toggle-form-btn {
+  padding: 10px 20px;
+  background-color: #218838;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  display: inline-block; /* Allows alignment */
+  margin: 0 0 20px 25px; /* 20px on the bottom and right for spacing */
+}
+
+
+
+.toggle-form-btn:hover {
+  background-color: #0C5DF4;
+}
