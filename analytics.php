@@ -86,7 +86,7 @@
 
         <!-- Task Graph Section -->
         <div class="box">
-            <h2>Task Overview</h2>
+            <h2> Overview</h2>
             <canvas id="taskGraph"></canvas>
         </div>
     </div>
@@ -96,6 +96,6 @@
         <!-- ===== MAIN JS ===== -->
         <script src="js/dash.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <!-- <script src="script.js"></script> -->, initial-scale=1.0">
+        <!-- <script src="script.js"></script> -->
 </body>
 </html>
