@@ -37,15 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <span class="nav__logo">ToDoze</span>
                     </div>
                     <div class="nav__list">
-                        <a href="dash.php" class="nav__link ">
-                            <ion-icon name="home-outline" class="nav__icon"></ion-icon>
-                            <span class="nav__name">Dashboard</span>
-                        </a>
-
-                        <!-- <a href="task.php" class="nav__link">
+                    
+                        <a href="task.php" class="nav__link">
                             <ion-icon name="add-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Task</span>
-                        </a> -->
+                        </a>
 
                         <a href="project.php"  class="nav__link">
                             <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
@@ -54,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                         <a href="analytics.php" class="nav__link">
                             <ion-icon name="pie-chart-outline" class="nav__icon"></ion-icon>
-                            <span class="nav__name">Analytics</span>
+                            <span class="nav__name">Report</span>
                         </a>
 
                         

@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <!-- ===== CSS ===== -->
-        <link rel="stylesheet" href="css/dash.css">
-        
-        <title>Dashboard</title>
-    </head>
-    <br id="body-pd">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/dash.css">
+    <title>Analytics</title>
+</head>
+<body>
+<br id="body-pd">
         <div class="l-navbar" id="navbar">
             <nav class="nav">
                 <div>
@@ -28,7 +26,7 @@
                             <span class="nav__name">Projects</span>
                         </a>
 
-                        <a href="analytics.php" class="nav__link">
+                        <a href="analytics.php" class="nav__link active">
                             <ion-icon name="pie-chart-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Report</span>
                         </a>
@@ -59,33 +57,45 @@
                 </a>
             </nav>
         </div>
-
-        <h1>Welcome Back</h1>
-<div class="container">
-        <!-- Add Task Section -->
         <div class="box">
-            <h2>Add Task</h2>
-            <form class="add-task-form" onsubmit="event.preventDefault(); addTask();">
-                <input type="text" id="taskDescription" placeholder="Task Description" required>
-                <input type="date" id="setDate" required>
-                <input type="date" id="dueDate" required>
-                <input type="" id="remainder" required>
-                <button type="submit">Add Task</button>
-            </form>
+            
+
+        <!-- Task Summary Section -->
+        <div class="box task-summary">
+            <div>
+                <h3>Total Tasks</h3>
+                <p id="totalTasks">0</p>
+            </div>
+            <div>
+                <h3>Pending Tasks</h3>
+                <p id="pendingTasks">0</p>
+            </div>
+            <div>
+                <h3>Completed Tasks</h3>
+                <p id="completedTasks">0</p>
+            </div>
         </div>
 
-        <!-- Task List Section -->
+        <!-- Progress Bar -->
         <div class="box">
-            <h2>Task List</h2>
-            <div id="taskList"></div>
+            <h2>Progress</h2>
+            <div class="progress-bar">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
         </div>
 
+        <!-- Task Graph Section -->
+        <div class="box">
+            <h2>Task Overview</h2>
+            <canvas id="taskGraph"></canvas>
+        </div>
+    </div>
         <!-- ===== IONICONS ===== -->
         <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
         
         <!-- ===== MAIN JS ===== -->
         <script src="js/dash.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <!-- <script src="script.js"></script> -->
-    </body>
+        <!-- <script src="script.js"></script> -->, initial-scale=1.0">
+</body>
 </html>
