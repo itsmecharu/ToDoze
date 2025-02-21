@@ -22,7 +22,6 @@ if (mysqli_query($conn, $sql)) {
 }
 
 // Connect to the newly created database
-
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 
 // Check connection
@@ -30,6 +29,22 @@ if ($conn === false) {
     die("ERROR: Could not connect to the database. " . mysqli_connect_error());
 }
 
+// Create the 'projects' table first
+$sql = "CREATE TABLE IF NOT EXISTS projects(
+    projectid INT PRIMARY KEY AUTO_INCREMENT,
+    projectname VARCHAR(30) NOT NULL,
+    projectdescription VARCHAR(255),
+    projectdate DATE,
+    projectstatus VARCHAR(30) NOT NULL,
+    projectcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+if (mysqli_query($conn, $sql)) {
+   // echo "Table 'projects' created successfully.<br>";
+} else {
+    echo "Error creating 'projects' table: " . mysqli_error($conn) . "<br>";
+}
+
+// Create 'users' table after 'projects' table
 $sql = "CREATE TABLE IF NOT EXISTS users (
     userid INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(30) NOT NULL,
@@ -43,15 +58,13 @@ $sql = "CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE SET NULL
 )";
-
-
 if (mysqli_query($conn, $sql)) {
     // echo "Table 'users' created successfully.";
 } else {
     echo "Error creating 'users' table: " . mysqli_error($conn);
 }
 
-// Create admin table with hashed password storage
+// Create admin table
 $sql = "CREATE TABLE IF NOT EXISTS admin(
     admin_userid INT PRIMARY KEY AUTO_INCREMENT,
     admin_useremail VARCHAR(30) NOT NULL,
@@ -66,7 +79,7 @@ if (mysqli_query($conn, $sql)) {
 // Hash the admin password before inserting
 $hashedadmin_userpassword = password_hash('admin123', PASSWORD_DEFAULT);
 
-// Insert default admin user (INSERT IGNORE ensures no duplicate entry if it already exists)
+// Insert default admin user
 $sql = "INSERT IGNORE INTO admin (admin_userid, admin_useremail, admin_userpassword) VALUES (1, 'admin123@gmail.com', ?)";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "s", $hashedadmin_userpassword);
@@ -78,24 +91,7 @@ if (mysqli_stmt_execute($stmt)) {
 
 mysqli_stmt_close($stmt);
 
-
-
-$sql = "CREATE TABLE IF NOT EXISTS projects(
-    projectid INT PRIMARY KEY AUTO_INCREMENT,
-    projectname VARCHAR(30) NOT NULL,
-    projectdescription VARCHAR(255),
-    projectdate DATE,
-    projectstatus VARCHAR(30) NOT NULL,
-    projectcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)";
-if (mysqli_query($conn, $sql)) {
-   // echo "Table 'project_tasks' created successfully.<br>";
-} else {
-    echo "Error creating 'projects' table: " . mysqli_error($conn) . "<br>";
-}
-
-
-// Create unified tasks table
+// Create 'tasks' table after 'users' and 'projects'
 $sql = "CREATE TABLE IF NOT EXISTS tasks(
     taskid INT PRIMARY KEY AUTO_INCREMENT,
     projectid INT NULL,
@@ -111,14 +107,13 @@ $sql = "CREATE TABLE IF NOT EXISTS tasks(
     FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
     FOREIGN KEY (assigned_to) REFERENCES users(userid) ON DELETE SET NULL
 )";
-
 if (mysqli_query($conn, $sql)) {
-    //echo "Table 'project_tasks' created successfully.<br>";
+    // echo "Table 'tasks' created successfully.<br>";
 } else {
-    echo "Error creating 'project_tasks' table: " . mysqli_error($conn) . "<br>";
+    echo "Error creating 'tasks' table: " . mysqli_error($conn) . "<br>";
 }
- 
-//create table for review
+
+// Create 'reviews' table
 $sql = "CREATE TABLE IF NOT EXISTS reviews (
     reviewid INT PRIMARY KEY AUTO_INCREMENT,
     userid INT NOT NULL,
@@ -133,6 +128,9 @@ if (mysqli_query($conn, $sql)) {
 } else {
     echo "Error creating 'reviews' table: " . mysqli_error($conn) . "<br>";
 }
+
+
+
 
 
 // $sql="DROP DATABASE todoze";

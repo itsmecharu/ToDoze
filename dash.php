@@ -5,6 +5,17 @@ if (!isset($_SESSION['userid'])) {
     header("Location: signin.php");
     exit();
 }
+$userid = $_SESSION['userid'];
+// Retrieve all tasks
+$sql = "SELECT * FROM tasks WHERE userid = ?";
+$stmt = mysqli_prepare($conn, $sql);
+if ($stmt) {
+    mysqli_stmt_bind_param($stmt, "s", $userid);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+} else {
+    echo "Error preparing statement: " . mysqli_error($conn);
+}
 ?>
 
 <!DOCTYPE html>
@@ -15,6 +26,7 @@ if (!isset($_SESSION['userid'])) {
 
         <!-- ===== CSS ===== -->
         <link rel="stylesheet" href="css/dash.css">
+        <link rel="icon" type="image/x-icon" href="img/favicon.ico">
         
         <title>Dashboard</title>
     </head>
@@ -24,17 +36,24 @@ if (!isset($_SESSION['userid'])) {
                 <div>
                     <div class="nav__brand">
                         <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                        <span class="nav__logo">ToDoze</span>
+                        <span class="nav__logo">Dashboard</span>
                     </div>
+
                     <div class="nav__list">
                     <a href="dash.php" class="nav__link">
+                        <ion-icon name="home-outline" class="nav__icon"></ion-icon>
+                        <span class="nav__name">Home</span>
+                    </a>
+
+                    <div class="nav__list">
+                    <a href="task.php" class="nav__link">
                             <ion-icon name="add-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Task</span>
                         </a>
 
                         <a href="project.php"  class="nav__link">
                             <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-                            <span class="nav__name">Projects</span>
+                            <span class="nav__name">Project</span>
                         </a>
 
                         <a href="analytics.php" class="nav__link">
@@ -43,12 +62,12 @@ if (!isset($_SESSION['userid'])) {
                         </a>
 
                         
-                        <a href="profile.php" class="nav__link">
+                        <!-- <a href="profile.php" class="nav__link">
                             
                             <ion-icon name="people-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Profile</span>
 
-                        </a>
+                        </a> -->
 
                         <a href="review.php" class="nav__link">
                             
@@ -62,31 +81,33 @@ if (!isset($_SESSION['userid'])) {
 
                 </div>
 
-                <a href="index.php" class="nav__link">
+                <a href="logout.php" class="nav__link">
                     <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
                     <span class="nav__name">Log Out</span>
                 </a>
             </nav>
         </div>
 
-        <h1>Welcome Back</h1>
-<div class="container">
-        <!-- Add Task Section -->
-        <div class="box">
-            <h2>Add Task</h2>
-            <form class="add-task-form" onsubmit="event.preventDefault(); addTask();">
-                <input type="text" id="taskDescription" placeholder="Task Description" required>
-                <input type="date" id="setDate" required>
-                <input type="date" id="dueDate" required>
-                <input type="" id="remainder" required>
-                <button type="submit">Add Task</button>
-            </form>
-        </div>
-
         <!-- Task List Section -->
         <div class="box">
-            <h2>Task List</h2>
+            <h2>Your Tasks</h2>
             <div id="taskList"></div>
+        </div>
+        <div class="box">
+            <h2>Task List</h2>
+            <?php
+            if ($result && mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<div class='task'>";
+                    echo "<h3>" . htmlspecialchars($row['taskname']) . "</h3>";
+                    echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
+                    echo "<small>Reminder: " . (!empty($row['taskreminder']) ? htmlspecialchars($row['taskreminder']) : "No reminder set") . "</small>";
+                    echo "</div>";
+                }
+            } else {
+                echo "<p>No tasks added yet.</p>";
+            }
+            ?>
         </div>
 
         <!-- ===== IONICONS ===== -->

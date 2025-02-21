@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Submit Review</title>
     <link rel="stylesheet" href="css/review.css">
     <link rel="stylesheet" href="css/dash.css">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
 <body>
 <div class="l-navbar" id="navbar">
@@ -38,8 +39,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div>
                     <div class="nav__brand">
                         <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                        <span class="nav__logo">ToDoze</span>
+                        <span class="nav__logo">Dashboard</span>
                     </div>
+                    <div class="nav__list">
+                    <a href="dash.php" class="nav__link">
+                        <ion-icon name="home-outline" class="nav__icon"></ion-icon>
+                        <span class="nav__name">Home</span>
+                    </a>
+
                     <div class="nav__list">
                     
                         <a href="task.php" class="nav__link">
@@ -49,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                         <a href="project.php"  class="nav__link">
                             <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-                            <span class="nav__name">Projects</span>
+                            <span class="nav__name">Project</span>
                         </a>
 
                         <a href="analytics.php" class="nav__link">
@@ -58,12 +65,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </a>
 
                         
-                        <a href="profile.php" class="nav__link">
+                        <!-- <a href="profile.php" class="nav__link">
                             
                             <ion-icon name="people-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Profile</span>
 
-                        </a>
+                        </a> -->
 
                         <a href="review.php" class="nav__link active">
                             
@@ -73,11 +80,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </a>
                        
                     </div>
-            
 
                 </div>
 
-                <a href="index.php" class="nav__link">
+                <a href="logout.php" class="nav__link">
                     <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
                     <span class="nav__name">Log Out</span>
                 </a>

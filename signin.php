@@ -68,6 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In</title>
     <link rel="stylesheet" href="css/form.css">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <style>
         .error {
             color: red;
@@ -84,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="form-container">
             <h1>Sign In</h1>
             <p>Welcome back to your favorite productivity app!</p>
-            <form method="POST" action="">
+            <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) ?>" >
                 <input type="email" name="useremail" placeholder="Enter your email" value="<?php echo htmlspecialchars($useremail); ?>" required>
                 <?php if (!empty($useremail_err)): ?>
                     <span class="error"><?php echo $useremail_err; ?></span>
