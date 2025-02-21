@@ -30,13 +30,20 @@ if ($conn === false) {
     die("ERROR: Could not connect to the database. " . mysqli_connect_error());
 }
 
-$sql = "CREATE TABLE IF NOT EXISTS users(
+$sql = "CREATE TABLE IF NOT EXISTS users (
     userid INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(30) NOT NULL,
-    useremail VARCHAR(50) NOT NULL,                    
+    useremail VARCHAR(50) NOT NULL UNIQUE,                    
     userpassword VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    otp VARCHAR(10),
+    otp_expiry DATETIME,
+    is_verified BOOLEAN DEFAULT 0,
+    projectid INT NULL,  -- Links the user to a project
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- When the user joined the project
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE SET NULL
 )";
+
 
 if (mysqli_query($conn, $sql)) {
     // echo "Table 'users' created successfully.";
@@ -87,21 +94,7 @@ if (mysqli_query($conn, $sql)) {
     echo "Error creating 'projects' table: " . mysqli_error($conn) . "<br>";
 }
 
-// Create table for project members (Linking existing users to projects)
-$sql = "CREATE TABLE IF NOT EXISTS project_members(
-    memberid INT PRIMARY KEY AUTO_INCREMENT,
-    projectid INT,
-    userid INT,
-    -- role VARCHAR(50) DEFAULT 'member',  -- Role of the user (e.g., member, admin)
-    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE CASCADE,
-    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE
-)";
-if (mysqli_query($conn, $sql)) {
-    //echo "Table 'project_members' created successfully.<br>";
-} else {
-    echo "Error creating 'project_members' table: " . mysqli_error($conn) . "<br>";
-}
+
 // Create unified tasks table
 $sql = "CREATE TABLE IF NOT EXISTS tasks(
     taskid INT PRIMARY KEY AUTO_INCREMENT,
@@ -142,3 +135,9 @@ if (mysqli_query($conn, $sql)) {
 }
 
 
+// $sql="DROP DATABASE todoze";
+// if (mysqli_query($conn, $sql)) {
+//     // echo "'reviews' table created successfully.<br>";
+// } else {
+//     echo "Error creating 'reviews' table: " . mysqli_error($conn) . "<br>";
+// }

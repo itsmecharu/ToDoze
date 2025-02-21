@@ -2,9 +2,9 @@
 session_start();
 include '../config/database.php';
 
-// Check if admin is logged in
+// Check if user is logged in
 if (!isset($_SESSION['admin_userid'])) {
-    header("Location: ../signin.php");
+    header("Location: signin.php");
     exit();
 }
 ?>

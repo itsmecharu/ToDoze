@@ -1,6 +1,10 @@
 <?php
 session_start();
 include 'config/database.php';
+if (!isset($_SESSION['userid'])) {
+    header("Location: signin.php");
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $userid = $_SESSION['userid'];  // Assuming the user is logged in and their user ID is stored in the session
