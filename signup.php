@@ -2,7 +2,11 @@
 session_start();
 include 'config/database.php';
 
-$username = $useremail = $userpassword = $confirmpassword = "";
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+$username = $useremail = $userpassword = $confirmpassword = $otp="";
 $username_err = $useremail_err = $userpassword_err = $confirmpassword_err = "";
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -56,26 +60,55 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         }
     }
     
-    // If no errors, proceed with registration (Database Insertion)
+    // If no errors, proceed with OTP generation
     if (empty($username_err) && empty($useremail_err) && empty($userpassword_err) && empty($confirmpassword_err)) {
-        $userpassword = password_hash($userpassword, PASSWORD_DEFAULT); // Hash the password
+        // Store data in session for later use
+        $_SESSION['username'] = $username;
+        $_SESSION['useremail'] = $useremail;
+        $_SESSION['userpassword'] = password_hash($userpassword, PASSWORD_DEFAULT); // Hash the password
+    
+        require 'phpmailer\PHPMailer.php';
+        require 'phpmailer\Exception.php';
+        require 'phpmailer\SMTP.php';
 
-        $sql = "INSERT INTO users (username, useremail, userpassword) VALUES (?, ?, ?)";
-        if ($stmt = mysqli_prepare($conn, $sql)) {
-            mysqli_stmt_bind_param($stmt, "sss", $username, $useremail, $userpassword);
-            if (mysqli_stmt_execute($stmt)) {
-                header("Location: signin.php");
-                exit();
-            } else {
-                echo "Something went wrong. Please try again later.";
-            }
-            mysqli_stmt_close($stmt);
+        // Generate a 6-digit OTP
+        $otp = rand(100000, 999999);
+
+        // Store OTP in session for verification
+        $_SESSION['otp'] = $otp;
+
+        $mail = new PHPMailer(true);
+        try {
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'todoze9@gmail.com'; 
+            $mail->Password   = 'aslu umcq hqhq ebhr';  // Use an App Password
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port       = 465;
+
+            // Recipients
+            $mail->setFrom('todoze9@gmail.com', 'ToDoze');
+            $mail->addAddress($useremail, $username); 
+
+            // Email Content
+            $mail->isHTML(true);
+            $mail->Subject = 'Your OTP for ToDoze Registration';
+            $mail->Body    = "<h3>Hello $username,</h3><p>Your OTP for verification is: <b>$otp</b></p><p>This OTP is valid for 5 minutes.</p>";
+            $mail->AltBody = "Hello $username, \nYour OTP for verification is: $otp \nThis OTP is valid for 5 minutes.";
+
+            $mail->send();
+            echo "OTP has been sent to your email.";
+        } catch (Exception $e) {
+            echo "Error sending OTP: {$mail->ErrorInfo}";
         }
+
+        // Proceed to OTP verification page
+        header("Location: verifyotp.php");
     }
-    mysqli_close($conn);
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -100,16 +133,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             <p>Create an account to start using the app!</p>
 
             <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) ?>">
-            
                 <input type="text" placeholder="username" name="username" required>
                 <span class="error"><?php echo $username_err; ?></span>
                 <input type="email" placeholder="Enter your email" name="useremail" required>
                 <span class="error"><?php echo $useremail_err; ?></span>
                 <input type="password" placeholder="Create a password" name="userpassword" required>
                 <span class="error"><?php echo $userpassword_err; ?></span>
-                <input type="password" placeholder="Confirm your password" name="confirmpassword"required>
+                <input type="password" placeholder="Confirm your password" name="confirmpassword" required>
                 <span class="error"><?php echo $confirmpassword_err; ?></span>
-                <button type="submit">Sign Up</button>
+                <button type="submit" name="send">Sign Up</button>
             </form>
             <p>Already have an account? <a href="signin.php" class="sign-in-link">Sign In</a></p>
         </div>
