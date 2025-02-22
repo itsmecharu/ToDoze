@@ -30,58 +30,50 @@ if ($stmt) {
         
         <title>Dashboard</title>
     </head>
-    <br id="body-pd">
+    <body id="body-pd">
+        <!-- User Profile Section -->
+        <div class="profile-section">
+        <a href="profile.php" class="profile-link" target="_blank">
+            <div class="profile">
+                <img src="img/userprofile.jpeg" class="profile-pic">
+                
+                <span class="profile-name"><a href="profile.php"></a>Uncle ji</span> <!-- Replace with dynamic name if needed -->
+            </div>
+        </div>
+
+        <!-- Navbar -->
         <div class="l-navbar" id="navbar">
             <nav class="nav">
                 <div>
                     <div class="nav__brand">
                         <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                        <span class="nav__logo">Dashboard</span>
+                        <span class="nav__logo">ToDoze</span>
                     </div>
 
                     <div class="nav__list">
-                    <a href="dash.php" class="nav__link">
-                        <ion-icon name="home-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Home</span>
-                    </a>
+                        <a href="dash.php" class="nav__link active">
+                            <ion-icon name="home-outline" class="nav__icon"></ion-icon>
+                            <span class="nav__name">Home</span>
+                        </a>
 
-                    <div class="nav__list">
-                    <a href="task.php" class="nav__link">
+                        <a href="task.php" class="nav__link">
                             <ion-icon name="add-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Task</span>
                         </a>
 
-                        <a href="project.php"  class="nav__link">
+                        <a href="project.php" class="nav__link">
                             <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Project</span>
                         </a>
 
-                        <a href="analytics.php" class="nav__link">
-                            <ion-icon name="pie-chart-outline" class="nav__icon"></ion-icon>
-                            <span class="nav__name">Report</span>
-                        </a>
-
-                        
-                        <!-- <a href="profile.php" class="nav__link">
-                            
-                            <ion-icon name="people-outline" class="nav__icon"></ion-icon>
-                            <span class="nav__name">Profile</span>
-
-                        </a> -->
-
                         <a href="review.php" class="nav__link">
-                            
                             <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Review</span>
-
                         </a>
-                       
                     </div>
-            
-
                 </div>
 
-                <a href="logout.php" class="nav__link">
+                <a href="logout.php" class="nav__link logout">
                     <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
                     <span class="nav__name">Log Out</span>
                 </a>
@@ -89,33 +81,34 @@ if ($stmt) {
         </div>
 
         <!-- Task List Section -->
-        <div class="box">
-            <h2>Your Tasks</h2>
-            <div id="taskList"></div>
-        </div>
-        <div class="box">
-            <h2>Task List</h2>
-            <?php
-            if ($result && mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<div class='task'>";
-                    echo "<h3>" . htmlspecialchars($row['taskname']) . "</h3>";
-                    echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
-                    echo "<small>Reminder: " . (!empty($row['taskreminder']) ? htmlspecialchars($row['taskreminder']) : "No reminder set") . "</small>";
-                    echo "</div>";
+        <div class="container">
+            <div class="box">
+                
+            <!-- </div> -->
+            <div class="box">
+                <h2>Task List</h2>
+                <?php
+                if ($result && mysqli_num_rows($result) > 0) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        echo "<div class='task'>";
+                        echo "<div class='task-tick' onclick='toggleTick(this)'></div>"; 
+                        echo "<h3>" . htmlspecialchars($row['taskname']) . "</h3>";
+                        echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
+                        echo "<small>Reminder: " . (!empty($row['taskreminder']) ? htmlspecialchars($row['taskreminder']) : "No reminder set") . "</small>";
+                        echo "</div>";
+                    }
+                } else {
+                    echo "<p>No tasks added yet.</p>";
                 }
-            } else {
-                echo "<p>No tasks added yet.</p>";
-            }
-            ?>
+                ?>
+            </div>
         </div>
-
+</div>
         <!-- ===== IONICONS ===== -->
         <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
         
         <!-- ===== MAIN JS ===== -->
         <script src="js/dash.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <!-- <script src="script.js"></script> -->
     </body>
 </html>

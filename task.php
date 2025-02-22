@@ -53,7 +53,7 @@ if ($stmt) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/dash.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-    <title>Dashboard</title>
+    <title>Home</title>
 </head>
 <body id="body-pd">
     <div class="l-navbar" id="navbar">
@@ -61,7 +61,7 @@ if ($stmt) {
             <div>
                 <div class="nav__brand">
                     <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                    <span class="nav__logo">Dashboard</span>
+                    <span class="nav__logo">ToDoze</span>
                 </div>
                 <div class="nav__list">
                     <a href="dash.php" class="nav__link">
@@ -69,7 +69,7 @@ if ($stmt) {
                         <span class="nav__name">Home</span>
                     </a>
                 <div class="nav__list">
-                    <a href="task.php" class="nav__link">
+                    <a href="task.php" class="nav__link active">
                         <ion-icon name="add-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Task</span>
                     </a>
@@ -77,9 +77,6 @@ if ($stmt) {
                         <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Project</span>
                     </a>
-                    <a href="analytics.php" class="nav__link">
-                        <ion-icon name="pie-chart-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Report</span>
                     </a>
                     <a href="review.php" class="nav__link">
                         <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
@@ -87,14 +84,24 @@ if ($stmt) {
                     </a>
                 </div>
             </div>
-            <a href="logout.php" class="nav__link">
-                <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-                <span class="nav__name">Log Out</span>
-            </a>
-        </nav>
-    </div>
+            <a href="logout.php" class="nav__link logout">
+                    <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Log Out</span>
+                </a>
+            </nav>
+        </div>
 
-    <h1>TODOZE</h1>
+  <!-- User Profile Section -->
+  <div class="profile-section">
+        <a href="profile.php" class="profile-link" target="_blank">
+            <div class="profile">
+                <img src="img/userprofile.jpeg" class="profile-pic">
+                
+                <span class="profile-name"><a href="profile.php"></a>uncle ji</span> <!-- Replace with dynamic name if needed -->
+            </div>
+        </div>
+
+    <h1>ToDoze</h1>
     <div class="container">
         <!-- Add Task Section -->
         <div class="box">

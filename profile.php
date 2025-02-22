@@ -12,7 +12,7 @@ if (!isset($_SESSION['userid'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics</title>
-    <link rel="stylesheet" href="css/dash.css">
+    <link rel="stylesheet" href="css/profile.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     
 </head>
@@ -42,19 +42,6 @@ if (!isset($_SESSION['userid'])) {
                             <span class="nav__name">Project</span>
                         </a>
 
-                        <a href="analytics.php" class="nav__link active">
-                            <ion-icon name="pie-chart-outline" class="nav__icon"></ion-icon>
-                            <span class="nav__name">Report</span>
-                        </a>
-
-                        
-                        <!-- <a href="profile.php" class="nav__link">
-                            
-                            <ion-icon name="people-outline" class="nav__icon"></ion-icon>
-                            <span class="nav__name">Profile</span>
-
-                        </a> -->
-
                         <a href="review.php" class="nav__link">
                             
                             <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
@@ -75,6 +62,45 @@ if (!isset($_SESSION['userid'])) {
         </div>
         <div class="box">
             
+
+  <!-- Profile Section -->
+  <div class="container">
+    <div class="box">
+      <div class="profile-content">
+        <div class="profile-image">
+          <img src="img/userprofile.jpeg" alt="User Image" class="user-img">
+        </div>
+        <div class="profile-info">
+          <h2 class="user-name">uncle ji</h2>
+          <p class="user-email">uncleji11@gmail.com</p>
+          <button id="edit-profile-btn" class="edit-btn">Edit Profile</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Popup -->
+  <div id="edit-profile-popup" class="popup">
+    <div class="popup-content">
+      <span class="close-btn" id="close-popup-btn">&times;</span>
+      <h2>Edit Profile</h2>
+      <form id="edit-profile-form">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" value="uncleji" required>
+        </div>
+        <div class="form-group">
+          <label for="address">Address</label>
+          <input type="text" id="address" name="address" value="chowktira">
+        </div>
+        <div class="form-group">
+          <label for="bio">Bio</label>
+          <textarea id="bio" name="bio" rows="4">kuch bhi</textarea>
+        </div>
+        <button type="submit" class="save-btn">Save Changes</button>
+      </form>
+    </div>
+  </div>
 
         <!-- Task Summary Section -->
         <div class="box task-summary">

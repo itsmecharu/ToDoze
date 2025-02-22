@@ -24,14 +24,19 @@
 *, ::before, ::after {
   box-sizing: border-box;
 }
-
 body {
-  position: relative;
-  margin: 0;
-  padding: 2rem 0 0 0; /* No left padding initially */
-  font-family: var(--body-font);
-  font-size: var(--normal-font-size);
-  transition: .5s;
+    position: relative;
+    margin: 100px;
+    padding: 2rem 0 0 0;
+    font-family: var(--body-font);
+    font-size: var(--normal-font-size);
+    transition: .5s;
+}
+
+
+
+.body-pd.expanded {
+  padding-left: calc(var(--nav-width) + 9.25rem); /* Padding when navbar is expanded */
 }
 
 h1 {
@@ -47,48 +52,129 @@ ul {
 a {
   text-decoration: none;
 }
-
-/*===== PROFILE SECTION =====*/
-.profile-section {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: var(--z-fixed);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.profile {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background-color: var(--white-color);
-  padding: 0.5rem 1rem;
-  border-radius: 2rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.profile:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-.profile-pic {
-  width: 32px;
-  height: 22px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.profile-name {
-  font-size: var(--small-font-size);
-  color: var(--bg-color);
-  font-weight: 600;
-}
-
+/* Profile Section */
+.profile-content {
+    text-align: center;
+  }
+  
+  .profile-image .user-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--first-color);
+  }
+  
+  .profile-info {
+    margin-top: 1rem;
+  }
+  
+  .user-name {
+    font-size: 1.5rem;
+    color: var(--bg-color);
+    margin-bottom: 0.5rem;
+  }
+  
+  .user-email {
+    font-size: 1rem;
+    color: #666;
+  }
+  
+  .edit-btn {
+    background: var(--first-color);
+    color: var(--white-color);
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 1rem;
+    transition: background 0.3s ease;
+  }
+  
+  .edit-btn:hover {
+    background: #0a4dcc;
+  }
+  
+  /* Popup Styles */
+  .popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: var(--z-fixed);
+  }
+  
+  .popup-content {
+    background: var(--white-color);
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--bg-color);
+  }
+  
+  .close-btn:hover {
+    color: var(--first-color);
+  }
+  
+  .popup h2 {
+    margin-bottom: 1.5rem;
+    color: var(--bg-color);
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--bg-color);
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .form-group textarea {
+    resize: vertical;
+  }
+  
+  .save-btn {
+    background: var(--first-color);
+    color: var(--white-color);
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+  }
+  
+  .save-btn:hover {
+    background: #0a4dcc;
+  }
 /*===== l NAV =====*/
 .l-navbar {
   position: fixed;
@@ -101,6 +187,10 @@ a {
   padding: 1.5rem 1.5rem 2rem;
   transition: .5s;
   z-index: var(--z-fixed);
+}
+
+.expander {
+  width: calc(var(--nav-width) + 9.25rem);
 }
 
 /*===== NAV =====*/
@@ -161,16 +251,6 @@ a {
   margin-top: auto; /* Pushes the logout button to the bottom */
 }
 
-/*Expander menu*/
-.expander {
-  width: calc(var(--nav-width) + 9.25rem);
-}
-
-/*Add padding body*/
-.body-pd {
-  padding: 2rem 0 0 9.25rem; /* Small left padding when navbar is expanded */
-}
-
 /*Active links menu*/
 .active {
   background-color: var(--first-color);
@@ -218,7 +298,7 @@ h1 {
 }
 
 .container {
-  max-width: 800px;
+  max-width: 600px;
   margin: 50px auto;
   padding: 0 1rem; /* Add some padding for better spacing */
 }
@@ -370,4 +450,3 @@ button:hover {
 .add-task-form input, .add-task-form button {
   margin: 0;
 }
-

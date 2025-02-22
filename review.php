@@ -34,12 +34,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
 <body>
+      <!-- User Profile Section -->
+      <div class="profile-section">
+        <a href="profile.php" class="profile-link" target="_blank">
+            <div class="profile">
+                <img src="img/userprofile.jpeg" class="profile-pic">
+                
+                <span class="profile-name"><a href="profile.php"></a>uncle ji</span> <!-- Replace with dynamic name if needed -->
+            </div>
+        </div>
+
 <div class="l-navbar" id="navbar">
             <nav class="nav">
                 <div>
                     <div class="nav__brand">
                         <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                        <span class="nav__logo">Dashboard</span>
+                        <span class="nav__logo">ToDoze</span>
                     </div>
                     <div class="nav__list">
                     <a href="dash.php" class="nav__link">
@@ -59,10 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <span class="nav__name">Project</span>
                         </a>
 
-                        <a href="analytics.php" class="nav__link">
+                        <!-- <a href="analytics.php" class="nav__link">
                             <ion-icon name="pie-chart-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Report</span>
-                        </a>
+                        </a> -->
 
                         
                         <!-- <a href="profile.php" class="nav__link">
@@ -83,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 </div>
 
-                <a href="logout.php" class="nav__link">
+                <a href="logout.php" class="nav__link logout">
                     <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
                     <span class="nav__name">Log Out</span>
                 </a>
