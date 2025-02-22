@@ -26,7 +26,7 @@
 }
 body {
     position: relative;
-    margin: 0px 0px 0px 100px;
+    margin: 0px 0px 0px 250px;
     padding: 2rem 0 0 0;
     font-family: var(--body-font);
     font-size: var(--normal-font-size);
@@ -298,13 +298,14 @@ h1 {
 }
 
 .container {
-  max-width: 600px;
+  max-width: 500px;
   margin: 50px auto;
   padding: 0 1rem; /* Add some padding for better spacing */
 }
 
 .box {
   background: #fff;
+  margin: 0px 35px;
   padding:25px;
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
