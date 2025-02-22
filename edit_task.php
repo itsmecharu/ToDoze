@@ -61,8 +61,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <title>Edit Task</title>
 </head>
 <body>
+<div class="container">
+<div class="box">
   <h2>Edit Task</h2>
-  <form method="POST" action="">
+  <form method="POST" action="" class="add-task-form">
     <label for="taskname">Task Name:</label>
     <input type="text" name="taskname" id="taskname" value="<?php echo htmlspecialchars($taskname); ?>" required><br>
     
@@ -76,5 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </form>
   <br>
   <a href="task.php">Back to Task List</a>
+  </div>
+  </div>
 </body>
 </html>

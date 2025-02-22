@@ -21,8 +21,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "INSERT INTO tasks (userid, taskname, taskdescription, taskreminder, taskstatus) VALUES (?, ?, ?, ?, 'pending')";
     $stmt = mysqli_prepare($conn, $sql);
     if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "ssss", $userid, $taskname, $taskdescription, $taskreminder);
+        mysqli_stmt_bind_param($stmt, "isss", $userid, $taskname, $taskdescription, $taskreminder);
         if (!mysqli_stmt_execute($stmt)) {
+            header("Location: task.php"); // Redirect to prevent duplicate insertion
+            exit();
+        }else{
+            
             echo "Error executing query: " . mysqli_error($conn);
         }
     } else {
@@ -31,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Retrieve all active tasks for the user
-$sql = "SELECT * FROM tasks WHERE userid = ? AND is_deleted = 0";
+$sql = "SELECT * FROM tasks WHERE userid = ? AND taskstatus != 'completed' AND is_deleted = 0";
 $stmt = mysqli_prepare($conn, $sql);
 if ($stmt) {
     mysqli_stmt_bind_param($stmt, "s", $userid);
@@ -115,19 +119,33 @@ if ($stmt) {
     <div class="box">
       <h2>Task List</h2>
       <?php
-      if ($result && mysqli_num_rows($result) > 0) {
-          while ($row = mysqli_fetch_assoc($result)) {
-              echo "<div class='task'>";
-              echo "<h3>" . htmlspecialchars($row['taskname']) . "</h3>";
-              echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
-              echo "<small>Reminder: " . (!empty($row['taskreminder']) ? htmlspecialchars($row['taskreminder']) : "No reminder set") . "</small><br>";
-              echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a> | ";
-              echo "<a href='delete_task.php?taskid=" . $row['taskid'] . "' onclick='return confirm(\"Are you sure you want to delete this task?\")'>Delete</a>";
-              echo "</div>";
-          }
-      } else {
-          echo "<p>No tasks added yet.</p>";
-      }
+    if ($result && mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            echo "<div class='task' id='task-" . $row['taskid'] . "'>";
+    
+            echo "<div class='task-content'>";
+            // Square box for marking the task as completed
+            echo "<form action='task_completion.php' method='POST' class='complete-form'>";
+            echo "<input type='hidden' name='taskid' value='" . $row['taskid'] . "'>";
+            echo "<button type='submit' class='complete-box' title='Tick to complete'></button>";
+            echo "</form>";
+    
+            // Task name and details
+            echo "<div class='task-details'>";
+            echo "<h3>" . htmlspecialchars($row['taskname']) . "</h3>";
+            echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
+            echo "<small>Reminder: " . (!empty($row['taskreminder']) ? htmlspecialchars($row['taskreminder']) : "No reminder set") . "</small><br>";
+            echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a> | ";
+            echo "<a href='delete_task.php?taskid=" . $row['taskid'] . "' onclick='return confirm(\"Are you sure you want to delete this task?\")'>Delete</a>";
+            echo "</div>"; // Close task-details
+    
+            echo "</div>"; // Close task-content
+            echo "</div>"; // Close task
+        }
+    } else {
+        echo "<p>No tasks added yet.</p>";
+    }
+    
       ?>
     </div>
     </div>

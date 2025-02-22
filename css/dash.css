@@ -371,3 +371,75 @@ button:hover {
   margin: 0;
 }
 
+/* for the completion button */
+ /* .complete-box {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  margin-right: 10px;
+  vertical-align: middle;
+  background-color: #fff;
+  cursor: pointer;
+}
+.complete-box:hover {
+  border-color: #888;
+}
+/* .task {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.task-details {
+  flex-grow: 1;
+}
+.complete-form {
+  display: inline;
+  margin: 0; */
+/* } */
+/* Hide the default submit button style */
+/* .complete-form button {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}  */ 
+
+
+
+
+/* maybe */
+.task {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  background: #f9f9f9;
+}
+
+.task-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.complete-form {
+  display: flex;
+  align-items: center;
+}
+
+.complete-box {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #333;
+  background: white;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.task-details {
+  flex-grow: 1;
+}

@@ -99,7 +99,7 @@ $sql = "CREATE TABLE IF NOT EXISTS tasks(
     assigned_to INT NULL,
     taskname VARCHAR(255) NOT NULL,
     taskdescription VARCHAR(255),
-    taskdate DATE,
+    taskcompletedate DATETIME,
     taskreminder DATETIME,
     taskstatus VARCHAR(30) NOT NULL,
     is_deleted TINYINT(1) DEFAULT 0,       -- 0 = active, 1 = deleted
