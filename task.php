@@ -2,13 +2,13 @@
 session_start();
 include 'config/database.php';
 
-// Ensure userid is set before accessing it
+// Ensure user is logged in
 if (!isset($_SESSION['userid'])) {
     header("Location: signin.php");
     exit();
 }
 
-$userid = $_SESSION['userid']; // Correct way to get the user ID
+$userid = $_SESSION['userid'];
 
 $taskname = $taskdescription = $taskreminder = "";
 
@@ -18,15 +18,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taskdescription = isset($_POST['taskdescription']) ? trim($_POST['taskdescription']) : null;
     $taskreminder = isset($_POST['taskreminder']) ? $_POST['taskreminder'] : null;
 
-    // Insert Task into Database
-    $sql = "INSERT INTO tasks (userid, taskname, taskdescription, taskreminder) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO tasks (userid, taskname, taskdescription, taskreminder, taskstatus) VALUES (?, ?, ?, ?, 'pending')";
     $stmt = mysqli_prepare($conn, $sql);
-    
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "ssss", $userid, $taskname, $taskdescription, $taskreminder);
-        if (mysqli_stmt_execute($stmt)) {
-           // echo "<script>alert('Task Added Successfully!'); window.location='task.php';</script>";
-        } else {
+        if (!mysqli_stmt_execute($stmt)) {
             echo "Error executing query: " . mysqli_error($conn);
         }
     } else {
@@ -34,8 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Retrieve all tasks
-$sql = "SELECT * FROM tasks WHERE userid = ?";
+// Retrieve all active tasks for the user
+$sql = "SELECT * FROM tasks WHERE userid = ? AND is_deleted = 0";
 $stmt = mysqli_prepare($conn, $sql);
 if ($stmt) {
     mysqli_stmt_bind_param($stmt, "s", $userid);
@@ -44,6 +40,7 @@ if ($stmt) {
 } else {
     echo "Error preparing statement: " . mysqli_error($conn);
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -103,38 +100,39 @@ if ($stmt) {
 
     <h1>ToDoze</h1>
     <div class="container">
-        <!-- Add Task Section -->
-        <div class="box">
-            <h2>Add Task</h2>
-            <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
-                <input type="text" id="taskname" name="taskname" placeholder="Add task here" required>
-                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description">
-                <input type="datetime-local" id="taskreminder" name="taskreminder">
-                <button type="submit">Done</button>
-            </form>
-        </div>
-
-        <!-- Task List Section  -->
-        <div class="box">
-            <h2>Task List</h2>
-            <?php
-            if ($result && mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<div class='task'>";
-                    echo "<h3>" . htmlspecialchars($row['taskname']) . "</h3>";
-                    echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
-                    echo "<small>Reminder: " . (!empty($row['taskreminder']) ? htmlspecialchars($row['taskreminder']) : "No reminder set") . "</small>";
-                    echo "</div>";
-                }
-            } else {
-                echo "<p>No tasks added yet.</p>";
-            }
-            ?>
-        </div>
+    <!-- Add Task Section -->
+    <div class="box">
+      <h2>Add Task</h2>
+      <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
+        <input type="text" id="taskname" name="taskname" placeholder="Add task here" required>
+        <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description">
+        <input type="datetime-local" id="taskreminder" name="taskreminder">
+        <button type="submit">Done</button>
+      </form>
     </div>
 
-    
-        <!-- ===== IONICONS ===== -->
+    <!-- Task List Section  -->
+    <div class="box">
+      <h2>Task List</h2>
+      <?php
+      if ($result && mysqli_num_rows($result) > 0) {
+          while ($row = mysqli_fetch_assoc($result)) {
+              echo "<div class='task'>";
+              echo "<h3>" . htmlspecialchars($row['taskname']) . "</h3>";
+              echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
+              echo "<small>Reminder: " . (!empty($row['taskreminder']) ? htmlspecialchars($row['taskreminder']) : "No reminder set") . "</small><br>";
+              echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a> | ";
+              echo "<a href='delete_task.php?taskid=" . $row['taskid'] . "' onclick='return confirm(\"Are you sure you want to delete this task?\")'>Delete</a>";
+              echo "</div>";
+          }
+      } else {
+          echo "<p>No tasks added yet.</p>";
+      }
+      ?>
+    </div>
+    </div>
+
+            <!-- ===== IONICONS ===== -->
         <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
         
         <!-- ===== MAIN JS ===== -->

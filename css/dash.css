@@ -326,14 +326,14 @@ button:hover {
 .task-summary h3 {
   margin: 0;
   font-size: 1.2rem;
-  color: #2c3e50;
+  color: #326ca7;
 }
 
 .task-summary p {
   margin: 5px 0 0;
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: bold;
-  color: #3498db;
+  color: #0d8ce0;
 }
 
 .progress-bar {
@@ -364,7 +364,7 @@ button:hover {
 .add-task-form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
 }
 
 .add-task-form input, .add-task-form button {

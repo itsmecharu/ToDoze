@@ -6,8 +6,9 @@ if (!isset($_SESSION['userid'])) {
     exit();
 }
 $userid = $_SESSION['userid'];
-// Retrieve all tasks
-$sql = "SELECT * FROM tasks WHERE userid = ?";
+
+// Retrieve all active tasks for the user
+$sql = "SELECT * FROM tasks WHERE userid = ? AND is_deleted = 0";
 $stmt = mysqli_prepare($conn, $sql);
 if ($stmt) {
     mysqli_stmt_bind_param($stmt, "s", $userid);
@@ -16,6 +17,7 @@ if ($stmt) {
 } else {
     echo "Error preparing statement: " . mysqli_error($conn);
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -86,24 +88,24 @@ if ($stmt) {
                 
             <!-- </div> -->
             <div class="box">
-                <h2>Task List</h2>
-                <?php
-                if ($result && mysqli_num_rows($result) > 0) {
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        echo "<div class='task'>";
-                        echo "<div class='task-tick' onclick='toggleTick(this)'></div>"; 
-                        echo "<h3>" . htmlspecialchars($row['taskname']) . "</h3>";
-                        echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
-                        echo "<small>Reminder: " . (!empty($row['taskreminder']) ? htmlspecialchars($row['taskreminder']) : "No reminder set") . "</small>";
-                        echo "</div>";
-                    }
-                } else {
-                    echo "<p>No tasks added yet.</p>";
-                }
-                ?>
-            </div>
-        </div>
-</div>
+            <h2>Task List</h2>
+      <?php
+      if ($result && mysqli_num_rows($result) > 0) {
+          while ($row = mysqli_fetch_assoc($result)) {
+              echo "<div class='task'>";
+              echo "<h3>" . htmlspecialchars($row['taskname']) . "</h3>";
+              echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
+              echo "<small>Reminder: " . (!empty($row['taskreminder']) ? htmlspecialchars($row['taskreminder']) : "No reminder set") . "</small><br>";
+              echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a> | ";
+              echo "<a href='delete_task.php?taskid=" . $row['taskid'] . "' onclick='return confirm(\"Are you sure you want to delete this task?\")'>Delete</a>";
+              echo "</div>";
+          }
+      } else {
+          echo "<p>No tasks added yet.</p>";
+      }
+      ?>
+    </div>
+    </div>
         <!-- ===== IONICONS ===== -->
         <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
         

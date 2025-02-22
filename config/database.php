@@ -102,6 +102,8 @@ $sql = "CREATE TABLE IF NOT EXISTS tasks(
     taskdate DATE,
     taskreminder DATETIME,
     taskstatus VARCHAR(30) NOT NULL,
+    is_deleted TINYINT(1) DEFAULT 0,       -- 0 = active, 1 = deleted
+    deleted_at DATETIME NULL,              -- When the task was marked as deleted
     taskcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
