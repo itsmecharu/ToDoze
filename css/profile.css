@@ -26,7 +26,7 @@
 }
 body {
     position: relative;
-    margin: 250px;
+    margin: 0px 0px 0px 100px;
     padding: 2rem 0 0 0;
     font-family: var(--body-font);
     font-size: var(--normal-font-size);
