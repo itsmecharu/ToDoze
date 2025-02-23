@@ -33,15 +33,7 @@ if ($stmt) {
         <title>Dashboard</title>
     </head>
     <body id="body-pd">
-        <!-- User Profile Section -->
-        <div class="profile-section">
-        <a href="profile.php" class="profile-link" target="_blank">
-            <div class="profile">
-                <img src="img/userprofile.jpeg" class="profile-pic">
-                
-                <span class="profile-name"><a href="profile.php"></a>Uncle ji</span> <!-- Replace with dynamic name if needed -->
-            </div>
-        </div>
+      
 
         <!-- Navbar -->
         <div class="l-navbar" id="navbar">
@@ -72,6 +64,12 @@ if ($stmt) {
                             <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Review</span>
                         </a>
+
+                        <a href="profile.php" class="nav__link">
+                            <ion-icon name="profile-outline" class="nav__icon"></ion-icon>
+                            <span class="nav__name">Profile</span>
+                        </a>
+
                     </div>
                 </div>
 
@@ -102,16 +100,20 @@ if ($result && mysqli_num_rows($result) > 0) {
         echo "<button type='submit' class='complete-box' title='Tick to complete'></button>";
         echo "</form>";
 
-        // Task name (clickable to view full details)
-        echo "<div class='task-details'>";
-        echo "<h3><a href='task_page.php?taskid=" . $row['taskid'] . "'>" . htmlspecialchars($row['taskname']) . "</a></h3>";
-        echo "</div>"; // Close task-details
+   // Task name and details
+   echo "<div class='task-details'>";
+   echo "<h3>" . htmlspecialchars($row['taskname']) . "</h3>";
+//    echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
+   echo "<small>Reminder: " . (!empty($row['taskreminder']) ? htmlspecialchars($row['taskreminder']) : "No reminder set") . "</small><br>";
+//    echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a> | ";
+//    echo "<a href='delete_task.php?taskid=" . $row['taskid'] . "' onclick='return confirm(\"Are you sure you want to delete this task?\")'>Delete</a>";
+//    echo "</div>"; // Close task-details
 
-        echo "</div>"; // Close task-content
-        echo "</div>"; // Close task
-    }
+   echo "</div>"; // Close task-content
+   echo "</div>"; // Close task
+}
 } else {
-    echo "<p>No tasks added yet.</p>";
+echo "<p>No tasks added yet.</p>";
 }
 
     

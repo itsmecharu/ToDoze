@@ -1,17 +1,21 @@
-<?php 
+<?php
 session_start();
 include 'config/database.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+// use PHPMailer\PHPMailer\SMTP;
 
-$username = $useremail = $userpassword = $confirmpassword = $otp="";
+require 'phpmailer/PHPMailer.php';
+require 'phpmailer/Exception.php';
+require 'phpmailer/SMTP.php';
+
+$username = $useremail = $userpassword = $confirmpassword = "";
 $username_err = $useremail_err = $userpassword_err = $confirmpassword_err = "";
 
+// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    
-    // Validate Username (Alphabets and one space between words)
+    // Validate Username (Only alphabets, one space between words allowed)
     if (empty(trim($_POST["username"]))) {
         $username_err = "Please enter your name.";
     } elseif (!preg_match("/^[A-Za-z]+( [A-Za-z]+)*$/", trim($_POST["username"]))) {
@@ -20,15 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $username = trim($_POST["username"]);
     }
 
-    // Validate Email (with additional check if it already exists in the database)
+    // Validate Email
     if (empty(trim($_POST["useremail"]))) {
         $useremail_err = "Please enter your email.";
     } elseif (!filter_var(trim($_POST["useremail"]), FILTER_VALIDATE_EMAIL)) {
         $useremail_err = "Please enter a valid email address.";
     } else {
         $useremail = trim($_POST["useremail"]);
-        
-        // Check if the email already exists
+        // Check if email already exists
         $sql = "SELECT userid FROM users WHERE useremail = ?";
         if ($stmt = mysqli_prepare($conn, $sql)) {
             mysqli_stmt_bind_param($stmt, "s", $useremail);
@@ -41,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         }
     }
 
-    // Validate Password (At least 8 and at most 15 characters)
+    // Validate Password
     if (empty(trim($_POST["userpassword"]))) {
         $userpassword_err = "Please enter a password.";
     } elseif (strlen(trim($_POST["userpassword"])) < 8 || strlen(trim($_POST["userpassword"])) > 15) {
@@ -59,62 +62,50 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             $confirmpassword_err = "Passwords do not match.";
         }
     }
-    
+
     // If no errors, proceed with OTP generation
     if (empty($username_err) && empty($useremail_err) && empty($userpassword_err) && empty($confirmpassword_err)) {
-        // Store data in session for later use
+        // Store user details in session
         $_SESSION['username'] = $username;
         $_SESSION['useremail'] = $useremail;
         $_SESSION['userpassword'] = password_hash($userpassword, PASSWORD_DEFAULT); // Hash the password
-    
-        require 'phpmailer\PHPMailer.php';
-        require 'phpmailer\Exception.php';
-        require 'phpmailer\SMTP.php';
 
         // Generate a 6-digit OTP
         $otp = rand(100000, 999999);
-        // Store OTP in session for verification
         $_SESSION['otp'] = $otp;
-        
-       if (!isset($_SESSION['otp_expiry'])) {
-            $_SESSION['otp_expiry'] = time() + 180; // 180 seconds = 3 minutes
-        }
-        
-    
+        $_SESSION['otp_expiry'] = time() + 180; // OTP expires in 3 minutes
 
-
+        // Send OTP via email
         $mail = new PHPMailer(true);
         try {
-            // Server settings
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'todoze9@gmail.com'; 
-            $mail->Password   = 'aslu umcq hqhq ebhr';  // Use an App Password
+            $mail->Username   = 'todoze9@gmail.com';
+            $mail->Password   = 'aslu umcq hqhq ebhr';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = 465;
 
-            // Recipients
             $mail->setFrom('todoze9@gmail.com', 'ToDoze');
-            $mail->addAddress($useremail, $username); 
+            $mail->addAddress($useremail, $username);
 
-            // Email Content
             $mail->isHTML(true);
             $mail->Subject = 'Your OTP for ToDoze Registration';
-            $mail->Body    = "<h3>Hello $username,</h3><p>Your OTP for verification is: <b>$otp</b></p><p>This OTP is valid for 3 minutes.</p>";
-            $mail->AltBody = "Hello $username, \nYour OTP for verification is: $otp \nThis OTP is valid for 3 minutes.";
+            $mail->Body    = "<h3>Hello $username,</h3><p>Your OTP is: <b>$otp</b></p><p>This OTP is valid for 3 minutes.</p>";
 
             $mail->send();
-            echo "OTP has been sent to your email.";
         } catch (Exception $e) {
-            echo "Error sending OTP: {$mail->ErrorInfo}";
+            die("Error sending OTP: {$mail->ErrorInfo}");
         }
 
-        // Proceed to OTP verification page
         header("Location: verifyotp.php");
+        exit();
     }
 }
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">

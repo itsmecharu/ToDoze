@@ -33,64 +33,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="css/dash.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
-<body>
-      <!-- User Profile Section -->
-      <div class="profile-section">
-        <a href="profile.php" class="profile-link" target="_blank">
-            <div class="profile">
-                <img src="img/userprofile.jpeg" class="profile-pic">
-                
-                <span class="profile-name"><a href="profile.php"></a>uncle ji</span> <!-- Replace with dynamic name if needed -->
-            </div>
-        </div>
+<body id="body-pd">
 
-<div class="l-navbar" id="navbar">
+
+        <!-- Navbar -->
+        <div class="l-navbar" id="navbar">
             <nav class="nav">
                 <div>
                     <div class="nav__brand">
                         <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
                         <span class="nav__logo">ToDoze</span>
                     </div>
-                    <div class="nav__list">
-                    <a href="dash.php" class="nav__link">
-                        <ion-icon name="home-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Home</span>
-                    </a>
 
                     <div class="nav__list">
-                    
+                        <a href="dash.php" class="nav__link active">
+                            <ion-icon name="home-outline" class="nav__icon"></ion-icon>
+                            <span class="nav__name">Home</span>
+                        </a>
+
                         <a href="task.php" class="nav__link">
                             <ion-icon name="add-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Task</span>
                         </a>
 
-                        <a href="project.php"  class="nav__link">
+                        <a href="project.php" class="nav__link">
                             <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Project</span>
                         </a>
 
-                        <!-- <a href="analytics.php" class="nav__link">
-                            <ion-icon name="pie-chart-outline" class="nav__icon"></ion-icon>
-                            <span class="nav__name">Report</span>
-                        </a> -->
-
-                        
-                        <!-- <a href="profile.php" class="nav__link">
-                            
-                            <ion-icon name="people-outline" class="nav__icon"></ion-icon>
-                            <span class="nav__name">Profile</span>
-
-                        </a> -->
-
-                        <a href="review.php" class="nav__link active">
-                            
+                        <a href="review.php" class="nav__link">
                             <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Review</span>
-
                         </a>
-                       
-                    </div>
 
+                        <a href="profile.php" class="nav__link">
+                            <ion-icon name="outline" class="nav__icon"></ion-icon>
+                            <span class="nav__name">Profile</span>
+                        </a>
+
+                    </div>
                 </div>
 
                 <a href="logout.php" class="nav__link logout">
@@ -99,6 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </a>
             </nav>
         </div>
+
+
     <div class="review-form-container">
         <h2>Submit Your Review</h2>
         <form method="POST">
