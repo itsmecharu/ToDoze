@@ -67,10 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </a>
 
                         <a href="profile.php" class="nav__link">
-                            <ion-icon name="outline" class="nav__icon"></ion-icon>
+                            <ion-icon name="people-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Profile</span>
                         </a>
-
                     </div>
                 </div>
 
