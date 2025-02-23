@@ -73,9 +73,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         // Generate a 6-digit OTP
         $otp = rand(100000, 999999);
-
         // Store OTP in session for verification
         $_SESSION['otp'] = $otp;
+        
+       if (!isset($_SESSION['otp_expiry'])) {
+            $_SESSION['otp_expiry'] = time() + 180; // 180 seconds = 3 minutes
+        }
+        
+    
+
 
         $mail = new PHPMailer(true);
         try {
@@ -95,8 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             // Email Content
             $mail->isHTML(true);
             $mail->Subject = 'Your OTP for ToDoze Registration';
-            $mail->Body    = "<h3>Hello $username,</h3><p>Your OTP for verification is: <b>$otp</b></p><p>This OTP is valid for 5 minutes.</p>";
-            $mail->AltBody = "Hello $username, \nYour OTP for verification is: $otp \nThis OTP is valid for 5 minutes.";
+            $mail->Body    = "<h3>Hello $username,</h3><p>Your OTP for verification is: <b>$otp</b></p><p>This OTP is valid for 3 minutes.</p>";
+            $mail->AltBody = "Hello $username, \nYour OTP for verification is: $otp \nThis OTP is valid for 3 minutes.";
 
             $mail->send();
             echo "OTP has been sent to your email.";
