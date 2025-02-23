@@ -103,17 +103,7 @@ if ($stmt) {
                 </a>
             </nav>
         </div>
-
-
-  <!-- User Profile Section -->
-  <div class="profile-section">
-        <a href="profile.php" class="profile-link" target="_blank">
-            <div class="profile">
-                <img src="img/userprofile.jpeg" class="profile-pic">
-                
-                <span class="profile-name"><a href="profile.php"></a>uncle ji</span> <!-- Replace with dynamic name if needed -->
-            </div>
-        </div>
+        
 
     <h1>ToDoze</h1>
     <div class="container">

@@ -23,3 +23,22 @@ showMenu('nav-toggle', 'navbar', 'body-pd');
 function toggleTick(button) {
     button.classList.toggle('ticked');
   }
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    let popup = document.querySelector(".popup");
+    let overlay = document.createElement("div");
+    overlay.className = "popup-overlay";
+    document.body.appendChild(overlay);
+
+    if (popup) {
+        popup.style.display = "block";
+        overlay.style.display = "block";
+
+        setTimeout(() => {
+            popup.style.display = "none";
+            overlay.style.display = "none";
+        }, 3000); // Hide after 3 seconds
+    }
+});
+

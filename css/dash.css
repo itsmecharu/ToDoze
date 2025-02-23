@@ -218,18 +218,18 @@ h1 {
 }
 
 .container {
-  max-width: 800px;
-  margin: 50px auto;
-  padding: 0 1rem; /* Add some padding for better spacing */
+  max-width: 100%;
+  margin: 0px auto;
+  padding: 0 7rem; /* Add some padding for better spacing */
 }
 
 .box {
   background: #fff;
   padding:25px;
   border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); */
   margin-bottom: 20px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* transition: transform 0.3s ease, box-shadow 0.3s ease; */
 }
 
 .box:hover {

@@ -17,10 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     mysqli_stmt_bind_param($stmt, "isi", $userid, $review, $rating);
 
     if (mysqli_stmt_execute($stmt)) {
-        echo "Review submitted successfully!";
+        echo "<div class='popup success'>Review submitted successfully!</div>";
     } else {
-        echo "Error submitting review: " . mysqli_error($conn);
+        echo "<div class='popup error'>Error submitting review: " . mysqli_error($conn) . "</div>";
     }
+    
 }
 ?>
 <!DOCTYPE html>
@@ -67,6 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </a>
 
                         <a href="profile.php" class="nav__link">
+
                             <ion-icon name="people-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Profile</span>
                         </a>
