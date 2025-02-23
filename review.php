@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
 
                     <div class="nav__list">
-                        <a href="dash.php" class="nav__link active">
+                        <a href="dash.php" class="nav__link ">
                             <ion-icon name="home-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Home</span>
                         </a>
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <span class="nav__name">Project</span>
                         </a>
 
-                        <a href="review.php" class="nav__link">
+                        <a href="review.php" class="nav__link active">
                             <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Review</span>
                         </a>

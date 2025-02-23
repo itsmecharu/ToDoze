@@ -30,7 +30,7 @@ if (!isset($_SESSION['userid'])) {
                     </div>
 
                     <div class="nav__list">
-                        <a href="dash.php" class="nav__link active">
+                        <a href="dash.php" class="nav__link ">
                             <ion-icon name="home-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Home</span>
                         </a>
@@ -50,7 +50,7 @@ if (!isset($_SESSION['userid'])) {
                             <span class="nav__name">Review</span>
                         </a>
 
-                        <a href="profile.php" class="nav__link">
+                        <a href="profile.php" class="nav__link active">
                             <ion-icon name="profile-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Profile</span>
                         </a>

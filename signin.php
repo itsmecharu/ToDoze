@@ -69,6 +69,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Sign In</title>
     <link rel="stylesheet" href="css/form.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         .error {
             color: red;
@@ -91,7 +93,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <span class="error"><?php echo $useremail_err; ?></span>
                 <?php endif; ?>
 
-                <input type="password" name="userpassword" placeholder="Enter your password" required>
+                <!-- <input type="password" name="userpassword" placeholder="Enter your password" required> -->
+                <div class="password-wrapper">
+    <input type="password" name="userpassword" id="password" placeholder="Enter your password" required>
+    <i class="fa fa-eye toggle-password" onclick="togglePassword('password')"></i>
+</div>
+
                 <?php if (!empty($userpassword_err)): ?>
                     <span class="error"><?php echo $userpassword_err; ?></span>
                 <?php endif; ?>
@@ -101,5 +108,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p>Don't have an account? <a href="signup.php" class="sign-up-link">Sign Up</a></p>
         </div>
     </div>
+    <script>
+    function togglePassword(id) {
+    let input = document.getElementById(id);
+    let icon = input.nextElementSibling;
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+    }
+}
+</script>
 </body>
 </html>

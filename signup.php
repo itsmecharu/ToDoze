@@ -115,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <title>Sign Up</title>
     <link rel="stylesheet" href="css/form.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .error { color: red; font-size: 12px; }
     </style>
@@ -134,9 +135,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <span class="error"><?php echo $username_err; ?></span>
                 <input type="email" placeholder="Enter your email" name="useremail" required>
                 <span class="error"><?php echo $useremail_err; ?></span>
-                <input type="password" placeholder="Create a password" name="userpassword" required>
+                <div class="password-wrapper">
+                <div class="password-wrapper">
+                <input type="password" name="userpassword" id="signup-password" placeholder="Create a password" required>
+                <i class="fa fa-eye toggle-password" onclick="togglePassword('signup-password', this)"></i>
+                </div>
                 <span class="error"><?php echo $userpassword_err; ?></span>
-                <input type="password" placeholder="Confirm your password" name="confirmpassword" required>
+                <div class="password-wrapper">
+                <input type="password" name="confirmpassword" id="confirm-password" placeholder="Confirm your password" required>
+                <i class="fa fa-eye toggle-password" onclick="togglePassword('confirm-password', this)"></i>
+                </div>
                 <span class="error"><?php echo $confirmpassword_err; ?></span>
                 <button type="submit" name="send">Sign Up</button>
             </form>

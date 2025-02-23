@@ -69,12 +69,12 @@ if ($stmt) {
                     </div>
 
                     <div class="nav__list">
-                        <a href="dash.php" class="nav__link active">
+                        <a href="dash.php" class="nav__link ">
                             <ion-icon name="home-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Home</span>
                         </a>
 
-                        <a href="task.php" class="nav__link">
+                        <a href="task.php" class="nav__link active">
                             <ion-icon name="add-outline" class="nav__icon"></ion-icon>
                             <span class="nav__name">Task</span>
                         </a>

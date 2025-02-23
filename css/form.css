@@ -1,6 +1,5 @@
-/* General Body Styles */
+/* General Styles */
 body {
-    margin: 0;
     font-family: Arial, sans-serif;
     background: linear-gradient(to bottom, #ffffff, #b3e5fc);
     color: #333;
@@ -8,9 +7,9 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    margin: 0;
 }
 
-/* Form Wrapper for Layout */
 .form-wrapper {
     display: flex;
     align-items: center;
@@ -21,7 +20,6 @@ body {
     width: 600px;
 }
 
-/* Logo Section */
 .logo-container {
     flex: 1;
     display: flex;
@@ -35,52 +33,55 @@ body {
     height: auto;
 }
 
-/* Form Section */
 .form-container {
     flex: 2;
     text-align: center;
     padding: 20px;
 }
 
-/* Form Heading */
-.form-container h1 {
-    font-size: 28px;
+h1 {
     margin-bottom: 10px;
+    font-size: 28px;
     color: #000;
 }
 
-.form-container p {
+p {
     font-size: 14px;
     color: #666;
     margin-bottom: 30px;
 }
 
-/* Input Fields */
-.form-container input[type="email"],
-.form-container input[type="password"],
-.form-container input[type="text"] {
-    width: 100%;
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    width: 90%;
     padding: 12px 16px;
     margin-bottom: 20px;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 20px;
     font-size: 16px;
     color: #333;
 }
 
-.form-container input::placeholder {
+input::placeholder {
     color: #bbb;
     font-size: 14px;
 }
 
-.form-container input:focus {
+input:focus {
     outline: none;
     border-color: #007bff;
     box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
 }
 
-/* Submit Button */
-.form-container button {
+.button-container {
+    position: relative;
+}
+
+button {
     width: 100%;
     background: #007bff;
     color: #fff;
@@ -94,18 +95,47 @@ body {
     transition: background-color 0.3s ease;
 }
 
-.form-container button:hover {
+button:hover {
     background-color: #0056b3;
 }
 
-/* Forgot Password */
-.form-container .forgot-password {
+.error {
+    color: red;
+    font-size: 12px;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    width: 90%;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 16px;
+    color: #333;
+}
+
+.password-wrapper .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 35%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #555;
+}
+
+.forgot-password {
     margin-top: 15px;
     font-size: 14px;
     color: #007bff;
     text-decoration: none;
 }
 
-.form-container .forgot-password:hover {
+.forgot-password:hover {
     text-decoration: underline;
 }
