@@ -9,7 +9,6 @@ if (!isset($_SESSION['userid'])) {
 }
 
 $userid = $_SESSION['userid'];
-
 $taskname = $taskdescription = $taskdate = $tasktime = $reminder_percentage = "";
 
 // Handle Task Submission
@@ -26,7 +25,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "ssssis", $userid, $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage);
         if (mysqli_stmt_execute($stmt)) {
-            echo "Task added successfully!";
+            $_SESSION['success_message'] = "Task added successfully!";
+            header("Location: task.php"); // Redirect to avoid form resubmission
+            exit();
         } else {
             echo "Error executing query: " . mysqli_error($conn);
         }
@@ -34,21 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Error preparing statement: " . mysqli_error($conn);
     }
 }
-
-
-// Retrieve all active tasks for the user
-$sql = "SELECT * FROM tasks WHERE userid = ? AND taskstatus != 'completed' AND is_deleted = 0";
-$stmt = mysqli_prepare($conn, $sql);
-if ($stmt) {
-    mysqli_stmt_bind_param($stmt, "s", $userid);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-} else {
-    echo "Error preparing statement: " . mysqli_error($conn);
-}
-
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -59,11 +46,10 @@ if ($stmt) {
     <link rel="stylesheet" href="css/dash.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <title>Task</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body id="body-pd">
-
-
     <!-- Navbar -->
     <div class="l-navbar" id="navbar">
         <nav class="nav">
@@ -74,7 +60,7 @@ if ($stmt) {
                 </div>
 
                 <div class="nav__list">
-                    <a href="dash.php" class="nav__link ">
+                    <a href="dash.php" class="nav__link">
                         <ion-icon name="home-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Home</span>
                     </a>
@@ -98,7 +84,6 @@ if ($stmt) {
                         <ion-icon name="people-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Profile</span>
                     </a>
-
                 </div>
             </div>
 
@@ -109,15 +94,14 @@ if ($stmt) {
         </nav>
     </div>
 
-
     <h1>ToDoze</h1>
     <div class="container">
         <!-- Add Task Section -->
         <div class="box">
             <h2>Add Task Here</h2>
-            <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST" ">
 
-                <label for=" taskname">Task Name:</label>
+            <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
+                <label for="taskname">Task Name:</label>
                 <input type="text" id="taskname" name="taskname" placeholder="Add task here" required>
 
                 <label for="taskDescription">Task Description:</label>
@@ -136,57 +120,86 @@ if ($stmt) {
                     <option value="100">100% (On Time)</option>
                 </select>
 
-
                 <button type="submit">Done</button>
             </form>
-
-
         </div>
+    </div>
 
-
-
-
-
-        <!-- ===== IONICONS ===== -->
-        <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
-
-        <!-- ===== MAIN JS ===== -->
-        <script src="js/dash.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <!-- <script src="script.js"></script> -->
-
-
+    <?php if (isset($_SESSION['success_message'])): ?>
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const taskDate = document.getElementById('taskdate');
-                const taskTime = document.getElementById('tasktime');
-                const reminderSelect = document.getElementById('reminder');
-                const form = document.querySelector('.add-task-form');
+    document.addEventListener("DOMContentLoaded", function () {
+        Swal.fire({
+            title: "Task added successfully!",
+            text: "", // Empty text since you only want "Task added successfully"
+            // icon: "success",
+            timer: 1000,
+            showConfirmButton: false,
+            customClass: {
+                popup: 'small-swal', // Custom class for SweetAlert popup
+                title: 'small-swal-title', // Custom class for the title
+                content: 'small-swal-content' // Custom class for the content
+            }
+        });
+    });
+</script>
 
-                function checkDateAndTime() {
-                    reminderSelect.disabled = !(taskDate.value && taskTime.value);
-                    if (reminderSelect.disabled) reminderSelect.value = "";
-                }
+<style>
+    .small-swal {
+        width: 200px; /* Set the width of the card */
+        padding: 20px; /* Optional: Add padding to adjust internal spacing */
+    }
 
-                taskDate.addEventListener('input', checkDateAndTime);
-                taskTime.addEventListener('input', checkDateAndTime);
+    .small-swal-title {
+        font-size: 16px; /* Adjust font size of the title */
+        font-weight: bold; /* Optional: Make title bold */
+    }
 
-                reminderSelect.addEventListener('change', function () {
-                    if (!taskDate.value || !taskTime.value) {
-                        alert("Set both date and time before selecting a reminder.");
-                        this.value = "";
-                    }
-                });
+    .small-swal-content {
+        font-size: 14px; /* Adjust font size of the text content */
+    }
+</style>
 
-                form.addEventListener('submit', function (event) {
-                    if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
-                        alert("Set both date and time before setting a reminder.");
-                        event.preventDefault();
-                    }
-                });
-            });
-        </script>
 
+    <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
+
+    <!-- IONICONS -->
+    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+
+    <!-- MAIN JS -->
+    <script src="js/dash.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const taskDate = document.getElementById('taskdate');
+        const taskTime = document.getElementById('tasktime');
+        const reminderSelect = document.getElementById('reminder');
+        const form = document.querySelector('.add-task-form');
+
+        function checkDateAndTime() {
+            reminderSelect.disabled = !(taskDate.value && taskTime.value);
+            if (reminderSelect.disabled) reminderSelect.value = "";
+        }
+
+        taskDate.addEventListener('input', checkDateAndTime);
+        taskTime.addEventListener('input', checkDateAndTime);
+
+        reminderSelect.addEventListener('change', function () {
+            if (!taskDate.value || !taskTime.value) {
+                alert("Set both date and time before selecting a reminder.");
+                this.value = "";
+            }
+        });
+
+        form.addEventListener('submit', function (event) {
+            if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
+                alert("Set both date and time before setting a reminder.");
+                event.preventDefault();
+            }
+        });
+    });
+    </script>
 </body>
 
 </html>
