@@ -22,7 +22,7 @@ $sql = "UPDATE tasks SET is_deleted = 1, deleted_at = NOW() WHERE taskid = ? AND
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "ii", $taskid, $userid);
 if (mysqli_stmt_execute($stmt)) {
-    header("Location: task.php");
+    header("Location: dash.php");
     exit();
 } else {
     echo "Error deleting task: " . mysqli_error($conn);

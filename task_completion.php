@@ -25,7 +25,7 @@ if (!$stmt) {
 }
 mysqli_stmt_bind_param($stmt, "ii", $taskid, $userid);
 if (mysqli_stmt_execute($stmt)) {
-    header("Location: task.php");
+    header("Location: dash.php");
     exit();
 } else {
     echo "Error marking task as completed: " . mysqli_error($conn);

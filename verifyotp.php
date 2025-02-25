@@ -24,7 +24,7 @@ if (isset($_SESSION['otp_expiry'])) {
 // Process OTP Submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['resend'])) {
-        header("Location: signup.php");
+        header("Location: signup.php"); // Redirect to resend OTP
         exit();
     }
 
@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             mysqli_stmt_close($stmt);
         }
     } else {
-        $otp_err = "Invalid OTP or OTP expired.";
+        $otp_err = "Invalid OTP.";
     }
 }
 ?>
@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/form.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <style>
-        .error { color: red; font-size: 14px; }
+        .error { color: red; font-size: 12px; }
         .countdown { color: green; font-size: 14px; font-weight: bold; }
         .countdown.expiring { color: orange; }
         .countdown.expired { color: red; }
@@ -86,9 +86,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="number" name="otp" id="otp" required <?php echo ($remainingTime <= 0) ? 'disabled' : ''; ?>>
                 <span class="error"><?php echo $otp_err; ?></span>
                 
-                <button type="submit" <?php echo ($remainingTime <= 0) ? 'disabled' : ''; ?>>Verify</button>
+                <button type="submit" id="verifyButton" <?php echo ($remainingTime <= 0) ? 'style="display:none;"' : ''; ?>>Verify</button>
                 
-                <button type="submit" name="resend">Resend OTP</button>
+                <button type="submit" name="resend" id="resendButton" style="display:none;">Resend OTP</button>
             </form>
         </div>
     </div>
@@ -104,7 +104,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 document.getElementById('countdown').innerHTML = "OTP has expired!";
                 document.getElementById('countdown').classList.add("expired");
                 document.getElementById('otp').disabled = true;
-                document.querySelector('button[type="submit"]').disabled = true;
+                document.getElementById('verifyButton').style.display = "none";
+                document.getElementById('resendButton').style.display = "block";
             } else {
                 var minutes = Math.floor(remainingTime / 60);
                 var seconds = remainingTime % 60;

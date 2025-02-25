@@ -86,40 +86,41 @@ if ($stmt) {
                 
             <!-- </div> -->
             <div class="box">
-            <h2>Task List</h2>
-      <?php
-if ($result && mysqli_num_rows($result) > 0) {
-    while ($row = mysqli_fetch_assoc($result)) {
-        echo "<div class='task' id='task-" . $row['taskid'] . "'>";
+    <h2>Task List</h2>
+    <?php
+    if ($result && mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            echo "<div class='task' id='task-" . $row['taskid'] . "'>";
+            echo "<div class='task-content'>";
 
-        echo "<div class='task-content'>";
-        
-        // Square box for marking the task as completed
-        echo "<form action='task_completion.php' method='POST' class='complete-form'>";
-        echo "<input type='hidden' name='taskid' value='" . $row['taskid'] . "'>";
-        echo "<button type='submit' class='complete-box' title='Tick to complete'></button>";
-        echo "</form>";
+            // Square box for marking the task as completed
+            echo "<form action='task_completion.php' method='POST' class='complete-form'>";
+            echo "<input type='hidden' name='taskid' value='" . $row['taskid'] . "'>";
+            echo "<button type='submit' class='complete-box' title='Tick to complete'></button>";
+            echo "</form>";
 
-   // Task name and details
-   echo "<div class='task-details'>";
-   echo "<h3>" . htmlspecialchars($row['taskname']) . "</h3>";
-//    echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
-   echo "<small>Reminder: " . (!empty($row['taskreminder']) ? htmlspecialchars($row['taskreminder']) : "No reminder set") . "</small><br>";
-//    echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a> | ";
-//    echo "<a href='delete_task.php?taskid=" . $row['taskid'] . "' onclick='return confirm(\"Are you sure you want to delete this task?\")'>Delete</a>";
-//    echo "</div>"; // Close task-details
+            // Task name and details
+            echo "<div class='task-details'>";
+            echo "<h4>" . htmlspecialchars($row['taskname']) . "</h4>";
+            echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
+            echo "<p>" . (!empty($row['taskdate']) ? htmlspecialchars($row['taskdate']) : "No date provided") . "</p>";
+            echo "<p>" . (!empty($row['tasktime']) ? htmlspecialchars($row['tasktime']) : "No time provided") . "</p>";
+            echo "<small>Reminder: " . (isset($row['reminder_percentage']) && $row['reminder_percentage'] !== null ? htmlspecialchars($row['reminder_percentage']) . "%" : "No reminder set") . "</small><br>";
+            echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a> | ";
+            echo "<a href='delete_task.php?taskid=" . $row['taskid'] . "' onclick='return confirm(\"Are you sure you want to delete this task?\")'>Delete</a>";
+            echo "</div>"; // Close task-details
 
-   echo "</div>"; // Close task-content
-   echo "</div>"; // Close task
-}
-} else {
-echo "<p>No tasks added yet.</p>";
-}
+            echo "</div>"; // Close task-content
+            echo "</div>"; // Close task
+        }
+    } else {
+        echo "<p>No tasks added yet.</p>";
+    }
+    ?>
+</div>
 
-    
-      ?>
     </div>
-    </div>
+
         <!-- ===== IONICONS ===== -->
         <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
         
