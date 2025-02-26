@@ -46,6 +46,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $stmt = mysqli_prepare($conn, $sql);
   mysqli_stmt_bind_param($stmt, "ssssiii", $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage, $taskid, $userid);
   if (mysqli_stmt_execute($stmt)) {
+
+    $_SESSION['success_message'] = "Task updated sucessfully!";
+
     header("Location: dash.php");
     exit();
   } else {
@@ -54,14 +57,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
+
+
+  
 <!DOCTYPE html>
+<head>
 <html lang="en">
+<meta charset="UTF-8">
+<title>Edit Task</title>
 <link rel="stylesheet" href="css/dash.css">
 <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<head>
-  <meta charset="UTF-8">
-  <title>Edit Task</title>
 </head>
 
 <body>
@@ -100,3 +107,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 
 </html>
+

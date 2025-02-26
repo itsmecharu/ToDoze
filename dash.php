@@ -120,6 +120,50 @@ if ($stmt) {
             ?>
         </div>
     </div>
+    <!-- for showing update message -->
+
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: "Task updated successfully!",
+                    text: "", // Empty text since you only want "Task added successfully"
+                    // icon: "success",
+                    timer: 1000,
+                    showConfirmButton: false,
+                    customClass: {
+                        popup: 'small-swal', // Custom class for SweetAlert popup
+                        title: 'small-swal-title', // Custom class for the title
+                        content: 'small-swal-content' // Custom class for the content
+                    }
+                });
+            });
+        </script>
+
+        <style>
+            .small-swal {
+                width: 200px;
+                /* Set the width of the card */
+                padding: 20px;
+                /* Optional: Add padding to adjust internal spacing */
+            }
+
+            .small-swal-title {
+                font-size: 16px;
+                /* Adjust font size of the title */
+                font-weight: bold;
+                /* Optional: Make title bold */
+            }
+
+            .small-swal-content {
+                font-size: 14px;
+                /* Adjust font size of the text content */
+            }
+        </style>
+
+
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

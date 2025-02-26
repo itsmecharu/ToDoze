@@ -291,7 +291,7 @@ button:hover {
   margin-top: 10px;
 }
 /*===== TASK TICK BUTTON =====*/
-.task-tick {
+/* .task-tick {
   width: 24px;
   height: 24px;
   border: 2px solid #3498db;
@@ -304,16 +304,16 @@ button:hover {
 .task-tick.ticked {
   background-color: #3498db;
   border-color: #3498db;
-}
+/* } */
 
-.task-tick.ticked::after {
+/* .task-tick.ticked::after {
   content: "✓";
   display: block;
   text-align: center;
   color: white;
   font-size: 14px;
   line-height: 24px;
-}
+} */ 
 .task-summary {
   display: flex;
   justify-content: space-between;
@@ -387,7 +387,7 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 100%;
+  width: 50%;
 }
 
 .complete-form {
@@ -396,8 +396,8 @@ button:hover {
 }
 
 .complete-box {
-  width: 20px;
-  height: 20px;
+  width: 10px;
+  height: 10px;
   border: 2px solid #333;
   background: white;
   cursor: pointer;
@@ -407,7 +407,7 @@ button:hover {
 .task-details {
   flex-grow: 1;
 }
-.success-box {
+/* .success-box {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -418,4 +418,4 @@ button:hover {
   border-radius: 8px;
   font-size: 18px;
   text-align: center;
-}
+} */
