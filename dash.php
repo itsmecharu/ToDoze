@@ -77,18 +77,31 @@ if ($stmt) {
             <?php
             if ($result && mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
+                    $taskDateTime = strtotime($row['taskdate'] . ' ' . $row['tasktime']);
+                    $currentDateTime = time();
+                    $isOverdue = $taskDateTime && $taskDateTime < $currentDateTime;
+                
                     echo "<div class='task' id='task-" . $row['taskid'] . "'>";
                     echo "<div class='task-content'>";
-
+                
+                 
+                
                     // Square box for marking the task as completed
-                    echo "<form action='task_completion.php' method='POST' class='complete-form'>";
+                    echo "<form action='task_completion.php' method='POST' class='complete-form' >";
                     echo "<input type='hidden' name='taskid' value='" . $row['taskid'] . "'>";
-                    echo "<button type='submit' class='complete-box' title='Tick to complete'></button>";
+                    echo "<button type='submit'  name='complete-box' class='complete-box' title='Tick to complete'></button>";
                     echo "</form>";
-
+                
                     // Task name and details
                     echo "<div class='task-details'>";
-                    echo "<h4>" . htmlspecialchars($row['taskname']) . "</h4>";
+                       // Display overdue message if the task is past due
+                       if ($isOverdue) {
+                        echo "<p style='color: red; font-weight: bold;'>Overdue Task</p>";
+                    }
+                    
+                    // Change task name color to red if overdue
+                    echo "<h4 style='" . ($isOverdue ? "color: red;" : "") . "'>" . htmlspecialchars($row['taskname']) . "</h4>";
+                    
                     echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
                     echo "<p>" . (!empty($row['taskdate']) ? htmlspecialchars($row['taskdate']) : "No date provided") . "</p>";
                     echo "<p>" . (!empty($row['tasktime']) ? htmlspecialchars($row['tasktime']) : "No time provided") . "</p>";
@@ -96,10 +109,11 @@ if ($stmt) {
                     echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a> | ";
                     echo "<a href='#' class='delete-task' data-taskid='" . $row['taskid'] . "'>Delete</a>";
                     echo "</div>"; // Close task-details
-
+                
                     echo "</div>"; // Close task-content
                     echo "</div>"; // Close task
                 }
+                
             } else {
                 echo "<p>No tasks added yet.</p>";
             }
@@ -133,7 +147,35 @@ if ($stmt) {
                     });
                 });
             });
+
+
+             // COMPLETE TASK CONFIRMATION
+        document.querySelectorAll(".complete-form").forEach(function (form) {
+            form.addEventListener("submit", function (e) {
+                e.preventDefault(); 
+                Swal.fire({
+                    // title: "Mark Task as Completed?",
+                    text: "Are you sure ?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonColor: "#28a745",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: "Completed!",
+                            // text: "Task Finished",
+                            icon: "success"
+                        }).then(() => {
+                            form.submit(); // Submit after confirmation
+                        });
+                    }
+                });
+            });
         });
+    });
+    
     </script>
 
     <!-- ===== IONICONS ===== -->

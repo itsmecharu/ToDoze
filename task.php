@@ -15,8 +15,8 @@ $taskname = $taskdescription = $taskdate = $tasktime = $reminder_percentage = ""
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taskname = trim($_POST['taskname']);
     $taskdescription = isset($_POST['taskdescription']) ? trim($_POST['taskdescription']) : null;
-    $taskdate = isset($_POST['taskdate']) ? $_POST['taskdate'] : null;
-    $tasktime = isset($_POST['tasktime']) ? $_POST['tasktime'] : null;
+    $taskdate = (!empty($_POST['taskdate'])) ? $_POST['taskdate'] : null;
+    $tasktime = (!empty($_POST['tasktime'])) ? $_POST['tasktime'] : null;
     $reminder_percentage = isset($_POST['reminder_percentage']) ? trim($_POST['reminder_percentage']) : null;
 
     $sql = "INSERT INTO tasks (userid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, taskstatus) VALUES (?, ?, ?, ?, ?, ?, 'pending')";
@@ -35,7 +35,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Error preparing statement: " . mysqli_error($conn);
     }
 }
+
+ 
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -127,40 +132,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <?php if (isset($_SESSION['success_message'])): ?>
         <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        Swal.fire({
-            title: "Task added successfully!",
-            text: "", // Empty text since you only want "Task added successfully"
-            // icon: "success",
-            timer: 1000,
-            showConfirmButton: false,
-            customClass: {
-                popup: 'small-swal', // Custom class for SweetAlert popup
-                title: 'small-swal-title', // Custom class for the title
-                content: 'small-swal-content' // Custom class for the content
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: "Task added successfully!",
+                    text: "", // Empty text since you only want "Task added successfully"
+                    // icon: "success",
+                    timer: 1000,
+                    showConfirmButton: false,
+                    customClass: {
+                        popup: 'small-swal', // Custom class for SweetAlert popup
+                        title: 'small-swal-title', // Custom class for the title
+                        content: 'small-swal-content' // Custom class for the content
+                    }
+                });
+            });
+        </script>
+
+        <style>
+            .small-swal {
+                width: 200px;
+                /* Set the width of the card */
+                padding: 20px;
+                /* Optional: Add padding to adjust internal spacing */
             }
-        });
-    });
-</script>
 
-<style>
-    .small-swal {
-        width: 200px; /* Set the width of the card */
-        padding: 20px; /* Optional: Add padding to adjust internal spacing */
-    }
+            .small-swal-title {
+                font-size: 16px;
+                /* Adjust font size of the title */
+                font-weight: bold;
+                /* Optional: Make title bold */
+            }
 
-    .small-swal-title {
-        font-size: 16px; /* Adjust font size of the title */
-        font-weight: bold; /* Optional: Make title bold */
-    }
-
-    .small-swal-content {
-        font-size: 14px; /* Adjust font size of the text content */
-    }
-</style>
+            .small-swal-content {
+                font-size: 14px;
+                /* Adjust font size of the text content */
+            }
+        </style>
 
 
-    <?php unset($_SESSION['success_message']); ?>
+        <?php unset($_SESSION['success_message']); ?>
     <?php endif; ?>
 
     <!-- IONICONS -->
@@ -171,34 +181,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const taskDate = document.getElementById('taskdate');
-        const taskTime = document.getElementById('tasktime');
-        const reminderSelect = document.getElementById('reminder');
-        const form = document.querySelector('.add-task-form');
+        document.addEventListener("DOMContentLoaded", function () {
+            const taskDate = document.getElementById('taskdate');
+            const taskTime = document.getElementById('tasktime');
+            const reminderSelect = document.getElementById('reminder');
+            const form = document.querySelector('.add-task-form');
 
-        function checkDateAndTime() {
-            reminderSelect.disabled = !(taskDate.value && taskTime.value);
-            if (reminderSelect.disabled) reminderSelect.value = "";
-        }
-
-        taskDate.addEventListener('input', checkDateAndTime);
-        taskTime.addEventListener('input', checkDateAndTime);
-
-        reminderSelect.addEventListener('change', function () {
-            if (!taskDate.value || !taskTime.value) {
-                alert("Set both date and time before selecting a reminder.");
-                this.value = "";
+            function checkDateAndTime() {
+                reminderSelect.disabled = !(taskDate.value && taskTime.value);
+                if (reminderSelect.disabled) reminderSelect.value = "";
             }
-        });
 
-        form.addEventListener('submit', function (event) {
-            if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
-                alert("Set both date and time before setting a reminder.");
-                event.preventDefault();
-            }
+            taskDate.addEventListener('input', checkDateAndTime);
+            taskTime.addEventListener('input', checkDateAndTime);
+
+            reminderSelect.addEventListener('change', function () {
+                if (!taskDate.value || !taskTime.value) {
+                    alert("Set both date and time before selecting a reminder.");
+                    this.value = "";
+                }
+            });
+
+            form.addEventListener('submit', function (event) {
+                if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
+                    alert("Set both date and time before setting a reminder.");
+                    event.preventDefault();
+                }
+            });
         });
-    });
     </script>
 </body>
 
