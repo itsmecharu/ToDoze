@@ -9,9 +9,13 @@ if (!isset($_SESSION['userid'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $userid = $_SESSION['userid'];  // Assuming the user is logged in and their user ID is stored in the session
     $review = $_POST['review'];
-    $rating = $_POST['rating'];  // Get the rating from the form
+    $rating = $_POST['rating'] ?? null ;  // Get the rating from the form
 
     // Insert review and rating into the database
+    if(empty($rating)){
+     echo"<div class='popup success'>Please select rating before submmiting </div>";
+    }
+    else{
     $sql = "INSERT INTO reviews (userid, review, rating) VALUES (?, ?, ?)";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "isi", $userid, $review, $rating);
@@ -21,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         echo "<div class='popup error'>Error submitting review: " . mysqli_error($conn) . "</div>";
     }
-    
+    } 
 }
 ?>
 <!DOCTYPE html>
@@ -32,7 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Submit Review</title>
     <link rel="stylesheet" href="css/review.css">
     <link rel="stylesheet" href="css/dash.css">
-    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="img/todoze.png">
+
 </head>
 <body id="body-pd">
 
