@@ -81,12 +81,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <div class="form-wrapper">
-        <div class="logo-container">
-            <img src="img/logo.png" alt="Logo">
-        </div>
+        <!-- <h3>ToDoze</h3>
+        <p>Boost Your Productivity – Organize, Prioritize, and Achieve More with Ease.</p>
+    --><div class="logo-container">
+                <img src="img/form.png" alt="Logo">
+            </div> 
         <div class="form-container">
             <h1>Sign In</h1>
-            <p>Welcome back to your favorite productivity app!</p>
+            <p>Welcome back</p>
             <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) ?>" >
                 <input type="email" name="useremail" placeholder="Enter your email" value="<?php echo htmlspecialchars($useremail); ?>" required>
                 <?php if (!empty($useremail_err)): ?>
@@ -96,7 +98,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <!-- <input type="password" name="userpassword" placeholder="Enter your password" required> -->
                 <div class="password-wrapper">
     <input type="password" name="userpassword" id="password" placeholder="Enter your password" required>
-    <i class="fa fa-eye toggle-password" onclick="togglePassword('password')"></i>
+    <div class="password-wrapper">
+                <!-- Initial hide image -->
+                <img src="img/hide.png" id="toggle-icon" alt="Hide Icon" onclick="togglePassword()">
+            </div>
 </div>
 
                 <?php if (!empty($userpassword_err)): ?>
@@ -105,23 +110,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <button type="submit">Sign In</button>
             </form>
-            <p>Don't have an account? <a href="signup.php" class="sign-up-link">Sign Up</a></p>
+            <p>Don't have an account? <a href="signup.php" class="sign-up-link">Sign up</a></p>
         </div>
     </div>
     <script>
-    function togglePassword(id) {
-    let input = document.getElementById(id);
-    let icon = input.nextElementSibling;
-    if (input.type === "password") {
-        input.type = "text";
-        icon.classList.remove("fa-eye");
-        icon.classList.add("fa-eye-slash");
+    function togglePassword() {
+    var passwordField = document.getElementById('password');
+    var icon = document.getElementById('toggle-icon');  // Get the image element
+
+    // Check if the password is currently hidden or visible
+    if (passwordField.type === "password") {
+        passwordField.type = "text";  // Show password
+        icon.src = "img/show.png";  // Change icon to show image
     } else {
-        input.type = "password";
-        icon.classList.remove("fa-eye-slash");
-        icon.classList.add("fa-eye");
+        passwordField.type = "password";  // Hide password
+        icon.src = "img/hide.png";  // Change icon to hide image
     }
 }
+
 </script>
 </body>
 </html>

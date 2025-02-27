@@ -123,33 +123,55 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <body>
     
     <div class="form-wrapper">
-        <div class="logo-container">
-            <img src="img/logo.png" alt="Logo">
-        </div>
+    <div class="logo-container">
+                <img src="img/form.png" alt="Logo">
+            </div> 
         <div class="form-container">
             <h1>Sign Up</h1>
-            <p>Create an account to start using the app!</p>
-
+             <p>Already a member? <a href="signin.php" class="sign-in-link">Sign In</a></p>
             <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) ?>">
                 <input type="text" placeholder="username" name="username" required>
                 <span class="error"><?php echo $username_err; ?></span>
                 <input type="email" placeholder="Enter your email" name="useremail" required>
                 <span class="error"><?php echo $useremail_err; ?></span>
                 <div class="password-wrapper">
-                <div class="password-wrapper">
                 <input type="password" name="userpassword" id="signup-password" placeholder="Create a password" required>
-                <i class="fa fa-eye toggle-password" onclick="togglePassword('signup-password', this)"></i>
+                <div class="password-wrapper">
+        <!-- Initial hide image -->
+        <img src="img/hide.png" id="toggle-icon" alt="Hide Icon" onclick="togglePassword('signup-password', 'toggle-icon')">
+    </div>
                 </div>
                 <span class="error"><?php echo $userpassword_err; ?></span>
                 <div class="password-wrapper">
                 <input type="password" name="confirmpassword" id="confirm-password" placeholder="Confirm your password" required>
-                <i class="fa fa-eye toggle-password" onclick="togglePassword('confirm-password', this)"></i>
-                </div>
+                <img src="img/hide.png" id="toggle-password" alt="Hide Icon" onclick="togglePassword('confirm-password', 'toggle-password')"
+                 style="width: 20px; cursor: pointer; position: absolute; right: 10px; top: 50%; transform: translateY(-80%)">   
+            </div>
                 <span class="error"><?php echo $confirmpassword_err; ?></span>
                 <button type="submit" name="send">Sign Up</button>
             </form>
-            <p>Already have an account? <a href="signin.php" class="sign-in-link">Sign In</a></p>
-        </div>
+                   </div>
     </div>
+    <script>
+    function togglePassword(passwordFieldId, iconId) {
+    var passwordField = document.getElementById(passwordFieldId);
+    var icon = document.getElementById(iconId);
+
+    if (!passwordField || !icon) {
+        console.error("Element not found: ", passwordFieldId, iconId);
+        return;
+    }
+
+    if (passwordField.type === "password") {
+        passwordField.type = "text";
+        icon.src = "img/show.png"; // Change icon to show image
+    } else {
+        passwordField.type = "password";
+        icon.src = "img/hide.png"; // Change icon to hide image
+    }
+}
+
+
+</script>
 </body>
 </html>
