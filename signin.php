@@ -95,10 +95,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <span class="error"><?php echo $useremail_err; ?></span>
                 <?php endif; ?>
 
-                <!-- <input type="password" name="userpassword" placeholder="Enter your password" required> -->
+            
                 <div class="password-wrapper">
-    <input type="password" name="userpassword" id="password" placeholder="Enter your password" required>
-    <div class="password-wrapper">
+                <input type="password" name="userpassword" id="password" placeholder="Enter your password" required>
+                <div class="password-wrapper">
                 <!-- Initial hide image -->
                 <img src="img/hide.png" id="toggle-icon" alt="Hide Icon" onclick="togglePassword()">
             </div>

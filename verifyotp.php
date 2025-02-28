@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $userpassword = $_SESSION['userpassword'];
 
         // Insert user into database
-        $sql = "INSERT INTO users (username, useremail, userpassword) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO users (username, useremail, userpassword,is_verified) VALUES (?, ?, ?,'1')";
         if ($stmt = mysqli_prepare($conn, $sql)) {
             mysqli_stmt_bind_param($stmt, "sss", $username, $useremail, $userpassword);
             if (mysqli_stmt_execute($stmt)) {
