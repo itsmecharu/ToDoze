@@ -1,7 +1,8 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-image: url('img/bg.avif'); /* Path to the image */
+    /* background-image: url('img/bg.avif'); Path to the imagve */
+    /* background: url('img/form.png') ; */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -183,4 +184,37 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
     background-color: #45a049;
+}
+/* css for transition page */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Fade-out effect before switching pages */
+.fade-out {
+    animation: fadeOut 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+}
+        .error { color: red; font-size: 12px; }
+        .fade-out { animation: fadeout 0.5s ease-in-out forwards; }
+@keyframes fadeout {
+    from {  opacity: 1; }
+    to {  opacity: 0; }
 }

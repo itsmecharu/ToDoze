@@ -128,7 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             </div> 
         <div class="form-container">
             <h1>Sign Up</h1>
-             <p>Already a member? <a href="signin.php" class="sign-in-link">Sign In</a></p>
+             <p>Already a member? <a href="signin.php" class="sign-in-link switch"
+              onclick="smoothRedirect('signin.php')">Sign In</a></p>
             <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) ?>">
                 <input type="text" placeholder="username" name="username" required>
                 <span class="error"><?php echo $username_err; ?></span>
@@ -170,8 +171,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         icon.src = "img/hide.png"; // Change icon to hide image
     }
 }
+function smoothRedirect(url) {
+    document.body.classList.add("fade-out");
+    setTimeout(() => {
+        window.location.href = url;
+    }, 100); // Adjusted timeout to match animation duration
+}
 
 
+document.addEventListener("DOMContentLoaded", function () {
+    document.body.style.transition = "opacity 0.5s"; // Apply smooth transition
+});
 </script>
 </body>
 </html>

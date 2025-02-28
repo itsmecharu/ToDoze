@@ -110,7 +110,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <button type="submit">Sign In</button>
             </form>
-            <p>Don't have an account? <a href="signup.php" class="sign-up-link">Sign up</a></p>
+            <p>Don't have an account? <a href="signup.php" class="sign-up-link" class="switch" 
+            onclick="smoothRedirect('signup.php');return false;">Sign up</a></p>
         </div>
     </div>
     <script>
@@ -127,7 +128,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         icon.src = "img/hide.png";  // Change icon to hide image
     }
 }
+function smoothRedirect(url) {
+    document.body.classList.add("fade-out");
+    setTimeout(() => {
+        window.location.href = url;
+    }, 100); // Adjusted timeout to match animation duration
+}
+document.addEventListener("DOMContentLoaded", function () {
+    document.body.style.transition = "opacity 0.5s"; // Apply smooth transition
+});
 
 </script>
+
 </body>
 </html>
