@@ -1,340 +1,83 @@
-/*===== GOOGLE FONTS =====*/
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 
-/*===== VARIABLES CSS =====*/
-:root{
-  --nav-width: 92px;
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #2e2e2e; /* Greyish black background */
+}
 
-  /*===== Colores =====*/
-  --first-color: #0C5DF4;
-  --bg-color: #12192C;
-  --sub-color: #B6CEFC;
-  --white-color: #FFF;
+body {
+  margin: 0;
+}
+
+/* Navbar styling */
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 10px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   
-  /*===== Fuente y tipografia =====*/
-  --body-font: 'Poppins', sans-serif;
-  --normal-font-size: 1rem;
-  --small-font-size: .875rem;
-  
-  /*===== z index =====*/
-  --z-fixed: 100;
-}
-
-
-/*===== BASE =====*/
-*,::before,::after{
-  box-sizing: border-box;
-}
-body{
-  position: relative;
-  margin: 0;
-  padding: 2rem 0 0 6.75rem;
-  font-family: var(--body-font);
-  font-size: var(--normal-font-size);
-  transition: .5s;
-}
-h1{
-  margin: 0;
-}
-ul{
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-a{
-  text-decoration: none;
-}
-
-/*===== l NAV =====*/
-.l-navbar{
+  /* Make the navbar stretch across the top and left */
   position: fixed;
   top: 0;
   left: 0;
-  width: var(--nav-width);
-  height: 100vh;
-  background-color: var(--bg-color);
-  color: var(--white-color);
-  padding: 1.5rem 1.5rem 2rem;
-  transition: .5s;
-  z-index: var(--z-fixed);
-}
-
-/*===== NAV =====*/
-.nav{
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
-}
-.nav__brand{
-  display: grid;
-  grid-template-columns: max-content max-content;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-.nav__toggle{
-  font-size: 1.25rem;
-  padding: .75rem;
-  cursor: pointer;
-}
-.nav__logo{
-  color: var(--white-color);
-  font-weight: 600;
-}
-
-.nav__link{
-  display: grid;
-  grid-template-columns: max-content max-content;
-  align-items: center;
-  column-gap: .75rem;
-  padding: .75rem;
-  color: var(--white-color);
-  border-radius: .5rem;
-  margin-bottom: 1rem;
-  transition: .3s;
-  cursor: pointer;
-}
-.nav__link:hover{
-  background-color: var(--first-color);
-}
-.nav__icon{
-  font-size: 1.25rem;
-}
-.nav__name{
-  font-size: var(--small-font-size);
-}
-
-/*Expander menu*/
-.expander{
-  width: calc(var(--nav-width) + 9.25rem);
-}
-
-/*Add padding body*/
-.body-pd{
-  padding: 2rem 0 0 16rem;
-}
-
-/*Active links menu*/
-.active{
-  background-color: var(--first-color);
-}
-
-/*===== COLLAPSE =====*/
-.collapse{
-  grid-template-columns: 20px max-content 1fr;
-}
-.collapse__link{
-  justify-self: flex-end;
-  transition: .5s;
-}
-.collapse__menu{
-  display: none;
-  padding: .75rem 2.25rem;
-}
-.collapse__sublink{
-  color: var(--sub-color);
-  font-size: var(--small-font-size);
-}
-.collapse__sublink:hover{
-  color: var(--white-color);
-}
-
-/*Show collapse*/
-.showCollapse{
-  display: block;
-}
-
-/*Rotate icon*/
-.rotate{
-  transform: rotate(180deg);
-}
-
-/* add task css */
-.add-task-form {
-  max-width: 600px;
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  margin: 0 auto;
-}
-
-.add-task-form input {
-  width: calc(100% - 22px);
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.add-task-form textarea{
-  
-  width: calc(100% - 22px);
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-
-}
-.add-task-form button {
-  padding: 10px 20px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
   width: 100%;
+  z-index: 1000;  /* Ensures the navbar stays above other content */
 }
 
-.add-task-form button:hover {
-  background-color: #2980b9;
+/* Logo styling */
+.navbar .logo img {
+  width: 150px; /* Adjust based on your logo size */
 }
 
-/* Task List */
-.task-list {
-  max-width: 600px;
-  margin: 20px auto;
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.task {
-  background-color: #ecf0f1;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
-}
-
-.task h3 {
-  margin-bottom: 5px;
-  color: #333;
-}
-
-.task p {
-  margin: 5px 0;
-  color: #555;
-}
-
-.task button {
-  padding: 5px 10px;
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.task button:hover {
-  background-color: #c0392b;
-}
-
-.status-select {
-  padding: 5px;
-  border-radius: 5px;
-  margin-top: 10px;
-  width: 100%;
-}
-
-/* Task Summary Section */
-.task-summary {
-  max-width: 600px;
-  margin: 20px auto;
-  display: flex;
-  justify-content: space-around;
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.task-summary div {
-  text-align: center;
-}
-
-.task-summary h3 {
-  color: #333;
-}
-
-/* Graph Section */
-.graph-section {
-  max-width: 600px;
-  margin: 20px auto;
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* toggle the add task form */
-/* Toggle Form Button */
-.toggle-form-btn {
-  padding: 10px 20px;
-  background-color: #218838;
-  color: white;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  display: inline-block; /* Allows alignment */
-  margin: 0 0 20px 25px; /* 20px on the bottom and right for spacing */
-}
-
-
-
-.toggle-form-btn:hover {
-  background-color: #0C5DF4;
-}
-
-
-
-
-
-/* extra from dash.php */
-/* Admin Dashboard Links Container */
 .dashboard-links {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Creates 3 equal-width columns */
-    gap: 20px; /* Adds space between the squares */
-    max-width: 900px; /* Controls the maximum width of the grid */
-    margin: 0 auto; /* Centers the grid on the page */
-    padding: 20px;
-  }
-  
-  /* Individual Link Square */
-  .nav__link {
-    display: flex;
-    flex-direction: column; /* Aligns the icon and name vertically */
-    justify-content: center;
-    align-items: center;
-    background-color: var(--first-color); /* Background color for the square */
-    color: var(--white-color);
-    width: 200px; /* Width of each square */
-    height: 200px; /* Height of each square */
-    border-radius: 10px; /* Optional: rounded corners */
-    transition: background-color 0.3s ease;
-    text-align: center;
-    font-size: 1.2rem;
-    box-sizing: border-box;
-    cursor: pointer;
-  }
-  
-  .nav__link:hover {
-    background-color: var(--sub-color); /* Hover effect */
-  }
-  
-  .nav__icon {
-    font-size: 3rem; /* Larger icon size */
-    margin-bottom: 10px; /* Space between icon and name */
-  }
-  
-  /* Name below the icon */
-  .nav__name {
-    font-size: 1.1rem;
-    font-weight: bold;
-  }
-  
-  
+  display: flex;
+  flex-direction: row; /* Align items horizontally */
+  gap: 40px; /* Increased space between the links */
+}
+
+.nav__link {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the content inside the square */
+  text-decoration: none;
+  background-color: white; /* Box color set to white */
+  width: 200px; /* Increased width for a much bigger box */
+  height: 200px; /* Increased height for a much bigger box */
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out, background 0.3s ease-in-out;
+}
+
+.nav__icon {
+  font-size: 50px; /* Increased icon size for the larger box */
+  transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.nav__link:hover {
+  transform: translateX(15px);
+  background-color: #007bff; /* Background turns blue on hover */
+  color: white;
+}
+
+.nav__link:hover .nav__icon {
+  transform: scale(1.3) rotate(10deg);
+  color: white;
+}
+
+.nav__name {
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out;
+}
+
+.nav__link:hover .nav__name {
+  color: white;
+}
+

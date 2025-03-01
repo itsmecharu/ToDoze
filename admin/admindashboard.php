@@ -19,8 +19,12 @@ if (!isset($_SESSION['admin_userid'])) {
     <link rel="icon" type="image/x-icon" href="../img/favicon.ico">
 </head>
 <body>
-    <div class="container">
-    <h2>Admin Dashboard</h2>
+    <nav class="navbar">
+        <a href="#" class="logo">
+            <img src="../img/logo.png" alt="Logo">
+        </a>
+    </nav>
+
 
     <div class="dashboard-links">
         <a href="usersinfo.php" class="nav__link">
