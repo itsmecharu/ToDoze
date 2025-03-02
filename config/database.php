@@ -34,12 +34,16 @@ $sql = "CREATE TABLE IF NOT EXISTS projects(
     projectid INT PRIMARY KEY AUTO_INCREMENT,
     projectname VARCHAR(30) NOT NULL,
     projectdescription VARCHAR(255),
-    projectdate DATE,
-    projectstatus VARCHAR(30) NOT NULL,
-    projectcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    projectduedate DATE,
+    projectstatus Enum('Inactive','Active','Hold','Completed') DEFAULT 'Inactive',
+    projectcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    projectstarted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    projectcompleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    projectdeleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_projectdeleted TINYINT(1) DEFAULT 0
 )";
 if (mysqli_query($conn, $sql)) {
-   // echo "Table 'projects' created successfully.<br>";
+    // echo "Table 'projects' created successfully.<br>";
 } else {
     echo "Error creating 'projects' table: " . mysqli_error($conn) . "<br>";
 }
@@ -54,8 +58,10 @@ $sql = "CREATE TABLE IF NOT EXISTS users (
     otp_expiry DATETIME,
     is_verified BOOLEAN DEFAULT 0,
     projectid INT NULL,  -- Links the user to a project
+    role ENUM('Admin','Member'),
     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- When the user joined the project
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    userstatus ENUM('Active','Inactive') DEFAULT 'Active',
     FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE SET NULL
 )";
 if (mysqli_query($conn, $sql)) {
@@ -66,9 +72,9 @@ if (mysqli_query($conn, $sql)) {
 
 // Create admin table
 $sql = "CREATE TABLE IF NOT EXISTS admin(
-    admin_userid INT PRIMARY KEY AUTO_INCREMENT,
-    admin_useremail VARCHAR(30) NOT NULL,
-    admin_userpassword VARCHAR(255) NOT NULL
+    admin_userid INT PRIMARY KEY NOT NULL,
+    admin_useremail VARCHAR(50) NOT NULL,
+    admin_userpassword VARCHAR(255) NOT NULL  
 )";
 if (mysqli_query($conn, $sql)) {
     // echo "Table 'admin' created successfully.";
@@ -80,7 +86,7 @@ if (mysqli_query($conn, $sql)) {
 $hashedadmin_userpassword = password_hash('admin123', PASSWORD_DEFAULT);
 
 // Insert default admin user
-$sql = "INSERT IGNORE INTO admin (admin_userid, admin_useremail, admin_userpassword) VALUES (1, 'admin123@gmail.com', ?)";
+$sql = "INSERT IGNORE INTO admin ( admin_userid,admin_useremail, admin_userpassword) VALUES (1,'todoze9@gmail.com', ?)";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "s", $hashedadmin_userpassword);
 if (mysqli_stmt_execute($stmt)) {
@@ -102,7 +108,7 @@ $sql = "CREATE TABLE IF NOT EXISTS tasks(
     taskdate DATE NULL,
     tasktime TIME NULL,
     reminder_percentage INT NULL, 
-    taskstatus VARCHAR(30) NOT NULL,
+    taskstatus ENUM('Pending','Completed') DEFAULT 'Pending',
     is_deleted TINYINT(1) DEFAULT 0,       -- 0 = active, 1 = deleted
     deleted_at DATETIME NULL,              -- When the task was marked as deleted
     taskcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -120,17 +126,19 @@ if (mysqli_query($conn, $sql)) {
 $sql = "CREATE TABLE IF NOT EXISTS reviews (
     reviewid INT PRIMARY KEY AUTO_INCREMENT,
     userid INT NOT NULL,
-    review TEXT NOT NULL,
+    review TEXT NULL,
     rating INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE
-)";  
+    FOREIGN KEY (userid) REFERENCES users(userid)
+)";
+
 
 if (mysqli_query($conn, $sql)) {
     // echo "'reviews' table created successfully.<br>";
 } else {
     echo "Error creating 'reviews' table: " . mysqli_error($conn) . "<br>";
- }
+}
+
 
 
 
@@ -140,5 +148,5 @@ if (mysqli_query($conn, $sql)) {
 // if (mysqli_query($conn, $sql)) {
 //     // echo "'reviews' table created successfully.<br>";
 // } else {
-//     echo "Error creating 'reviews' table: " . mysqli_error($conn) . "<br>";
+//     echo "Error creating 'reviews' table: " . mysqli_error($conn)."<br>";
 // }
