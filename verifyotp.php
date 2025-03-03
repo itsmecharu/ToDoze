@@ -4,12 +4,13 @@ include 'config/database.php';
 
 $otp_err = "";
 $timeMessage = "";
+$remainingTime = 0;
 
-// Check if OTP is set and still valid
+// Check if OTP expiry time exists
 if (isset($_SESSION['otp_expiry'])) {
     $remainingTime = $_SESSION['otp_expiry'] - time();
     if ($remainingTime <= 0) {
-        $otp_err = "OTP has expired.";
+        $timeMessage = "OTP has expired!";
         unset($_SESSION['otp']);
         unset($_SESSION['otp_expiry']);
     } else {
@@ -21,7 +22,7 @@ if (isset($_SESSION['otp_expiry'])) {
     $timeMessage = "No OTP generated.";
 }
 
-// Process OTP Submission
+// Process OTP submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['resend'])) {
         header("Location: signup.php"); // Redirect to resend OTP
@@ -32,14 +33,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($enteredOtp)) {
         $otp_err = "Please enter your verification code.";
-    } elseif (isset($_SESSION['otp']) && $enteredOtp == $_SESSION['otp'] && $remainingTime > 0) {
+    } elseif (!isset($_SESSION['otp'])) {
+        $otp_err = "OTP has expired. Please request a new one.";
+    } elseif ($enteredOtp == $_SESSION['otp'] && $remainingTime > 0) {
         // Store user data
         $username = $_SESSION['username'];
         $useremail = $_SESSION['useremail'];
         $userpassword = $_SESSION['userpassword'];
 
         // Insert user into database
-        $sql = "INSERT INTO users (username, useremail, userpassword,is_verified) VALUES (?, ?, ?,'1')";
+        $sql = "INSERT INTO users (username, useremail, userpassword, is_verified) VALUES (?, ?, ?, '1')";
         if ($stmt = mysqli_prepare($conn, $sql)) {
             mysqli_stmt_bind_param($stmt, "sss", $username, $useremail, $userpassword);
             if (mysqli_stmt_execute($stmt)) {
@@ -53,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             mysqli_stmt_close($stmt);
         }
     } else {
-        $otp_err = "Invalid OTP.";
+        $otp_err = "Invalid OTP. Please try again.";
     }
 }
 ?>
@@ -88,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 <button type="submit" id="verifyButton" <?php echo ($remainingTime <= 0) ? 'style="display:none;"' : ''; ?>>Verify</button>
                 
-                <button type="submit" name="resend" id="resendButton" style="display:none;">Resend OTP</button>
+                <button type="submit" name="resend" id="resendButton" <?php echo ($remainingTime > 0) ? 'style="display:none;"' : ''; ?>>Resend OTP</button>
             </form>
         </div>
     </div>

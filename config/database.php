@@ -34,7 +34,7 @@ $sql = "CREATE TABLE IF NOT EXISTS projects(
     projectid INT PRIMARY KEY AUTO_INCREMENT,
     projectname VARCHAR(30) NOT NULL,
     projectdescription VARCHAR(255),
-    projectduedate DATE,
+    projectduedate DATETIME,
     projectstatus Enum('Inactive','Active','Hold','Completed') DEFAULT 'Inactive',
     projectcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     projectstarted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -57,12 +57,29 @@ $sql = "CREATE TABLE IF NOT EXISTS users (
     otp VARCHAR(10),
     otp_expiry DATETIME,
     is_verified BOOLEAN DEFAULT 0,
-    projectid INT NULL,  -- Links the user to a project
-    role ENUM('Admin','Member'),
-    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- When the user joined the project
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    userstatus ENUM('Active','Inactive') DEFAULT 'Active',
-    FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE SET NULL
+    userstatus ENUM('Active', 'Inactive') DEFAULT 'Active'
+)";
+if (mysqli_query($conn, $sql)) {
+    // echo "Table 'users' created successfully.";
+} else {
+    echo "Error creating 'users' table: " . mysqli_error($conn);
+}
+
+
+
+
+//  Create 'project_members' table (Many-to-Many Relationship + Invitations)
+$sql = "CREATE TABLE IF NOT EXISTS project_members (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    projectid INT NOT NULL,
+    userid INT NOT NULL,
+    role ENUM('Admin', 'Member') DEFAULT 'Member',
+    status ENUM('Pending', 'Accepted', 'Rejected') DEFAULT 'Pending',
+    invited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    joinedproject_at TIMESTAMP NULL,
+    FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE CASCADE,
+    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE
 )";
 if (mysqli_query($conn, $sql)) {
     // echo "Table 'users' created successfully.";
@@ -149,4 +166,5 @@ if (mysqli_query($conn, $sql)) {
 //     // echo "'reviews' table created successfully.<br>";
 // } else {
 //     echo "Error creating 'reviews' table: " . mysqli_error($conn)."<br>";
+
 // }

@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 include 'config/database.php';
 
@@ -9,31 +10,63 @@ if (!isset($_SESSION['userid'])) {
 }
 
 $userid = $_SESSION['userid'];
-$projectname = $projectdescription =  "";
 
-// Handle Project Submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $projectname = trim($_POST['projectname']);
-    $projectdescription = isset($_POST['projectdescription']) ? trim($_POST['projectdescription']) : null;
+// Check the user's role in project_members
+$sql = "SELECT role FROM project_members WHERE userid = ?";
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "i", $userid);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$userRole = mysqli_fetch_assoc($result)['role'] ?? null;
+$isAdmin = ($userRole === 'Admin');
 
+// Initialize variables
+$projectName = '';
+$projectDescription = '';
+$projectDueDate = '';
+$projectId = null;
 
-    $sql = "INSERT INTO projects (userid, projectname, projectdescription) 
-            VALUES (?, ?, ? )";
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Handle project creation
+    $projectName = trim($_POST['projectname']);
+    $projectDescription = trim($_POST['projectdescription']);
+    $projectDueDate = trim($_POST['projectduedate']);
+
+    // Insert into 'projects' table
+    $sql = "INSERT INTO projects (projectname, projectdescription, projectduedate) VALUES (?, ?, ?)";
     $stmt = mysqli_prepare($conn, $sql);
-
     if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "iss", $userid, $projectname, $projectdescription);
+        mysqli_stmt_bind_param($stmt, "sss", $projectName, $projectDescription, $projectDueDate);
         if (mysqli_stmt_execute($stmt)) {
-            $_SESSION['success_message'] = "Project added successfully!";
-            header("Location: project.php"); // Redirect to avoid form resubmission
-            exit();
-        } else {
-            echo "Error executing query: " . mysqli_error($conn);
+            $projectId = mysqli_insert_id($conn);
+
+            // Assign the creator as "Admin" in project_members
+            $sql = "INSERT INTO project_members (userid, projectid, role) VALUES (?, ?, 'Admin')";
+            $stmt2 = mysqli_prepare($conn, $sql);
+            if ($stmt2) {
+                mysqli_stmt_bind_param($stmt2, "ii", $userid, $projectId);
+                mysqli_stmt_execute($stmt2);
+                mysqli_stmt_close($stmt2);
+            }
         }
-    } else {
-        echo "Error preparing statement: " . mysqli_error($conn);
+        mysqli_stmt_close($stmt);
     }
 }
+
+// Fetch projects based on membership
+$sql = "SELECT projects.* FROM projects 
+        JOIN project_members ON projects.projectid = project_members.projectid 
+        WHERE project_members.userid = ? AND projects.is_projectdeleted = 0";
+
+$stmt = mysqli_prepare($conn, $sql);
+if ($stmt) {
+    mysqli_stmt_bind_param($stmt, "i", $userid);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+} else {
+    die("Error fetching projects: " . mysqli_error($conn));
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -41,10 +74,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Project</title>
     <link rel="stylesheet" href="css/dash.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <title>Project</title>
 </head>
 <body id="body-pd">
 
@@ -56,8 +89,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
                     <span class="nav__logo">ToDoze</span>
                 </div>
+
                 <div class="nav__list">
-                    <a href="dash.php" class="nav__link ">
+                    <a href="dash.php" class="nav__link">
                         <ion-icon name="home-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Home</span>
                     </a>
@@ -73,12 +107,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Review</span>
                     </a>
-                    <a href="profile.php" class="nav__link ">
+                    <a href="profile.php" class="nav__link">
                         <ion-icon name="people-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Profile</span>
                     </a>
                 </div>
             </div>
+
             <a href="logout.php" class="nav__link logout">
                 <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
                 <span class="nav__name">Log Out</span>
@@ -86,32 +121,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </nav>
     </div>
 
-    <!-- Project Form -->
-    <h1>ToDoze</h1>
     <div class="container">
         <div class="box">
-            <h2>Create Your Projects Here</h2>
-
-            <form class="add-project-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
+            <h2>Create New Project</h2>
+            <form method="POST">
                 <label for="projectname">Project Name:</label>
-                <input type="text" id="projectname" name="projectname" placeholder="Enter project name" required>
+                <input type="text" id="projectname" name="projectname" required><br><br>
 
                 <label for="projectdescription">Project Description:</label>
-                <input type="text" id="projectdescription" name="projectdescription" placeholder="Enter project description">
+                <input type="text" id="projectdescription" name="projectdescription" ></><br><br>
 
-             
- 
-                <button type="submit">Done</button>
+                <label for="projectduedate">Due Date:</label>
+                <input type="datetime-local" id="projectduedate" name="projectduedate" ><br><br>
+
+                <input type="submit" value="Create Project">
             </form>
         </div>
     </div>
 
-    <!-- IONICONS -->
-    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+    <!-- Display Projects -->
+    <div class="container">
+        <div class="box">
+            <h2>Your Projects</h2>
+            <?php if (mysqli_num_rows($result) > 0): ?>
+                <div class="project-list">
+                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                        <div class="project-box">
+                            <h3><?php echo htmlspecialchars($row['projectname']); ?></h3>
+                            <p><?php echo htmlspecialchars($row['projectdescription']); ?></p>
+                            <p><strong>Due Date:</strong> <?php echo $row['projectduedate']; ?></p>
+                            <p><strong>Status:</strong> <?php echo $row['projectstatus']; ?></p>
 
-    <!-- MAIN JS -->
+                            <!-- Edit & Delete Buttons -->
+                            <a href="edit_project.php?id=<?php echo $row['projectid']; ?>">Edit</a>
+                            <a href="delete_project.php?id=<?php echo $row['projectid']; ?>" onclick="return confirm('Are you sure you want to delete this project?');">Delete</a>
+                        </div>
+                    <?php endwhile; ?>
+                </div>
+            <?php else: ?>
+                <p>No projects found.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
     <script src="js/dash.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 </html>
+
+<?php
+// Close connection
+mysqli_close($conn);
+?>
