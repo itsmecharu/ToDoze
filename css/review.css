@@ -1,7 +1,7 @@
-/* General Styles */
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background-color: #a8c4a1;
     margin: 0;
     padding: 20px;
     display: flex;
@@ -21,7 +21,7 @@ body {
 }
 
 .review-form-container h2 {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     color: #333;
 }
 
@@ -36,7 +36,7 @@ body {
 }
 
 .rating-stars label {
-    font-size: 30px;
+    font-size: 60px;
     color: #ccc;
     cursor: pointer;
     transition: color 0.2s;
@@ -66,10 +66,11 @@ body {
     background-color: #3498db;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
     width: 100%;
     font-size: 16px;
+    height: 50px;
 }
 
 .submit-btn:hover {
@@ -80,4 +81,9 @@ body {
 .swal-toast {
     margin: 0; 
     white-space: nowrap; /* Prevent text wrapping */
+}
+
+p{
+    font-size: small;
+    /* padding: 30px 15px 15px 10px; */
 }

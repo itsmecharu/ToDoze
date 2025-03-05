@@ -89,9 +89,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 
     <div class="review-form-container">
-        <h2>Submit Your Review</h2>
+        <h3>Share Review</h3>
         <form method="POST">
-            <label for="rating">Rate the System (1 to 5):</label>
+            <label for="rating"><h2>How was your experience?</h2></label>
+           <p>Your review will help our product and make
+                 it user friendly for more users.</>
             <div class="rating-stars" id="rating-stars">
                 <input type="radio" name="rating" value="5" id="star1">
                 <label for="star1">&#9733;</label>
@@ -105,8 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="star5">&#9733;</label>
             </div>
 
-            <label for="review">Write your review:</label>
-            <textarea name="review" placeholder="Tell us your thoughts about the system!"></textarea>
+            <label for="review"></label>
+            <textarea name="review" placeholder="Share feedback..."></textarea>
 
             <!-- The submit button is enabled by default -->
             <button type="submit" class="submit-btn" id="submitReview">Submit Review</button>
