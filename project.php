@@ -11,23 +11,8 @@ if (!isset($_SESSION['userid'])) {
 
 $userid = $_SESSION['userid'];
 
-// Check the user's role in project_members
-$sql = "SELECT role FROM project_members WHERE userid = ?";
-$stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "i", $userid);
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
-$userRole = mysqli_fetch_assoc($result)['role'] ?? null;
-$isAdmin = ($userRole === 'Admin');
-
-// Initialize variables
-$projectName = '';
-$projectDescription = '';
-$projectDueDate = '';
-$projectId = null;
-
+// Handle project creation
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Handle project creation
     $projectName = trim($_POST['projectname']);
     $projectDescription = trim($_POST['projectdescription']);
     $projectDueDate = trim($_POST['projectduedate']);
@@ -48,6 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 mysqli_stmt_execute($stmt2);
                 mysqli_stmt_close($stmt2);
             }
+
+            // Store success message & Redirect to prevent form resubmission
+            $_SESSION['success_message'] = "Project created successfully!";
+            header("Location: project.php");
+            exit();
         }
         mysqli_stmt_close($stmt);
     }
@@ -57,16 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 $sql = "SELECT projects.* FROM projects 
         JOIN project_members ON projects.projectid = project_members.projectid 
         WHERE project_members.userid = ? AND projects.is_projectdeleted = 0";
-
 $stmt = mysqli_prepare($conn, $sql);
-if ($stmt) {
-    mysqli_stmt_bind_param($stmt, "i", $userid);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-} else {
-    die("Error fetching projects: " . mysqli_error($conn));
-}
-
+mysqli_stmt_bind_param($stmt, "i", $userid);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 ?>
 
 <!DOCTYPE html>
@@ -122,55 +106,73 @@ if ($stmt) {
     </div>
 
     <div class="container">
-        <div class="box">
-            <h2>Create New Project</h2>
-            <form method="POST">
-                <label for="projectname">Project Name:</label>
-                <input type="text" id="projectname" name="projectname" required><br><br>
+    <div class="box">
+        <h2>Create New Project</h2>
+        <form method="POST">
+            <label for="projectname">Project Name:</label>
+            <input type="text" id="projectname" name="projectname" required><br><br>
 
-                <label for="projectdescription">Project Description:</label>
-                <input type="text" id="projectdescription" name="projectdescription" ></><br><br>
+            <label for="projectdescription">Project Description:</label>
+            <input type="text" id="projectdescription" name="projectdescription"><br><br>
 
-                <label for="projectduedate">Due Date:</label>
-                <input type="datetime-local" id="projectduedate" name="projectduedate" ><br><br>
+            <label for="projectduedate">Due Date:</label>
+            <input type="datetime-local" id="projectduedate" name="projectduedate"><br><br>
 
-                <input type="submit" value="Create Project">
-            </form>
-        </div>
+            <input type="submit" value="Create Project">
+        </form>
     </div>
+</div>
 
-    <!-- Display Projects -->
-    <div class="container">
-        <div class="box">
-            <h2>Your Projects</h2>
-            <?php if (mysqli_num_rows($result) > 0): ?>
-                <div class="project-list">
-                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
+<!-- Display Projects -->
+<div class="container">
+    <div class="box">
+        <h2>Your Projects</h2>
+        <?php if (mysqli_num_rows($result) > 0): ?>
+            <div class="project-list">
+                <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                    <a href="project_view.php?projectid=<?php echo $row['projectid']; ?>" class="project-link">
                         <div class="project-box">
                             <h3><?php echo htmlspecialchars($row['projectname']); ?></h3>
                             <p><?php echo htmlspecialchars($row['projectdescription']); ?></p>
                             <p><strong>Due Date:</strong> <?php echo $row['projectduedate']; ?></p>
                             <p><strong>Status:</strong> <?php echo $row['projectstatus']; ?></p>
-
-                            <!-- Edit & Delete Buttons -->
-                            <a href="edit_project.php?id=<?php echo $row['projectid']; ?>">Edit</a>
-                            <a href="delete_project.php?id=<?php echo $row['projectid']; ?>" onclick="return confirm('Are you sure you want to delete this project?');">Delete</a>
+                            <a href="edit_project.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn">Edit</a>
+                            <a href="delete_project.php?projectid=<?php echo $row['projectid']; ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this project?');">Delete</a>
                         </div>
-                    <?php endwhile; ?>
-                </div>
-            <?php else: ?>
-                <p>No projects found.</p>
-            <?php endif; ?>
-        </div>
+                    </a>
+                <?php endwhile; ?>
+            </div>
+        <?php else: ?>
+            <p>No projects found.</p>
+        <?php endif; ?>
     </div>
+</div>
 
+<!-- Display Success Message -->
+<?php if (isset($_SESSION['success_message'])): ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            Swal.fire({
+                title: "Success!",
+                text: "<?php echo $_SESSION['success_message']; ?>",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false
+            });
+        });
+    </script>
+    <?php unset($_SESSION['success_message']); ?>
+<?php endif; ?>
+
+
+    <!-- IONICONS -->
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
-    <script src="js/dash.js"></script>
 
+    <!-- MAIN JS -->
+    <script src="js/dash.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
 </body>
 </html>
 
-<?php
-// Close connection
-mysqli_close($conn);
-?>
+<?php mysqli_close($conn); ?>

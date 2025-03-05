@@ -11,23 +11,24 @@ if (!isset($_SESSION['userid'])) {
 $userid = $_SESSION['userid'];
 
 // Ensure project ID is provided in the URL
-if (!isset($_GET['id'])) {
+if (!isset($_GET['projectid'])) {
     echo "Project ID is missing.";
     exit();
 }
 
-$projectid = $_GET['id'];  // Get the project ID from the URL
+$projectid = $_GET['projectid'];  // Get the project ID from the URL
 
-// Fetch project details (ensure only the owner can edit)
+// Fetch project details (ensure only the owner or member can edit)
 $sql = "SELECT projects.* 
         FROM projects 
         JOIN project_members ON projects.projectid = project_members.projectid 
-        WHERE projects.projectid = ? AND project_members.userid = ? AND projects.is_projectdeleted = 0";
+        WHERE projects.projectid = ? 
+        AND project_members.userid = ? 
+        AND projects.is_projectdeleted = 0";
 $stmt = mysqli_prepare($conn, $sql);
 
-// Check if the query preparation was successful
 if ($stmt === false) {
-    die('Error preparing query: ' . mysqli_error($conn)); // Output database error if query preparation fails
+    die('Error preparing query: ' . mysqli_error($conn));
 }
 
 mysqli_stmt_bind_param($stmt, "ii", $projectid, $userid);
@@ -41,8 +42,8 @@ if (mysqli_num_rows($result) == 0) {
 
 $project = mysqli_fetch_assoc($result);
 $projectname = $project['projectname'];
-$projectdescription = $project['projectdescription'];
-$projectduedate = $project['projectduedate'];
+$projectdescription = isset($project['projectdescription']) ? $project['projectdescription'] : '';
+$projectduedate = isset($project['projectduedate']) ? $project['projectduedate'] : '';
 
 // Handle project update submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -50,22 +51,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $projectdescription = isset($_POST['projectdescription']) ? trim($_POST['projectdescription']) : null;
     $projectduedate = isset($_POST['projectduedate']) ? trim($_POST['projectduedate']) : null;
 
-    $sql = "UPDATE projects SET projectname = ?, projectdescription = ?, projectduedate = ? WHERE projectid = ? AND EXISTS (SELECT 1 FROM project_members WHERE project_members.projectid = projects.projectid AND project_members.userid = ?)";
-    $stmt = mysqli_prepare($conn, $sql);
+    $sql = "UPDATE projects 
+            SET projectname = ?, projectdescription = ?, projectduedate = ? 
+            WHERE projectid = ? 
+            AND projectid IN (SELECT projectid FROM project_members WHERE userid = ?)";
 
-    // Check if the query preparation was successful
+    $stmt = mysqli_prepare($conn, $sql);
     if ($stmt === false) {
-        die('Error preparing update query: ' . mysqli_error($conn)); // Output database error if query preparation fails
+        die('Error preparing update query: ' . mysqli_error($conn));
     }
 
     mysqli_stmt_bind_param($stmt, "sssii", $projectname, $projectdescription, $projectduedate, $projectid, $userid);
 
     if (mysqli_stmt_execute($stmt)) {
         $_SESSION['success_message'] = "Project updated successfully!";
-        header("Location: project.php"); // Redirect to project list
+        header("Location: project.php");
         exit();
     } else {
-        echo "Error updating project: " . mysqli_error($conn); // Output error if query execution fails
+        echo "Error updating project: " . mysqli_error($conn);
     }
 }
 ?>
@@ -90,7 +93,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <textarea name="projectdescription" id="projectdescription"><?php echo htmlspecialchars($projectdescription); ?></textarea><br>
 
                 <label for="projectduedate">Due Date:</label>
-                <input type="datetime-local" id="projectduedate" name="projectduedate" value="<?php echo htmlspecialchars($projectduedate); ?>"><br>
+                <input type="datetime-local" id="projectduedate" name="projectduedate" 
+                       value="<?php echo date('Y-m-d\TH:i', strtotime($projectduedate)); ?>"><br>
 
                 <button type="submit">Update Project</button>
             </form>
@@ -102,6 +106,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </html>
 
 <?php
-// Close connection
 mysqli_close($conn);
 ?>

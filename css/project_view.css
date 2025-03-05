@@ -1,0 +1,88 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Project Box */
+.project-box {
+    padding: 15px;
+    border-bottom: 2px solid #ddd;
+    background: #fff;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.project-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+/* Icons */
+.icons {
+    display: flex;
+    gap: 10px;
+}
+
+.task-icon, .member-icon {
+    font-size: 24px;
+    cursor: pointer;
+    color: #007bff;
+}
+
+.task-icon:hover, .member-icon:hover {
+    color: #0056b3;
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+.modal input, .modal button {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.modal button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.modal button:hover {
+    background-color: #0056b3;
+}

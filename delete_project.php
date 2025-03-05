@@ -11,22 +11,23 @@ if (!isset($_SESSION['userid'])) {
 $userid = $_SESSION['userid'];
 
 // Ensure project ID is provided in the URL
-if (!isset($_GET['id'])) {
-    echo "Project ID is missing.";
+if (!isset($_GET['projectid'])) {
+    $_SESSION['error_message'] = "Project ID is missing.";
+    header("Location: project.php");
     exit();
 }
 
-$projectid = $_GET['id'];
+$projectid = $_GET['projectid'];
 
-// Check if the user is part of the project and has 'Admin' role in the project_members table
+// Check if the user is part of the project and has 'Admin' or 'Super Admin' role
 $sql = "SELECT pm.userid 
         FROM project_members pm 
-        WHERE pm.projectid = ? AND pm.userid = ? AND pm.role = 'Admin'";
+        WHERE pm.projectid = ? AND pm.userid = ? AND (pm.role = 'Admin' OR pm.role = 'Super Admin')";
 $stmt = mysqli_prepare($conn, $sql);
 
-// Ensure the query was prepared successfully
 if ($stmt === false) {
-    echo "Error preparing query: " . mysqli_error($conn);
+    $_SESSION['error_message'] = "Database error: " . mysqli_error($conn);
+    header("Location: project.php");
     exit();
 }
 
@@ -34,38 +35,33 @@ mysqli_stmt_bind_param($stmt, "ii", $projectid, $userid);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
-// If no project is found or the user does not have permission to delete the project
 if (mysqli_num_rows($result) == 0) {
-    echo "You do not have permission to delete this project or the project does not exist.";
+    $_SESSION['error_message'] = "You do not have permission to delete this project.";
+    header("Location: project.php");
     exit();
 }
-
-// Debugging: Output the project ID to verify it's correct
-echo "Attempting to delete project with ID: $projectid<br>";
 
 // Soft delete: Mark project as deleted and store deletion timestamp
 $sql = "UPDATE projects 
         SET is_projectdeleted = 1, projectdeleted_at = NOW() 
-        WHERE projectid = ? AND is_projectdeleted = 0"; // Ensure we only delete if not already deleted
+        WHERE projectid = ? AND is_projectdeleted = 0";
 $stmt = mysqli_prepare($conn, $sql);
 
-// Ensure the query was prepared successfully
 if ($stmt === false) {
-    echo "Error preparing query: " . mysqli_error($conn);
+    $_SESSION['error_message'] = "Database error: " . mysqli_error($conn);
+    header("Location: project.php");
     exit();
 }
 
 mysqli_stmt_bind_param($stmt, "i", $projectid);
 
-// Execute the deletion query
 if (mysqli_stmt_execute($stmt)) {
-    // Output success message for debugging
-    echo "Project successfully deleted.<br>";
     $_SESSION['success_message'] = "Project deleted successfully.";
-    header("Location: project.php"); // Redirect to project list
-    exit();
 } else {
-    echo "Error executing query: " . mysqli_error($conn);
-    exit();
+    $_SESSION['error_message'] = "Error deleting project: " . mysqli_error($conn);
 }
+
+mysqli_close($conn);
+header("Location: project.php");
+exit();
 ?>
