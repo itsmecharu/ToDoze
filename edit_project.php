@@ -65,8 +65,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (mysqli_stmt_execute($stmt)) {
         $_SESSION['success_message'] = "Project updated successfully!";
-        header("Location: project.php");
-        exit();
+        header("Location: project_view.php?projectid=$projectid");
+       exit();
+
     } else {
         echo "Error updating project: " . mysqli_error($conn);
     }
@@ -90,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="text" name="projectname" id="projectname" value="<?php echo htmlspecialchars($projectname); ?>" required><br>
 
                 <label for="projectdescription">Project Description:</label>
-                <textarea name="projectdescription" id="projectdescription"><?php echo htmlspecialchars($projectdescription); ?></textarea><br>
+                <input type="text" name="projectdescription" id="projectdescription" value="<?php echo htmlspecialchars($projectdescription); ?>"> <br>
 
                 <label for="projectduedate">Due Date:</label>
                 <input type="datetime-local" id="projectduedate" name="projectduedate" 

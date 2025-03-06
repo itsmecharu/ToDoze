@@ -137,7 +137,7 @@ $result = mysqli_stmt_get_result($stmt);
                             <p><strong>Due Date:</strong> <?php echo $row['projectduedate']; ?></p>
                             <p><strong>Status:</strong> <?php echo $row['projectstatus']; ?></p>
                             <a href="edit_project.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn">Edit</a>
-                            <a href="delete_project.php?projectid=<?php echo $row['projectid']; ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this project?');">Delete</a>
+                            <a href="delete_project.php?projectid=<?php echo $row['projectid']; ?>" class="delete-project">Delete</a>
                         </div>
                     </a>
                 <?php endwhile; ?>
@@ -165,6 +165,34 @@ $result = mysqli_stmt_get_result($stmt);
 <?php endif; ?>
 
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.delete-project').forEach(function (button) {
+        button.addEventListener('click', function (e) {
+            e.preventDefault(); // Prevent default link behavior
+
+            var projectid = this.getAttribute('href').split('=')[1]; // Extract project ID
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'delete_project.php?projectid=' + projectid;
+                }
+            });
+        });
+    });
+});
+
+
+
+            </script>
     <!-- IONICONS -->
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
 
