@@ -22,28 +22,21 @@ mysqli_stmt_bind_param($stmt, "i", $projectId);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $project = mysqli_fetch_assoc($result);
+mysqli_stmt_close($stmt);
 
 if (!$project) {
     echo "Project not found!";
     exit();
 }
 
-mysqli_stmt_close($stmt);
-
-// Fetch all tasks related to this project
+// Fetch tasks
 $sql = "SELECT * FROM tasks WHERE projectid = ? AND is_deleted = 0 ORDER BY taskid DESC";
 $stmt = mysqli_prepare($conn, $sql);
-
-if ($stmt) {
-    mysqli_stmt_bind_param($stmt, "i", $projectId);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $tasks = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    mysqli_stmt_close($stmt);
-} else {
-    echo "Error preparing statement: " . mysqli_error($conn);
-    exit();
-}
+mysqli_stmt_bind_param($stmt, "i", $projectId);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$tasks = mysqli_fetch_all($result, MYSQLI_ASSOC);
+mysqli_stmt_close($stmt);
 
 mysqli_close($conn);
 ?>
@@ -68,23 +61,13 @@ mysqli_close($conn);
             <!-- Add Task Icon -->
             <ion-icon name="add-circle-outline" class="task-icon" onclick="window.location.href='project_task.php?projectid=<?php echo $projectId; ?>'"></ion-icon>
 
-            <!-- Add Member Icon -->
-            <ion-icon name="person-add-outline" class="member-icon" onclick="openMemberForm()"></ion-icon>
+            <!-- Add Member Icon (Now links to member.php) -->
+            <a href="member.php?projectid=<?php echo $projectId; ?>">
+                <ion-icon name="people-outline" class="member-icon"></ion-icon>
+            </a>
 
             <p><strong>Status:</strong> <?php echo htmlspecialchars($project['projectstatus']); ?></p>
         </div>
-    </div>
-
-    <!-- Hidden Add Member Form -->
-    <div id="memberForm" class="member-form" style="display: none;">
-        <h3>Add Member</h3>
-        <form action="add_member.php" method="POST">
-            <input type="hidden" name="projectid" value="<?php echo $projectId; ?>">
-            <label for="email">Member Email:</label>
-            <input type="email" id="email" name="email" required>
-            <button type="submit">Add</button>
-            <button type="button" onclick="closeMemberForm()">Cancel</button>
-        </form>
     </div>
 </div>
 
@@ -99,7 +82,7 @@ mysqli_close($conn);
                     <?php echo htmlspecialchars($task['taskstatus']); ?>
 
                     <!-- Edit Button -->
-                    <a href="edit_task.php?taskid=<?php echo $task['taskid']; ?>&projectid=<?php echo $projectId; ?>" class="edit-btn">Edit</a>
+                    <a href="editproject_task.php?taskid=<?php echo $task['taskid']; ?>&projectid=<?php echo $projectId; ?>" class="edit-btn">Edit</a>
 
                     <!-- Delete Button -->
                     <a href="delete_task.php?taskid=<?php echo $task['taskid']; ?>&projectid=<?php echo $projectId; ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this task?');">Delete</a>
@@ -116,16 +99,6 @@ mysqli_close($conn);
 
 <!-- MAIN JS -->
 <script src="js/dash.js"></script>
-
-<script>
-    function openMemberForm() {
-        document.getElementById("memberForm").style.display = "block";
-    }
-
-    function closeMemberForm() {
-        document.getElementById("memberForm").style.display = "none";
-    }
-</script>
 
 </body>
 </html>

@@ -16,23 +16,28 @@ $projectid = isset($_GET['projectid']) ? $_GET['projectid'] : null; // Get proje
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taskname = trim($_POST['taskname']);
     $taskdescription = isset($_POST['taskdescription']) ? trim($_POST['taskdescription']) : null;
-    $taskdate = (!empty($_POST['taskdate'])) ? $_POST['taskdate'] : null;
-    $tasktime = (!empty($_POST['tasktime'])) ? $_POST['tasktime'] : null;
+    $taskdate = !empty($_POST['taskdate']) ? $_POST['taskdate'] : null;
+    $tasktime = !empty($_POST['tasktime']) ? $_POST['tasktime'] : null;
     $reminder_percentage = isset($_POST['reminder_percentage']) ? trim($_POST['reminder_percentage']) : null;
     $projectid = isset($_POST['projectid']) ? $_POST['projectid'] : null; // Get project ID from form submission
 
-    $sql = "INSERT INTO tasks (userid, projectid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, taskstatus) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')";
+    // Insert Task
+    $sql = "INSERT INTO tasks (userid, projectid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, taskstatus) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')";
+    
     $stmt = mysqli_prepare($conn, $sql);
 
     if ($stmt) {
         mysqli_stmt_bind_param($stmt, "iisssss", $userid, $projectid, $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage);
         if (mysqli_stmt_execute($stmt)) {
             $_SESSION['success_message'] = "Task added successfully!";
-            header("Location: project_task.php?projectid=" . $projectid);
+            mysqli_stmt_close($stmt);
+            header("Location: project_view.php?projectid=" . $projectid);
             exit();
         } else {
             echo "Error executing query: " . mysqli_error($conn);
         }
+        mysqli_stmt_close($stmt);
     } else {
         echo "Error preparing statement: " . mysqli_error($conn);
     }
@@ -54,6 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h2>Add Task to Project</h2>
             <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?projectid=' . $projectid; ?>" method="POST">
                 <input type="hidden" name="projectid" value="<?php echo $projectid; ?>">
+                
                 <label for="taskname">Task Name:</label>
                 <input type="text" id="taskname" name="taskname" required>
 
@@ -74,6 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </select>
 
                 <button type="submit">Add Task</button>
+                <a href="project_view.php?projectid=<?php echo $projectid; ?>">Back</a>
             </form>
         </div>
     </div>
@@ -96,6 +103,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } else {
                     echo "<li>No tasks found for this project.</li>";
                 }
+                mysqli_stmt_close($stmt);
+                mysqli_close($conn);
                 ?>
             </ul>
         </div>
