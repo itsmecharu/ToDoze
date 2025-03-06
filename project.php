@@ -137,7 +137,7 @@ $result = mysqli_stmt_get_result($stmt);
                             <p><strong>Due Date:</strong> <?php echo $row['projectduedate']; ?></p>
                             <p><strong>Status:</strong> <?php echo $row['projectstatus']; ?></p>
                             <a href="edit_project.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn">Edit</a>
-                            <a href="delete_project.php?projectid=<?php echo $row['projectid']; ?>" class="delete-project">Delete</a>
+                            <a href="delete_project.php?projectid=<?php echo $row['projectid']; ?>" class="delete-project" >Delete</a>
                         </div>
                     </a>
                 <?php endwhile; ?>
