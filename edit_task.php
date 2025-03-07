@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Kathmandu'); 
 include 'config/database.php';
 
 // Check if user is logged in
@@ -34,17 +35,25 @@ $taskname = $task['taskname'];
 $taskdescription = $task['taskdescription'];
 $reminder_percentage = $task['reminder_percentage'];
 
+// // Format taskdate for input type="date"
+// $taskdateFormatted = isset($task['taskdate']) ? date("Y-m-d", strtotime($task['taskdate'])) : '';
+
+// // Format tasktime for input type="time"
+// $tasktimeFormatted = isset($task['tasktime']) ? date("H:i:s", strtotime($task['tasktime'])) : '';
+
+
 // Handle Task Update Submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $taskname = trim($_POST['taskname']);
   $taskdescription = isset($_POST['taskdescription']) ? trim($_POST['taskdescription']) : null;
-  $taskdate = isset($_POST['tasktime']) ? trim($_POST['taskdate']) : null;
-  $tasktime = isset($_POST['tasktime']) ? trim($_POST['tasktime']) : null;
+  $taskdate = (!empty($_POST['taskdate'])) ? date('Y-m-d', strtotime($_POST['taskdate'])) : null; // Format the date before storing
+  $tasktime = (!empty($_POST['tasktime'])) ? date('H:i', strtotime($_POST['tasktime'])) : null;
   $reminder_percentage = isset($_POST['reminder_percentage']) ? $_POST['reminder_percentage'] : null;
+
 
   $sql = "UPDATE tasks SET taskname = ?, taskdescription = ?, taskdate = ?,tasktime = ?,  reminder_percentage = ? WHERE taskid = ? AND userid = ?";
   $stmt = mysqli_prepare($conn, $sql);
-  mysqli_stmt_bind_param($stmt, "ssssiii", $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage, $taskid, $userid);
+  mysqli_stmt_bind_param($stmt, "sssssii", $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage, $taskid, $userid);
   if (mysqli_stmt_execute($stmt)) {
 
     $_SESSION['success_message'] = "Task updated sucessfully!";
@@ -76,20 +85,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="box">
       <h2>Edit Task</h2>
       <form method="POST" action="" class="add-task-form">
-        <label for="taskname">Task Name:</label>
-        <input type="text" name="taskname" id="taskname" value="<?php echo htmlspecialchars($taskname); ?>"
-          required><br>
+        <!-- <label for="taskname">Task Name:</label> -->
+        <input type="text" name="taskname" id="taskname" placeholder="Add task here" value="<?php echo htmlspecialchars($taskname); ?>"
+          required>
 
-        <label for="taskdescription">Task Description:</label>
-        <input type="text" name="taskdescription" id="taskdescription"
-          value="<?php echo htmlspecialchars($taskdescription); ?>"><br>
-        <label for="taskdate">Due Date:</label>
-        <input type="date" id="taskdate" name="taskdate" value="<?php echo htmlspecialchars($taskdate); ?>">
-        <input type="time" id="tasktime" name="tasktime" value="<?php echo htmlspecialchars($tasktime); ?>">
+        <!-- <label for="taskdescription">Task Description:</label> -->
+        <input type="text" name="taskdescription" id="taskdescription" placeholder="Task Description" style="height: 80px;" value="<?php echo htmlspecialchars($taskdescription); ?>">
 
-        <label for="reminder">Set Reminder:</label>
+        <div style="display: inline-block; vertical-align: top; margin-right: 20px;"> 
+        <label for="taskdate" style="display: block;">Select Due Date 📅</label>
+        <input type="date" id="taskdate" name="taskdate" style="width: 170px"  value="<?php echo htmlspecialchars($taskdate); ?>">
+        </div>
+
+        <div style="display: inline-block; vertical-align: top;">
+        <label for="tasktime" style="display: block;">Select Time 🕰️</label>
+        <input type="time" id="tasktime" name="tasktime" style="width: 170px" value="<?php echo htmlspecialchars($tasktime); ?>"> 
+        </div>
+        <!-- <label for="reminder">Set Reminder:</label> -->
 <select id="reminder" name="reminder_percentage">
-    <option value="" disabled>Select Reminder</option>
+    <option value="" disabled selected >Set Reminder Here 🔔</option>
     <option value="50" <?php if ($reminder_percentage == 50) echo "selected"; ?>>50% (Halfway to Due Date)</option>
     <option value="75" <?php if ($reminder_percentage == 75) echo "selected"; ?>>75% (Closer to Due Date)</option>
     <option value="90" <?php if ($reminder_percentage == 90) echo "selected"; ?>>90% (Near Due Date)</option>

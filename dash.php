@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Kathmandu'); 
 include 'config/database.php';
 if (!isset($_SESSION['userid'])) {
     header("Location: signin.php");
@@ -11,7 +12,7 @@ $userid = $_SESSION['userid'];
 $sql = "SELECT * FROM tasks WHERE userid = ? AND taskstatus != 'completed' AND is_deleted = 0 AND projectid IS NULL";
 $stmt = mysqli_prepare($conn, $sql);
 if ($stmt) {
-    mysqli_stmt_bind_param($stmt, "s", $userid);
+    mysqli_stmt_bind_param($stmt, "i", $userid);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 } else {
@@ -79,7 +80,7 @@ if ($stmt) {
                 while ($row = mysqli_fetch_assoc($result)) {
                     $taskDateTime = strtotime($row['taskdate'] . ' ' . $row['tasktime']);
                     $currentDateTime = time();
-                    $isOverdue = $taskDateTime && $taskDateTime < $currentDateTime;
+                    $isOverdue = $taskDateTime < $currentDateTime;
                 
                     echo "<div class='task' id='task-" . $row['taskid'] . "'>";
                     echo "<div class='task-content'>";
@@ -103,8 +104,9 @@ if ($stmt) {
                     echo "<h4 style='" . ($isOverdue ? "color: red;" : "") . "'>" . htmlspecialchars($row['taskname']) . "</h4>";
                     
                     echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "No description provided") . "</p>";
-                    echo "<p>" . (!empty($row['taskdate']) ? htmlspecialchars($row['taskdate']) : "No date provided") . "</p>";
-                    echo "<p>" . (!empty($row['tasktime']) ? htmlspecialchars($row['tasktime']) : "No time provided") . "</p>";
+                    echo "<p>" . (!empty($row['taskdate']) ? htmlspecialchars(date('Y-m-d', strtotime($row['taskdate']))) : "No time provided") . "</p>";
+                    echo "<p>" . (!empty($row['tasktime']) ? htmlspecialchars(date('H:i', strtotime($row['tasktime']))) : "No time provided") . "</p>";
+                    
                     echo "<small>Reminder: " . (isset($row['reminder_percentage']) && $row['reminder_percentage'] !== null ? htmlspecialchars($row['reminder_percentage']) . "%" : "No reminder set") . "</small><br>";
                     echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a>  ";
                     echo "<a href='#' class='delete-task' data-taskid='" . $row['taskid'] . "'>Delete</a>";

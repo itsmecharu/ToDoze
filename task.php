@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Kathmandu'); 
 include 'config/database.php';
 
 // Ensure user is logged in
@@ -15,15 +16,16 @@ $taskname = $taskdescription = $taskdate = $tasktime = $reminder_percentage = ""
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taskname = trim($_POST['taskname']);
     $taskdescription = isset($_POST['taskdescription']) ? trim($_POST['taskdescription']) : null;
-    $taskdate = (!empty($_POST['taskdate'])) ? $_POST['taskdate'] : null;
-    $tasktime = (!empty($_POST['tasktime'])) ? $_POST['tasktime'] : null;
+    $taskdate = (!empty($_POST['taskdate'])) ?($_POST['taskdate']) : null; 
+    $tasktime = (!empty($_POST['tasktime'])) ? ($_POST['tasktime']) : null;
     $reminder_percentage = isset($_POST['reminder_percentage']) ? trim($_POST['reminder_percentage']) : null;
-
+    // echo $tasktime;
+    // exit();
     $sql = "INSERT INTO tasks (userid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, taskstatus) VALUES (?, ?, ?, ?, ?, ?, 'pending')";
     $stmt = mysqli_prepare($conn, $sql);
 
     if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "ssssis", $userid, $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage);
+        mysqli_stmt_bind_param($stmt, "isssss", $userid, $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage);
         if (mysqli_stmt_execute($stmt)) {
             $_SESSION['success_message'] = "Task added successfully!";
             header("Location: task.php"); // Redirect to avoid form resubmission
@@ -117,7 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <!-- Date Section -->
                 <div style="display: inline-block; vertical-align: top; margin-right: 20px;">
                     <label for="taskdate" style="display: block;">Select Due Date 📅</label>
-                    <input type="date" id="taskdate" name="taskdate" style="width: 170px;">
+                    <input type="date" id="taskdate" name="taskdate" style="width: 170px;" >
                 </div>
 
                 <!-- Time Section -->
