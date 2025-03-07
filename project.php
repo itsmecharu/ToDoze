@@ -110,7 +110,7 @@ $result = mysqli_stmt_get_result($stmt);
         <h2>Create New Project</h2>
         <form method="POST">
             <label for="projectname">Project Name:</label>
-            <input type="text" id="projectname" name="projectname" placeholder="Project name" >
+            <input type="text" id="projectname" name="projectname" placeholder="Project name" required >
 
             <label for="projectdescription" >Project Description:</label>
             <input type="text" id="projectdescription" name="projectdescription"style="height: 80px;" placeholder="Task description...">
