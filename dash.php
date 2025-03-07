@@ -72,8 +72,8 @@ if ($stmt) {
 
     <!-- Task List Section -->
     <div class="container">
-        <div class="box">
-            <h2>Task List</h2>
+        <!-- <div class="box"> -->
+            <h1 style="margin:10%; ;">Task List</h1>
             <?php
             if ($result && mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
@@ -106,7 +106,7 @@ if ($stmt) {
                     echo "<p>" . (!empty($row['taskdate']) ? htmlspecialchars($row['taskdate']) : "No date provided") . "</p>";
                     echo "<p>" . (!empty($row['tasktime']) ? htmlspecialchars($row['tasktime']) : "No time provided") . "</p>";
                     echo "<small>Reminder: " . (isset($row['reminder_percentage']) && $row['reminder_percentage'] !== null ? htmlspecialchars($row['reminder_percentage']) . "%" : "No reminder set") . "</small><br>";
-                    echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a> | ";
+                    echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a>  ";
                     echo "<a href='#' class='delete-task' data-taskid='" . $row['taskid'] . "'>Delete</a>";
                     echo "</div>"; // Close task-details
                 
@@ -220,6 +220,20 @@ if ($stmt) {
         });
     });
     
+    </script>
+    <script>
+        // Function to toggle task details
+        function toggleTaskDetails(taskElement) {
+            taskElement.classList.toggle('expanded');
+        }
+
+        // Add click event listeners to all task names
+        document.querySelectorAll('.task-details h4').forEach(taskName => {
+            taskName.addEventListener('click', () => {
+                const taskElement = taskName.closest('.task');
+                toggleTaskDetails(taskElement);
+            });
+        });
     </script>
 
     <!-- ===== IONICONS ===== -->

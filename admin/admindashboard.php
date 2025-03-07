@@ -20,7 +20,6 @@ if (!isset($_SESSION['admin_userid'])) {
 </head>
 <body>
     <nav class="navbar">
-        <a href="#" class="logo">
             <img src="../img/logo.png" alt="Logo">
         </a>
     </nav>

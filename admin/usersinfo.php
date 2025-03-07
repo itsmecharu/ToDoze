@@ -28,13 +28,17 @@ $result = mysqli_query($conn, $sql);
     <link rel="stylesheet" href="../css/admin.css">
     <link rel="icon" type="image/x-icon" href="../img/favicon.ico">
 </head>
-<body>
+<body >
+    
+       <div class="user--nav">
+        <p class="total-users">Total Users Registered till date: <?php echo $total_users; ?></p>
+        </div>        
+    </div>
     <div class="container">
         <h2>User Information</h2>
         <table border="1">
             <thead>
-            <p class="total-users">Total Users Registered till date: <?php echo $total_users; ?></p>
-                <tr>
+                 <tr>
                     <th>User ID</th>
                     <th>Name</th>
                     <th>Email</th>
@@ -53,5 +57,8 @@ $result = mysqli_query($conn, $sql);
             </tbody>
         </table>
     </div>
+    <a href="admindashboard.php" class="back">
+            <div class="back__icon">↩</div>
+            <div class="back__name">Back</div>
 </body>
 </html>

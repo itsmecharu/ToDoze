@@ -100,36 +100,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <h1>ToDoze</h1>
+    
+    
+  
     <div class="container">
         <!-- Add Task Section -->
         <div class="box">
-            <h2>Add Task Here</h2>
-
-            <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
-                <label for="taskname">Task Name:</label>
+                <h2>Add Task Here</h2>
+                <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
+                <!-- <label for="taskname">Task Name:</label> -->
                 <input type="text" id="taskname" name="taskname" placeholder="Add task here" required>
 
-                <label for="taskDescription">Task Description:</label>
-                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description">
+                <!-- <label for="taskDescription">Task Description:</label> -->
+                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description" style="height: 80px;">
+                <div>
+                <!-- Date Section -->
+                <div style="display: inline-block; vertical-align: top; margin-right: 20px;">
+                    <label for="taskdate" style="display: block;">Select Due Date 📅</label>
+                    <input type="date" id="taskdate" name="taskdate" style="width: 170px;">
+                </div>
 
-                <label for="taskdate">Due Date:</label>
-                <input type="date" id="taskdate" name="taskdate">
-                <input type="time" id="tasktime" name="tasktime">
-
-                <label for="reminder">Set Reminder:</label>
+                <!-- Time Section -->
+                <div style="display: inline-block; vertical-align: top;">
+                    <label for="tasktime" style="display: block;">Select Time 🕰️</label>
+                    <input type="time" id="tasktime" name="tasktime" style="width: 170px;">
+                </div>
+               
+                <!-- <label for="reminder">Set Reminder:</label> -->
                 <select id="reminder" name="reminder_percentage">
-                    <option value="" disabled selected>Set Reminder Here</option>
+                    <option value="" disabled selected>Set Reminder Here 🔔</option>
                     <option value="50">50% (Halfway to Due Date)</option>
                     <option value="75">75% (Closer to Due Date)</option>
                     <option value="90">90% (Near Due Date)</option>
                     <option value="100">100% (On Time)</option>
                 </select>
-
-                <button type="submit">Done</button>
+                <button type="submit" style="margin-top: 20px;">Done</button>
             </form>
         </div>
-    </div>
-
+        </div>
     <?php if (isset($_SESSION['success_message'])): ?>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -179,7 +187,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- MAIN JS -->
     <script src="js/dash.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Get references to the button and container
+        const addTaskButton = document.getElementById('addTaskButton');
+        const container = document.querySelector('.container');
 
+        // Add click event listener to the button
+        addTaskButton.addEventListener('click', function () {
+            // Toggle the 'active' class on the container
+            container.classList.toggle('actives');
+        });
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const taskDate = document.getElementById('taskdate');

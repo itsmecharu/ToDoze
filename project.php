@@ -110,15 +110,14 @@ $result = mysqli_stmt_get_result($stmt);
         <h2>Create New Project</h2>
         <form method="POST">
             <label for="projectname">Project Name:</label>
-            <input type="text" id="projectname" name="projectname" required><br><br>
+            <input type="text" id="projectname" name="projectname" placeholder="Project name" >
 
-            <label for="projectdescription">Project Description:</label>
-            <input type="text" id="projectdescription" name="projectdescription"><br><br>
+            <label for="projectdescription" >Project Description:</label>
+            <input type="text" id="projectdescription" name="projectdescription"style="height: 80px;" placeholder="Task description...">
 
             <label for="projectduedate">Due Date:</label>
-            <input type="datetime-local" id="projectduedate" name="projectduedate"><br><br>
-
-            <input type="submit" value="Create Project">
+            <input type="datetime-local" id="projectduedate" name="projectduedate" style="width:35%">
+            <button type="submit" value="Create Project" >Create Project</button>
         </form>
     </div>
 </div>
@@ -193,6 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             </script>
+            
     <!-- IONICONS -->
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
 
