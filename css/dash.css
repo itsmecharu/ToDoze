@@ -472,31 +472,6 @@ button:hover {
 
 /* for project part (the connection to the task */
 
-.project-link {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-}
-
-.project-box {
-  border: 1px solid #ccc;
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 5px;
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-}
-
-.project-box:hover {
-  transform: scale(1.02);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.project-list {
-  margin-top: 20px;
-}
-
-/* Project Box Styles */
 .project-box {
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -505,47 +480,48 @@ button:hover {
   background-color: #f9f9f9;
 }
 
-.project-box h3 {
-  cursor: pointer;
-  margin: 0;
-  font-size: 20px;
-  color: #333;
+/* Make sure project name and buttons are on the same row */
+.project-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;  /* Pushes project name left, buttons right */
+  width: 100%;
+  gap: 15px;
 }
 
-.project-box h3:hover {
-  color: #007bff;
+/* Prevent project name from shrinking */
+.project-title {
+  flex-grow: 1; 
 }
 
-/* Hide additional details initially */
-.project-box p,
-.project-box .edit-btn,
-.project-box .delete-project {
-  display: none;
+/* Make sure buttons stay on the right */
+.project-actions {
+  display: flex;
+  gap: 10px; /* Space between buttons */
 }
 
-/* Show additional details when the project is expanded */
-.project-box.expanded p,
-.project-box.expanded .edit-btn,
-.project-box.expanded .delete-project {
-  display: block;
-}
-
-/* Button Styles */
+/* Button styles */
 .edit-btn,
-.delete-project {
-  margin-top: 10px;
-  padding: 5px 10px;
+.delete-btn {
+  padding: 5px 12px;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
   text-decoration: none;
   cursor: pointer;
-  display: inline-block;
-  margin-right: 10px;
+  font-size: 14px;
+  white-space: nowrap; /* Prevents text from wrapping */
 }
 
-.edit-btn:hover,
-.delete-project:hover {
+.delete-btn {
+  background-color: #d33;
+}
+
+.edit-btn:hover {
   background-color: #0056b3;
+}
+
+.delete-btn:hover {
+  background-color: #a00;
 }

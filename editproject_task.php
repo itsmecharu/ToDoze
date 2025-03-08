@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_bind_param($stmt, "ssssiii", $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage, $taskid, $userid);
 
     if (mysqli_stmt_execute($stmt)) {
-        $_SESSION['success_message'] = "Task updated successfully!";
+        // $_SESSION['success_message'] = "Task updated successfully!";
         header("Location: project_view.php?projectid=" . $projectId);
         exit();
     } else {
@@ -73,19 +73,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="box">
             <h2>Edit Task</h2>
             <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?taskid=' . $taskid; ?>" class="add-task-form">
-                <label for="taskname">Task Name:</label>
-                <input type="text" name="taskname" id="taskname" value="<?php echo htmlspecialchars($taskname); ?>" required><br>
+                <!-- <label for="taskname">Task Name:</label> -->
+                <input type="text" name="taskname" id="taskname" placeholder=" Add Task" value="<?php echo htmlspecialchars($taskname); ?>" required><br>
 
-                <label for="taskdescription">Task Description:</label>
-                <input type="text" name="taskdescription" id="taskdescription" value="<?php echo htmlspecialchars($taskdescription); ?>"><br>
+                <!-- <label for="taskdescription">Task Description:</label> -->
+                <input type="text" name="taskdescription" id="taskdescription" placeholder="Task Description" value="<?php echo htmlspecialchars($taskdescription); ?>"><br>
+                <div>
+                <div style="display: inline-block; vertical-align: top; margin-right: 20px;">
+                        <label for="taskdate" style="display: block;">Select Due Date 📅</label>
+                        <input type="date" id="taskdate" name="taskdate" value="<?php echo htmlspecialchars($taskdate); ?>" style="width: 170px;">
+                </div>
 
-                <label for="taskdate">Due Date:</label>
-                <input type="date" id="taskdate" name="taskdate" value="<?php echo htmlspecialchars($taskdate); ?>">
-                <input type="time" id="tasktime" name="tasktime" value="<?php echo htmlspecialchars($tasktime); ?>">
+                <div style="display: inline-block; vertical-align: top;">
+                        <label for="tasktime" style="display: block;">Select Time 🕰️</label>
+                        <input type="time" id="tasktime" name="tasktime" value="<?php echo htmlspecialchars($tasktime); ?>" style="width: 170px;">
+                    </div>
 
-                <label for="reminder">Set Reminder:</label>
+
+                <!-- <label for="reminder">Set Reminder:</label> -->
                 <select id="reminder" name="reminder_percentage">
-                    <option value="" disabled>Select Reminder</option>
+                <option value="" disabled selected>Set Reminder Here 🔔</option>
                     <option value="50" <?php if ($reminder_percentage == 50) echo "selected"; ?>>50% (Halfway to Due Date)</option>
                     <option value="75" <?php if ($reminder_percentage == 75) echo "selected"; ?>>75% (Closer to Due Date)</option>
                     <option value="90" <?php if ($reminder_percentage == 90) echo "selected"; ?>>90% (Near Due Date)</option>
@@ -95,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <button type="submit">Update Task</button>
             </form>
             <br>
-            <a href="project_view.php?projectid=<?php echo $projectId; ?>">Back to Task List</a>
+            <a href="project_view.php?projectid=<?php echo $projectId; ?>">Back</a>
         </div>
     </div>
 </body>

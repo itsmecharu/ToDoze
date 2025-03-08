@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Insert Task
     $sql = "INSERT INTO tasks (userid, projectid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, taskstatus) 
             VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')";
-    
+
     $stmt = mysqli_prepare($conn, $sql);
 
     if ($stmt) {
@@ -46,68 +46,112 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Tasks</title>
     <link rel="stylesheet" href="css/dash.css">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    
 </head>
+
 <body>
     <h1>ToDoze - Project Tasks</h1>
     <div class="container">
         <div class="box">
             <h2>Add Task to Project</h2>
-            <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?projectid=' . $projectid; ?>" method="POST">
+            <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?projectid=' . $projectid; ?>"
+                method="POST">
                 <input type="hidden" name="projectid" value="<?php echo $projectid; ?>">
-                
-                <label for="taskname">Task Name:</label>
-                <input type="text" id="taskname" name="taskname" required>
 
-                <label for="taskDescription">Task Description:</label>
-                <input type="text" id="taskDescription" name="taskdescription">
+                <!-- <label for="taskname">Task Name:</label> -->
+                <input type="text" id="taskname" name="taskname" placeholder="Add task here" required>
 
-                <label for="taskdate">Due Date:</label>
-                <input type="date" id="taskdate" name="taskdate">
-                <input type="time" id="tasktime" name="tasktime">
+                <!-- <label for="taskDescription">Task Description:</label> -->
+                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description"
+                    style="height: 80px;">
+                <div>
+                    <!-- Date Section -->
+                    <div style="display: inline-block; vertical-align: top; margin-right: 20px;">
+                        <label for="taskdate" style="display: block;">Select Due Date 📅</label>
+                        <input type="date" id="taskdate" name="taskdate" style="width: 170px;">
+                    </div>
 
-                <label for="reminder">Set Reminder:</label>
-                <select id="reminder" name="reminder_percentage">
-                    <option value="" disabled selected>Set Reminder</option>
-                    <option value="50">50% (Halfway to Due Date)</option>
-                    <option value="75">75% (Closer to Due Date)</option>
-                    <option value="90">90% (Near Due Date)</option>
-                    <option value="100">100% (On Time)</option>
-                </select>
+                    <!-- Time Section -->
+                    <div style="display: inline-block; vertical-align: top;">
+                        <label for="tasktime" style="display: block;">Select Time 🕰️</label>
+                        <input type="time" id="tasktime" name="tasktime" style="width: 170px;">
+                    </div>
 
-                <button type="submit">Add Task</button>
-                <a href="project_view.php?projectid=<?php echo $projectid; ?>">Back</a>
+                    <!-- <label for="reminder">Set Reminder:</label> -->
+                    <select id="reminder" name="reminder_percentage">
+                        <option value="" disabled selected>Set Reminder Here 🔔</option>
+                        <option value="50">50% (Halfway to Due Date)</option>
+                        <option value="75">75% (Closer to Due Date)</option>
+                        <option value="90">90% (Near Due Date)</option>
+                        <option value="100">100% (On Time)</option>
+                    </select>
+                    <button type="submit" style="margin-top: 20px;">Done</button>
+            
+           
             </form>
+</br>
+            <a href="project_view.php?projectid=<?php echo $projectid; ?>">Back</a>
         </div>
     </div>
 
-    <div class="container">
-        <div class="box">
-            <h2>Project Tasks</h2>
-            <ul>
-                <?php
-                $sql = "SELECT * FROM tasks WHERE projectid = ? AND userid = ? AND is_deleted = 0";
-                $stmt = mysqli_prepare($conn, $sql);
-                mysqli_stmt_bind_param($stmt, "ii", $projectid, $userid);
-                mysqli_stmt_execute($stmt);
-                $result = mysqli_stmt_get_result($stmt);
-                
-                if (mysqli_num_rows($result) > 0) {
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        echo "<li>{$row['taskname']} - Status: {$row['taskstatus']}</li>";
-                    }
-                } else {
-                    echo "<li>No tasks found for this project.</li>";
+
+<script>
+    // Get references to the button and container
+    const addTaskButton = document.getElementById('addTaskButton');
+    const container = document.querySelector('.container');
+
+    // Add click event listener to the button
+    addTaskButton.addEventListener('click', function () {
+        // Toggle the 'active' class on the container
+        container.classList.toggle('actives');
+    });
+</script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const taskDate = document.getElementById('taskdate');
+            const taskTime = document.getElementById('tasktime');
+            const reminderSelect = document.getElementById('reminder');
+            const form = document.querySelector('.add-task-form');
+
+            function checkDateAndTime() {
+                reminderSelect.disabled = !(taskDate.value && taskTime.value);
+                if (reminderSelect.disabled) reminderSelect.value = "";
+            }
+
+            taskDate.addEventListener('input', checkDateAndTime);
+            taskTime.addEventListener('input', checkDateAndTime);
+
+            reminderSelect.addEventListener('change', function () {
+                if (!taskDate.value || !taskTime.value) {
+                    alert("Set both date and time before selecting a reminder.");
+                    this.value = "";
                 }
-                mysqli_stmt_close($stmt);
-                mysqli_close($conn);
-                ?>
-            </ul>
-        </div>
-    </div>
+            });
+
+            form.addEventListener('submit', function (event) {
+                if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
+                    alert("Set both date and time before setting a reminder.");
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+     <!-- IONICONS -->
+ <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+
+<!-- MAIN JS -->
+<script src="js/dash.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </body>
+
 </html>
+
+    

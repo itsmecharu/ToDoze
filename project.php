@@ -34,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 mysqli_stmt_close($stmt2);
             }
 
-            // Store success message & Redirect to prevent form resubmission
             $_SESSION['success_message'] = "Project created successfully!";
             header("Location: project.php");
             exit();
@@ -55,6 +54,7 @@ $result = mysqli_stmt_get_result($stmt);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,8 +63,8 @@ $result = mysqli_stmt_get_result($stmt);
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body id="body-pd">
 
+<body id="body-pd">
     <!-- Navbar -->
     <div class="l-navbar" id="navbar">
         <nav class="nav">
@@ -79,18 +79,22 @@ $result = mysqli_stmt_get_result($stmt);
                         <ion-icon name="home-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Home</span>
                     </a>
-                    <a href="task.php" class="nav__link">
+
+                    <a href="task.php" class="nav__link ">
                         <ion-icon name="add-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Task</span>
                     </a>
-                    <a href="project.php" class="nav__link active">
+
+                    <a href="project.php" class="nav__link" active>
                         <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Project</span>
                     </a>
+
                     <a href="review.php" class="nav__link">
                         <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Review</span>
                     </a>
+
                     <a href="profile.php" class="nav__link">
                         <ion-icon name="people-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Profile</span>
@@ -106,101 +110,102 @@ $result = mysqli_stmt_get_result($stmt);
     </div>
 
     <div class="container">
-    <div class="box">
-        <h2>Create New Project</h2>
-        <form method="POST">
-            <label for="projectname">Project Name:</label>
-            <input type="text" id="projectname" name="projectname" placeholder="Project name" required >
+        <button id="createProjectBtn" class="create-btn"> + Create New Project</button>
+        <div id="projectForm" class="box" style="display:none;">
+            <h2>Create New Project</h2>
+            <form method="POST">
+                <label for="projectname">Project Name:</label>
+                <input type="text" id="projectname" name="projectname" required>
 
-            <label for="projectdescription" >Project Description:</label>
-            <input type="text" id="projectdescription" name="projectdescription"style="height: 80px;" placeholder="Task description...">
+                <label for="projectdescription">Project Description:</label>
+                <input type="text" id="projectdescription" name="projectdescription" style="height: 80px;">
 
-            <label for="projectduedate">Due Date:</label>
-            <input type="datetime-local" id="projectduedate" name="projectduedate" style="width:35%">
-            <button type="submit" value="Create Project" >Create Project</button>
-        </form>
+                <label for="projectduedate">Due Date:</label>
+                <input type="datetime-local" id="projectduedate" name="projectduedate" style="width:35%">
+
+                <button type="submit">Create Project</button>
+            
+            </form>
+        </div>
     </div>
-</div>
 
-<!-- Display Projects -->
-<div class="container">
-    <div class="box">
-        <h2>Your Projects</h2>
-        <?php if (mysqli_num_rows($result) > 0): ?>
-            <div class="project-list">
-                <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                    <a href="project_view.php?projectid=<?php echo $row['projectid']; ?>" class="project-link">
+    <div class="container">
+        <div class="box">
+            <h2>Your Projects</h2>
+            <?php if (mysqli_num_rows($result) > 0): ?>
+                <div class="project-list">
+                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
                         <div class="project-box">
-                            <h3><?php echo htmlspecialchars($row['projectname']); ?></h3>
-                            <p><?php echo htmlspecialchars($row['projectdescription']); ?></p>
-                            <p><strong>Due Date:</strong> <?php echo $row['projectduedate']; ?></p>
-                            <p><strong>Status:</strong> <?php echo $row['projectstatus']; ?></p>
-                            <a href="edit_project.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn">Edit</a>
-                            <a href="delete_project.php?projectid=<?php echo $row['projectid']; ?>" class="delete-project" >Delete</a>
+
+
+                            <a href="project_view.php?projectid=<?php echo $row['projectid']; ?>" class="project-link">
+                                <h3><?php echo htmlspecialchars($row['projectname']); ?></h3>
+
+                            </a>
+                            <div class="project-actions">
+                                <a href="edit_project.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn">Edit</a>
+                                <a href="#" class="delete-btn" onclick="confirmDelete(<?php echo $row['projectid']; ?>)">Delete</a>
+                            </div>
+
                         </div>
-                    </a>
-                <?php endwhile; ?>
-            </div>
-        <?php else: ?>
-            <p>No projects found.</p>
-        <?php endif; ?>
+                    <?php endwhile; ?>
+                </div>
+            <?php else: ?>
+                <p>No projects found.</p>
+            <?php endif; ?>
+        </div>
     </div>
-</div>
-
-<!-- Display Success Message -->
-<?php if (isset($_SESSION['success_message'])): ?>
+    <!-- for delete msg -->
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            Swal.fire({
-                title: "Success!",
-                text: "<?php echo $_SESSION['success_message']; ?>",
-                icon: "success",
-                timer: 1500,
-                showConfirmButton: false
-            });
-        });
-    </script>
-    <?php unset($_SESSION['success_message']); ?>
-<?php endif; ?>
-
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.delete-project').forEach(function (button) {
-        button.addEventListener('click', function (e) {
-            e.preventDefault(); // Prevent default link behavior
-
-            var projectid = this.getAttribute('href').split('=')[1]; // Extract project ID
-
+        function confirmDelete(projectId) {
             Swal.fire({
                 title: "Are you sure?",
-                text: "You won't be able to revert this!",
+                text: "This action cannot be undone!",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
                 confirmButtonText: "Yes, delete it!"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = 'delete_project.php?projectid=' + projectid;
+                    window.location.href = "delete_project.php?projectid=" + projectId;
                 }
             });
+        }
+    </script>
+
+    <!-- Success Message -->
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: "Success!",
+                    text: "<?php echo $_SESSION['success_message']; ?>",
+                    icon: "success",
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            });
+        </script>
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
+
+    <script>
+        document.getElementById("createProjectBtn").addEventListener("click", function () {
+            document.getElementById("projectForm").style.display = "block";
+            this.style.display = "none";
         });
-    });
-});
+    </script>
 
-
-
-            </script>
-            
     <!-- IONICONS -->
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
 
     <!-- MAIN JS -->
     <script src="js/dash.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-</body>
-</html>
+    <script>
 
-<?php mysqli_close($conn); ?>
+</body >
+</html >
+
+            <?php mysqli_close($conn); ?>
