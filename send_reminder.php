@@ -11,36 +11,36 @@ require 'phpmailer/SMTP.php';
 $current_time = date("Y-m-d H:i:s");
 
 // Fetch tasks where reminder is set but hasn't been sent
-$sql = "SELECT * FROM tasks WHERE reminder_percentage IS NOT NULL AND reminder_sent = 0";
+$sql = "SELECT * FROM tasks WHERE reminder_percentage IS NOT NULL AND reminder_sent = 0 AND taskstatus !='complete'";
 $result = mysqli_query($conn, $sql);
 
 while ($task = mysqli_fetch_assoc($result)) {
-    $reminder_time = calculateReminderTime($task['taskdate'], $task['tasktime'], $task['created_at'], $task['reminder_percentage']);
+    $reminder_time = calculateReminderTime($task['taskdate'], $task['tasktime'], $task['taskcreated_at'], $task['reminder_percentage']);
     
     if ($current_time >= $reminder_time) { 
-        sendReminderEmail($task['userid'], $task['taskname'], $task['taskdate'], $task['tasktime'], $task['reminder_percentage']);
+        sendReminderEmail($task['userid'], $task['taskname'], $task['taskdate'], $task['tasktime'], $task['reminder_percentage'], $task['projectid']);
         
         // Mark the reminder as sent
-        $update_sql = "UPDATE tasks SET reminder_sent = 1 WHERE id = ?";
+        $update_sql = "UPDATE tasks SET reminder_sent = 1 WHERE taskid = ?";
         $stmt = mysqli_prepare($conn, $update_sql);
-        mysqli_stmt_bind_param($stmt, "i", $task['id']);
+        mysqli_stmt_bind_param($stmt, "i", $task['taskid']);
         mysqli_stmt_execute($stmt);
     }
 }
 
 // Function to calculate the exact reminder time
-function calculateReminderTime($taskdate, $tasktime, $created_at, $percentage) {
-    $task_due_time = strtotime("$taskdate $tasktime");
-    $task_created_time = strtotime($created_at);
+function calculateReminderTime($taskdate, $tasktime, $taskcreated_at, $reminder_percentage) {
+    $taskdue_time = strtotime("$taskdate $tasktime");
+    $taskcreated_time = strtotime($taskcreated_at);
 
-    $time_diff = $task_due_time - $task_created_time; // Total time from creation to due
-    $reminder_time = $task_due_time - ($time_diff * ($percentage / 100)); // Calculate exact reminder time
+    $time_diff = $taskdue_time - $taskcreated_time; // Total time from creation to due
+    $reminder_time = $taskdue_time - ($time_diff * ($reminder_percentage / 100)); // Calculate exact reminder time
 
     return date("Y-m-d H:i:s", $reminder_time);
 }
 
 // Function to send email reminder
-function sendReminderEmail($userid, $taskname, $taskdate, $tasktime, $reminder_percentage) {
+function sendReminderEmail($userid, $taskname, $taskdate, $tasktime, $reminder_percentage, $projectid) {
     global $conn;
 
     // Get user email
@@ -51,6 +51,18 @@ function sendReminderEmail($userid, $taskname, $taskdate, $tasktime, $reminder_p
     $result = mysqli_stmt_get_result($stmt);
     $user = mysqli_fetch_assoc($result);
     $useremail = $user['useremail'];
+
+    // Get project name if the task belongs to a project
+    $projectname = null;
+    if ($projectid != null) {
+        $project_sql = "SELECT projectname FROM projects WHERE projectid = ?";
+        $stmt_project = mysqli_prepare($conn, $project_sql);
+        mysqli_stmt_bind_param($stmt_project, "i", $projectid);
+        mysqli_stmt_execute($stmt_project);
+        $result_project = mysqli_stmt_get_result($stmt_project);
+        $project = mysqli_fetch_assoc($result_project);
+        $projectname = $project['projectname'];
+    }
 
     // Send email using PHPMailer
     $mail = new PHPMailer(true);
@@ -68,9 +80,18 @@ function sendReminderEmail($userid, $taskname, $taskdate, $tasktime, $reminder_p
 
         $mail->isHTML(true);
         $mail->Subject = "Reminder for Task: $taskname";
-        $mail->Body = "<h3>Reminder for your task: $taskname</h3>
-                        <p>Due date: $taskdate $tasktime.</p>
-                        <p>Reminder sent at $reminder_percentage% of the way to the due date.</p>";
+
+        // Construct email body
+        if ($projectname) {
+            $mail->Body = "<h3>Reminder for your task: $taskname</h3>
+                            <p>Project: $projectname</p>
+                            <p>Due date: $taskdate $tasktime.</p>
+                            <p>Reminder sent at $reminder_percentage% of the way to the due date.</p>";
+        } else {
+            $mail->Body = "<h3>Reminder for your task: $taskname</h3>
+                            <p>Due date: $taskdate $tasktime.</p>
+                            <p>Reminder sent at $reminder_percentage% of the way to the due date.</p>";
+        }
 
         $mail->send();
     } catch (Exception $e) {

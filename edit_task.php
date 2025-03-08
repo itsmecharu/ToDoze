@@ -35,19 +35,18 @@ $taskname = $task['taskname'];
 $taskdescription = $task['taskdescription'];
 $reminder_percentage = $task['reminder_percentage'];
 
-// // Format taskdate for input type="date"
-// $taskdateFormatted = isset($task['taskdate']) ? date("Y-m-d", strtotime($task['taskdate'])) : '';
+$taskdate = isset($task['taskdate']) ? $task['taskdate'] : '';  
+$tasktime = isset($task['tasktime']) ? $task['tasktime'] : ''; 
 
-// // Format tasktime for input type="time"
-// $tasktimeFormatted = isset($task['tasktime']) ? date("H:i:s", strtotime($task['tasktime'])) : '';
+
 
 
 // Handle Task Update Submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $taskname = trim($_POST['taskname']);
   $taskdescription = isset($_POST['taskdescription']) ? trim($_POST['taskdescription']) : null;
-  $taskdate = (!empty($_POST['taskdate'])) ? date('Y-m-d', strtotime($_POST['taskdate'])) : null; // Format the date before storing
-  $tasktime = (!empty($_POST['tasktime'])) ? date('H:i', strtotime($_POST['tasktime'])) : null;
+  $taskdate = isset($_POST['taskdate']) ? trim($_POST['taskdate']) : null;
+  $tasktime = isset($_POST['tasktime']) ? trim($_POST['tasktime']) : null;
   $reminder_percentage = isset($_POST['reminder_percentage']) ? $_POST['reminder_percentage'] : null;
 
 
@@ -55,9 +54,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $stmt = mysqli_prepare($conn, $sql);
   mysqli_stmt_bind_param($stmt, "sssssii", $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage, $taskid, $userid);
   if (mysqli_stmt_execute($stmt)) {
-
-    $_SESSION['success_message'] = "Task updated sucessfully!";
-
     header("Location: dash.php");
     exit();
   } else {
@@ -92,15 +88,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <!-- <label for="taskdescription">Task Description:</label> -->
         <input type="text" name="taskdescription" id="taskdescription" placeholder="Task Description" style="height: 80px;" value="<?php echo htmlspecialchars($taskdescription); ?>">
 
-        <div style="display: inline-block; vertical-align: top; margin-right: 20px;"> 
-        <label for="taskdate" style="display: block;">Select Due Date 📅</label>
-        <input type="date" id="taskdate" name="taskdate" style="width: 170px"  value="<?php echo htmlspecialchars($taskdate); ?>">
-        </div>
+        <div>
+                <div style="display: inline-block; vertical-align: top; margin-right: 20px;">
+                        <label for="taskdate" style="display: block;">Select Due Date 📅</label>
+                        <input type="date" id="taskdate" name="taskdate" value="<?php echo htmlspecialchars($taskdate); ?>" style="width: 170px;">
+                </div>
 
-        <div style="display: inline-block; vertical-align: top;">
-        <label for="tasktime" style="display: block;">Select Time 🕰️</label>
-        <input type="time" id="tasktime" name="tasktime" style="width: 170px" value="<?php echo htmlspecialchars($tasktime); ?>"> 
-        </div>
+                <div style="display: inline-block; vertical-align: top;">
+                        <label for="tasktime" style="display: block;">Select Time 🕰️</label>
+                        <input type="time" id="tasktime" name="tasktime" value="<?php echo htmlspecialchars($tasktime); ?>" style="width: 170px;">
+                    </div>
         <!-- <label for="reminder">Set Reminder:</label> -->
 <select id="reminder" name="reminder_percentage">
     <option value="" disabled selected >Set Reminder Here 🔔</option>

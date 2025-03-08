@@ -121,107 +121,56 @@ if ($stmt) {
             }
             ?>
         </div>
-    </div>
-    <!-- for showing update message -->
-
-    <?php if (isset($_SESSION['success_message'])): ?>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                Swal.fire({
-                    title: "Task updated successfully!",
-                    text: "", // Empty text since you only want "Task added successfully"
-                    // icon: "success",
-                    timer: 1000,
-                    showConfirmButton: false,
-                    customClass: {
-                        popup: 'small-swal', // Custom class for SweetAlert popup
-                        title: 'small-swal-title', // Custom class for the title
-                        content: 'small-swal-content' // Custom class for the content
-                    }
-                });
-            });
-        </script>
-
-        <style>
-            .small-swal {
-                width: 200px;
-                /* Set the width of the card */
-                padding: 20px;
-                /* Optional: Add padding to adjust internal spacing */
-            }
-
-            .small-swal-title {
-                font-size: 16px;
-                /* Adjust font size of the title */
-                font-weight: bold;
-                /* Optional: Make title bold */
-            }
-
-            .small-swal-content {
-                font-size: 14px;
-                /* Adjust font size of the text content */
-            }
-        </style>
-
-
-        <?php unset($_SESSION['success_message']); ?>
-    <?php endif; ?>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Ensure that all delete links with the class 'delete-task' are properly selected
-            document.querySelectorAll('.delete-task').forEach(function (button) {
-                button.addEventListener('click', function (e) {
-                    e.preventDefault(); // Prevent the default link action (redirect)
+    // Ensure that all delete links with the class 'delete-task' are properly selected
+    document.querySelectorAll('.delete-task').forEach(function (button) {
+        button.addEventListener('click', function (e) {
+            e.preventDefault(); // Prevent the default link action (redirect)
 
-                    var taskid = this.getAttribute('data-taskid'); // Get the taskid from the data attribute
+            var taskid = this.getAttribute('data-taskid'); // Get the taskid from the data attribute
 
-                    // Use SweetAlert to confirm deletion
-                    Swal.fire({
-                        title: "Are you sure?",
-                        text: "You won't be able to revert this!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#3085d6",
-                        cancelButtonColor: "#d33",
-                        confirmButtonText: "Yes, delete it!"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Redirect to delete_task.php with the task ID
-                            window.location.href = 'delete_task.php?taskid=' + taskid;
-                        }
-                    });
-                });
-            });
-
-
-             // COMPLETE TASK CONFIRMATION
-        document.querySelectorAll(".complete-form").forEach(function (form) {
-            form.addEventListener("submit", function (e) {
-                e.preventDefault(); 
-                Swal.fire({
-                    // title: "Mark Task as Completed?",
-                    text: "Are you sure ?",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonColor: "#28a745",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            title: "Completed!",
-                            // text: "Task Finished",
-                            icon: "success"
-                        }).then(() => {
-                            form.submit(); // Submit after confirmation
-                        });
-                    }
-                });
+            // Use SweetAlert to confirm deletion
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect to delete_task.php with the task ID
+                    window.location.href = 'delete_task.php?taskid=' + taskid;
+                }
             });
         });
     });
-    
+
+    // COMPLETE TASK CONFIRMATION
+    document.querySelectorAll(".complete-form").forEach(function (form) {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            Swal.fire({
+                text: "Are you sure?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Submit the form after confirmation
+                }
+            });
+        });
+    });
+
+}); // Closing bracket for DOMContentLoaded
+
+
     </script>
     <script>
         // Function to toggle task details

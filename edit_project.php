@@ -64,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_bind_param($stmt, "sssii", $projectname, $projectdescription, $projectduedate, $projectid, $userid);
 
     if (mysqli_stmt_execute($stmt)) {
-        // $_SESSION['success_message'] = "Project updated successfully!";
+      
         header("Location: project.php?projectid=$projectid");
        exit();
 

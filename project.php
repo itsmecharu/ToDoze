@@ -174,21 +174,7 @@ $result = mysqli_stmt_get_result($stmt);
         }
     </script>
 
-    <!-- Success Message -->
-    <?php if (isset($_SESSION['success_message'])): ?>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                Swal.fire({
-                    title: "Success!",
-                    text: "<?php echo $_SESSION['success_message']; ?>",
-                    icon: "success",
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-            });
-        </script>
-        <?php unset($_SESSION['success_message']); ?>
-    <?php endif; ?>
+    
 
     <script>
         document.getElementById("createProjectBtn").addEventListener("click", function () {

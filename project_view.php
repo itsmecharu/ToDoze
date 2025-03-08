@@ -68,7 +68,7 @@ mysqli_close($conn);
                 <ion-icon name="people-outline" class="member-icon"></ion-icon>
             </a>
 
-
+            <a href="project.php">Back </a>
         </div>
     </div>
 </div>
@@ -89,6 +89,7 @@ mysqli_close($conn);
                         $taskDateTime = strtotime($task['taskdate'] . ' ' . $task['tasktime']);
                         $currentDateTime = time();
                         $isOverdue = $taskDateTime < $currentDateTime;
+                        
                         if ($isOverdue) { echo "<p style='color: red; font-weight: bold;'>Overdue Task</p>"; }
                         ?>
                         <h4 style='<?php echo $isOverdue ? "color: red;" : ""; ?>'><?php echo htmlspecialchars($task['taskname']); ?></h4>
@@ -143,31 +144,24 @@ mysqli_close($conn);
                 });
             });
         });
-           // COMPLETE TASK CONFIRMATION
-           document.querySelectorAll(".complete-form").forEach(function (form) {
-            form.addEventListener("submit", function (e) {
-                e.preventDefault(); 
-                Swal.fire({
-                    // title: "Mark Task as Completed?",
-                    text: "Are you sure ?",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonColor: "#28a745",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            title: "Completed!",
-                            // text: "Task Finished",
-                            icon: "success"
-                        }).then(() => {
-                            form.submit(); // Submit after confirmation
-                        });
-                    }
-                });
+          // COMPLETE TASK CONFIRMATION
+    document.querySelectorAll(".complete-form").forEach(function (form) {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            Swal.fire({
+                text: "Are you sure?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Submit the form after confirmation
+                }
             });
         });
+    });
     });
     
 </script>

@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_bind_param($stmt, "ssssiii", $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage, $taskid, $userid);
 
     if (mysqli_stmt_execute($stmt)) {
-        // $_SESSION['success_message'] = "Task updated successfully!";
+        
         header("Location: project_view.php?projectid=" . $projectId);
         exit();
     } else {
