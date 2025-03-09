@@ -71,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $_SESSION['userpassword'] = password_hash($userpassword, PASSWORD_DEFAULT); // Hash the password
 
         // Generate a 6-digit OTP
+        if (!isset($_SESSION['otp']) || time() >= $_SESSION['otp_expiry']) {
         $otp = rand(100000, 999999);
         $_SESSION['otp'] = $otp;
         $_SESSION['otp_expiry'] = time() + 180; // OTP expires in 3 minutes
@@ -97,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         } catch (Exception $e) {
             die("Error sending OTP: {$mail->ErrorInfo}");
         }
-
+    }
         header("Location: verifyotp.php");
         exit();
     }
