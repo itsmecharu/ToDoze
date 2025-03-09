@@ -56,7 +56,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div>
                 <div class="nav__brand">
                     <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                    <span class="nav__logo">ToDoze</span>
+                    <span class="nav__logo" style="display: flex; align-items: center;">
+                        ToDoze
+                        <a href="invitation.php"> <!-- Added a link to redirect to the invitations page -->
+                            <ion-icon name="notifications-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
+                        </a>
+                    </span>
                 </div>
                 <div class="nav__list">
                     <a href="dash.php" class="nav__link">
@@ -91,9 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="review-form-container">
         <h3>Share Review</h3>
         <form method="POST">
-            <label for="rating"><h2>How was your experience?</h2></label>
-           <p>Your review will help our product and make
-                 it user friendly for more users.</>
+            <label for="rating">
+                <h2>How was your experience?</h2>
+            </label>
+            <p>Your review will help our product and make
+                it user friendly for more users.</>
             <div class="rating-stars" id="rating-stars">
                 <input type="radio" name="rating" value="5" id="star1">
                 <label for="star1">&#9733;</label>

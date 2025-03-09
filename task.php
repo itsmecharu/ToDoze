@@ -1,6 +1,6 @@
 <?php
 session_start();
-date_default_timezone_set('Asia/Kathmandu'); 
+date_default_timezone_set('Asia/Kathmandu');
 include 'config/database.php';
 
 // Ensure user is logged in
@@ -16,7 +16,7 @@ $taskname = $taskdescription = $taskdate = $tasktime = $reminder_percentage = ""
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taskname = trim($_POST['taskname']);
     $taskdescription = isset($_POST['taskdescription']) ? trim($_POST['taskdescription']) : null;
-    $taskdate = (!empty($_POST['taskdate'])) ?($_POST['taskdate']) : null; 
+    $taskdate = (!empty($_POST['taskdate'])) ? ($_POST['taskdate']) : null;
     $tasktime = (!empty($_POST['tasktime'])) ? ($_POST['tasktime']) : null;
     $reminder_percentage = isset($_POST['reminder_percentage']) ? trim($_POST['reminder_percentage']) : null;
     // echo $tasktime;
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
- 
+
 ?>
 
 
@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Task</title>
+    <title>Task</title>
     <link rel="stylesheet" href="css/dash.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -63,7 +63,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div>
                 <div class="nav__brand">
                     <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                    <span class="nav__logo">ToDoze</span>
+                    <span class="nav__logo" style="display: flex; align-items: center;">
+                        ToDoze
+                        <a href="invitation.php"> <!-- Added a link to redirect to the invitations page -->
+                            <ion-icon name="notifications-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
+                        </a>
+                    </span>
                 </div>
 
                 <div class="nav__list">
@@ -102,44 +107,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <h1>ToDoze</h1>
-    
-    
-  
+
+
+
     <div class="container">
         <!-- Add Task Section -->
         <div class="box">
-                <h2>Add Task Here</h2>
-                <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
+            <h2>Add Task Here</h2>
+            <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
                 <!-- <label for="taskname">Task Name:</label> -->
                 <input type="text" id="taskname" name="taskname" placeholder="Add task here" required>
 
                 <!-- <label for="taskDescription">Task Description:</label> -->
-                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description" style="height: 80px;">
+                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description"
+                    style="height: 80px;">
                 <div>
-                <!-- Date Section -->
-                <div style="display: inline-block; vertical-align: top; margin-right: 20px;">
-                    <label for="taskdate" style="display: block;">Select Due Date 📅</label>
-                    <input type="date" id="taskdate" name="taskdate" style="width: 170px;" >
-                </div>
+                    <!-- Date Section -->
+                    <div style="display: inline-block; vertical-align: top; margin-right: 20px;">
+                        <label for="taskdate" style="display: block;">Select Due Date 📅</label>
+                        <input type="date" id="taskdate" name="taskdate" style="width: 170px;">
+                    </div>
 
-                <!-- Time Section -->
-                <div style="display: inline-block; vertical-align: top;">
-                    <label for="tasktime" style="display: block;">Select Time 🕰️</label>
-                    <input type="time" id="tasktime" name="tasktime" style="width: 170px;">
-                </div>
-               
-                <!-- <label for="reminder">Set Reminder:</label> -->
-                <select id="reminder" name="reminder_percentage">
-                    <option value="" disabled selected>Set Reminder Here 🔔</option>
-                    <option value="50">50% (Halfway to Due Date)</option>
-                    <option value="75">75% (Closer to Due Date)</option>
-                    <option value="90">90% (Near Due Date)</option>
-                    <option value="100">100% (On Time)</option>
-                </select>
-                <button type="submit" style="margin-top: 20px;">Done</button>
+                    <!-- Time Section -->
+                    <div style="display: inline-block; vertical-align: top;">
+                        <label for="tasktime" style="display: block;">Select Time 🕰️</label>
+                        <input type="time" id="tasktime" name="tasktime" style="width: 170px;">
+                    </div>
+
+                    <!-- <label for="reminder">Set Reminder:</label> -->
+                    <select id="reminder" name="reminder_percentage">
+                        <option value="" disabled selected>Set Reminder Here 🔔</option>
+                        <option value="50">50% (Halfway to Due Date)</option>
+                        <option value="75">75% (Closer to Due Date)</option>
+                        <option value="90">90% (Near Due Date)</option>
+                        <option value="100">100% (On Time)</option>
+                    </select>
+                    <button type="submit" style="margin-top: 20px;">Done</button>
             </form>
         </div>
-        </div>
+    </div>
     <?php if (isset($_SESSION['success_message'])): ?>
         <script>
             document.addEventListener("DOMContentLoaded", function () {

@@ -67,6 +67,7 @@ mysqli_close($conn);
             <a href="member.php?projectid=<?php echo $projectId; ?>">
                 <ion-icon name="people-outline" class="member-icon"></ion-icon>
             </a>
+           
 
             <a href="project.php">Back </a>
         </div>

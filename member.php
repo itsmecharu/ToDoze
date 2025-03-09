@@ -14,12 +14,8 @@ if (!$projectId) {
     die("Project not found!");
 }
 
-// Fetch existing members of the project
-$sql = "SELECT users.userid, users.useremail, project_members.role 
-        FROM project_members 
-        JOIN users ON project_members.userid = users.userid 
-        WHERE project_members.projectid = ?";
-
+// Fetch the admin (project creator) of the project
+$sql = "SELECT userid FROM project_members WHERE projectid = ? AND role = 'admin' LIMIT 1";
 $stmt = mysqli_prepare($conn, $sql);
 if (!$stmt) {
     die("Query preparation failed: " . mysqli_error($conn));
@@ -28,7 +24,22 @@ if (!$stmt) {
 mysqli_stmt_bind_param($stmt, "i", $projectId);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
-$members = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$admin = mysqli_fetch_assoc($result);
+$admin_userid = $admin['userid']; // Admin's (creator's) userid
+mysqli_stmt_close($stmt);
+
+// Fetch users who are not the admin and who are not already part of the project
+$sql = "SELECT userid, useremail FROM users WHERE userid != ? AND userid NOT IN (SELECT userid FROM project_members WHERE projectid = ?)";
+
+$stmt = mysqli_prepare($conn, $sql);
+if (!$stmt) {
+    die("Query preparation failed: " . mysqli_error($conn));
+}
+
+mysqli_stmt_bind_param($stmt, "ii", $admin_userid, $projectId);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 mysqli_stmt_close($stmt);
 
 mysqli_close($conn);
@@ -40,7 +51,7 @@ mysqli_close($conn);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Members</title>
-    <link rel="stylesheet" href="css/form.cssS">
+    <link rel="stylesheet" href="css/dash.css">
 </head>
 <body>
 
@@ -65,16 +76,26 @@ mysqli_close($conn);
         <?php } ?>
     </div>
 
-    <!-- Add Member Form -->
-    <div class="add-member-form">
-        <h3>Add Member</h3>
-        <form action="add_member.php" method="POST">
-            <input type="hidden" name="projectid" value="<?php echo $projectId; ?>">
-            <label for="email">Member Email:</label>
-            <input type="email" id="useremail" name="useremail" required>
-            <button type="submit">Add</button>
-        </form>
-    </div>
+   <!-- Add Member Form -->
+<div class="add-member-form">
+    <h3>Add Member</h3>
+    <form action="send_invitation.php" method="POST">
+        <input type="hidden" name="projectid" value="<?php echo $projectId; ?>">
+        <label for="email">Member Email:</label>
+        <select name="useremail" id="useremail" required>
+            <option value="" disabled selected>Select User</option>
+            <?php if (!empty($users)) { ?>
+                <?php foreach ($users as $user) { ?>
+                    <option value="<?php echo htmlspecialchars($user['useremail']); ?>"><?php echo htmlspecialchars($user['useremail']); ?></option>
+                <?php } ?>
+            <?php } else { ?>
+                <option value="">No users available</option>
+            <?php } ?>
+        </select>
+        <button > <a href="send_reminder">Add</a> </button>
+    </form>
+</div>
+
 
     <button onclick="window.history.back();" class="back-btn">Go Back</button>
 </div>

@@ -41,6 +41,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,6 +49,7 @@ $conn->close();
     <link rel="stylesheet" href="css/profile.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
+
 <body id="body-pd">
 
     <!-- Navbar -->
@@ -56,7 +58,12 @@ $conn->close();
             <div>
                 <div class="nav__brand">
                     <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                    <span class="nav__logo">ToDoze</span>
+                    <span class="nav__logo" style="display: flex; align-items: center;">
+                        ToDoze
+                        <a href="invitation.php"> <!-- Added a link to redirect to the invitations page -->
+                            <ion-icon name="notifications-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
+                        </a>
+                    </span>
                 </div>
                 <div class="nav__list">
                     <a href="dash.php" class="nav__link">
@@ -122,7 +129,8 @@ $conn->close();
     <div class="box">
         <h2>Progress</h2>
         <div class="progress-bar">
-            <div class="progress-bar-fill" id="progressBar" style="width: <?php echo $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0; ?>%;"></div>
+            <div class="progress-bar-fill" id="progressBar"
+                style="width: <?php echo $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0; ?>%;"></div>
         </div>
     </div>
 
@@ -150,4 +158,5 @@ $conn->close();
         });
     </script>
 </body>
+
 </html>

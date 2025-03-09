@@ -11,20 +11,33 @@ require 'phpmailer/SMTP.php';
 $current_time = date("Y-m-d H:i:s");
 
 // Fetch tasks where reminder is set but hasn't been sent
-$sql = "SELECT * FROM tasks WHERE reminder_percentage IS NOT NULL AND reminder_sent = 0 AND taskstatus !='complete'";
+$sql = "SELECT * FROM tasks WHERE reminder_percentage IS NOT NULL AND reminder_sent = 0 AND taskstatus != 'complete'";
 $result = mysqli_query($conn, $sql);
+
+// If no tasks are found, log this
+if (mysqli_num_rows($result) == 0) {
+    error_log("No tasks found that need reminders.");
+}
 
 while ($task = mysqli_fetch_assoc($result)) {
     $reminder_time = calculateReminderTime($task['taskdate'], $task['tasktime'], $task['taskcreated_at'], $task['reminder_percentage']);
     
+    error_log("Task ID: {$task['taskid']} | Reminder Time: $reminder_time | Current Time: $current_time");
+
     if ($current_time >= $reminder_time) { 
+        error_log("Sending reminder for Task ID: {$task['taskid']}");
+
         sendReminderEmail($task['userid'], $task['taskname'], $task['taskdate'], $task['tasktime'], $task['reminder_percentage'], $task['projectid']);
-        
+
         // Mark the reminder as sent
         $update_sql = "UPDATE tasks SET reminder_sent = 1 WHERE taskid = ?";
         $stmt = mysqli_prepare($conn, $update_sql);
         mysqli_stmt_bind_param($stmt, "i", $task['taskid']);
-        mysqli_stmt_execute($stmt);
+        if (mysqli_stmt_execute($stmt)) {
+            error_log("Reminder marked as sent for Task ID: {$task['taskid']}");
+        } else {
+            error_log("Failed to update reminder_sent for Task ID: {$task['taskid']}");
+        }
     }
 }
 
@@ -35,6 +48,8 @@ function calculateReminderTime($taskdate, $tasktime, $taskcreated_at, $reminder_
 
     $time_diff = $taskdue_time - $taskcreated_time; // Total time from creation to due
     $reminder_time = $taskdue_time - ($time_diff * ($reminder_percentage / 100)); // Calculate exact reminder time
+
+    error_log("Task Due: " . date("Y-m-d H:i:s", $taskdue_time) . " | Created At: " . date("Y-m-d H:i:s", $taskcreated_time) . " | Reminder Time: " . date("Y-m-d H:i:s", $reminder_time));
 
     return date("Y-m-d H:i:s", $reminder_time);
 }
@@ -51,6 +66,11 @@ function sendReminderEmail($userid, $taskname, $taskdate, $tasktime, $reminder_p
     $result = mysqli_stmt_get_result($stmt);
     $user = mysqli_fetch_assoc($result);
     $useremail = $user['useremail'];
+
+    if (!$useremail) {
+        error_log("No email found for User ID: $userid");
+        return;
+    }
 
     // Get project name if the task belongs to a project
     $projectname = null;
@@ -71,7 +91,7 @@ function sendReminderEmail($userid, $taskname, $taskdate, $tasktime, $reminder_p
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'todoze9@gmail.com';
-        $mail->Password = 'aslu umcq hqhq ebhr'; 
+        $mail->Password = 'aslu umcq hqhq ebhr';  
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port = 465;
 
@@ -94,8 +114,10 @@ function sendReminderEmail($userid, $taskname, $taskdate, $tasktime, $reminder_p
         }
 
         $mail->send();
+        error_log("Email sent successfully to: $useremail");
+
     } catch (Exception $e) {
-        echo "Error sending reminder: {$mail->ErrorInfo}";
+        error_log("Email sending failed: {$mail->ErrorInfo}");
     }
 }
 ?>

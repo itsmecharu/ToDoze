@@ -71,7 +71,12 @@ $result = mysqli_stmt_get_result($stmt);
             <div>
                 <div class="nav__brand">
                     <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                    <span class="nav__logo">ToDoze</span>
+                    <span class="nav__logo" style="display: flex; align-items: center;">
+                        ToDoze
+                        <a href="invitation.php"> <!-- Added a link to redirect to the invitations page -->
+                            <ion-icon name="notifications-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
+                        </a>
+                    </span>
                 </div>
 
                 <div class="nav__list">
@@ -85,7 +90,7 @@ $result = mysqli_stmt_get_result($stmt);
                         <span class="nav__name">Task</span>
                     </a>
 
-                    <a href="project.php" class="nav__link" active>
+                    <a href="project.php" class="nav__link active">
                         <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Project</span>
                     </a>
@@ -124,7 +129,7 @@ $result = mysqli_stmt_get_result($stmt);
                 <input type="datetime-local" id="projectduedate" name="projectduedate" style="width:35%">
 
                 <button type="submit">Create Project</button>
-            
+
             </form>
         </div>
     </div>
@@ -144,7 +149,8 @@ $result = mysqli_stmt_get_result($stmt);
                             </a>
                             <div class="project-actions">
                                 <a href="edit_project.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn">Edit</a>
-                                <a href="#" class="delete-btn" onclick="confirmDelete(<?php echo $row['projectid']; ?>)">Delete</a>
+                                <a href="#" class="delete-btn"
+                                    onclick="confirmDelete(<?php echo $row['projectid']; ?>)">Delete</a>
                             </div>
 
                         </div>
@@ -174,7 +180,7 @@ $result = mysqli_stmt_get_result($stmt);
         }
     </script>
 
-    
+
 
     <script>
         document.getElementById("createProjectBtn").addEventListener("click", function () {

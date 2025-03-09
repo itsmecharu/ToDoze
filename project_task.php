@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (mysqli_stmt_execute($stmt)) {
             $_SESSION['success_message'] = "Task added successfully!";
             mysqli_stmt_close($stmt);
-            header("Location: project_view.php?projectid=" . $projectid);
+            header("Location: project_task.php?projectid=" . $projectid);
             exit();
         } else {
             echo "Error executing query: " . mysqli_error($conn);
