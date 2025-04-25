@@ -26,7 +26,8 @@ if ($stmt) {
     mysqli_stmt_close($stmt);
 
     // Only allow removal if the user is an "admin" or "owner" of the project
-    if ($userRole !== 'admin' && $userRole !== 'owner') {
+    if ($userRole !== 'Admin' && $userRole !== 'Owner') {
+        
         die("You do not have permission to remove members.");
     }
 }

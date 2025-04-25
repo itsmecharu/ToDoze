@@ -9,8 +9,23 @@ if (!isset($_SESSION['userid'])) {
 
 $userid = $_SESSION['userid'];
 
-// Fetch pending invitations
-$sql = "SELECT projectid, role FROM project_members WHERE userid = ? AND status = 'Pending'";
+// Fetch all invitations (Pending/Accepted/Rejected)
+$sql = "SELECT 
+    p.projectid,
+    p.projectname,
+    u_admin.username AS adminname,
+    pm_user.status
+FROM 
+    project_members pm_user
+JOIN 
+    projects p ON pm_user.projectid = p.projectid
+JOIN 
+    project_members pm_admin ON pm_admin.projectid = p.projectid AND pm_admin.role = 'Admin'
+JOIN 
+    users u_admin ON pm_admin.userid = u_admin.userid
+WHERE 
+    pm_user.userid = ?
+";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $userid);
 mysqli_stmt_execute($stmt);
@@ -28,7 +43,43 @@ mysqli_stmt_close($stmt);
     <title>Pending Invitations</title>
     <link rel="stylesheet" href="css/dash.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <style>
+        .accepted-btn, .rejected-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: not-allowed;
+            opacity: 0.75;
+            font-weight: bold;
+        }
 
+        .accepted-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .rejected-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .action-btn {
+            margin-right: 10px;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .accept-btn {
+            background-color: #007bff;
+        }
+
+        .reject-btn {
+            background-color: #6c757d;
+        }
+    </style>
 </head>
 
 <body id="body-pd">
@@ -40,8 +91,8 @@ mysqli_stmt_close($stmt);
                     <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
                     <span class="nav__logo" style="display: flex; align-items: center;">
                         ToDoze
-                        <a href="invitation.php "> <!-- Added a link to redirect to the invitations page -->
-                            <ion-icon name="notifications-outline" class="nav__toggle " id="nav-toggle" ></ion-icon>
+                        <a href="invitation.php">
+                            <ion-icon name="notifications-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
                         </a>
                     </span>
                 </div>
@@ -51,22 +102,18 @@ mysqli_stmt_close($stmt);
                         <ion-icon name="home-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Home</span>
                     </a>
-
                     <a href="task.php" class="nav__link ">
                         <ion-icon name="add-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Task</span>
                     </a>
-
                     <a href="project.php" class="nav__link">
                         <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Project</span>
                     </a>
-
                     <a href="review.php" class="nav__link">
                         <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Review</span>
                     </a>
-
                     <a href="profile.php" class="nav__link">
                         <ion-icon name="people-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Profile</span>
@@ -81,37 +128,36 @@ mysqli_stmt_close($stmt);
         </nav>
     </div>
 
-
-
     <div class="container">
-        <!-- Add Task Section -->
-        <div class="box" >
-        <h2>Pending Invitations</h2>
+        <div class="box">
+            <h2>Project Invitations</h2>
 
             <?php if (!empty($invitations)) { ?>
                 <ul>
                     <?php foreach ($invitations as $invitation) { ?>
-                        <li>
-                            Project ID: <?php echo $invitation['projectid']; ?>
-                            Role: <?php echo $invitation['role']; ?>
-                            <a href="accept_invitation.php?projectid=<?php echo $invitation['projectid']; ?>">Accept</a> |
-                            <a href="reject_invitation.php?projectid=<?php echo $invitation['projectid']; ?>">Reject</a>
+                        <li style="margin-bottom: 10px;">
+                            Project: <strong><?php echo htmlspecialchars($invitation['projectname']); ?></strong><br>
+                            Created by: <?php echo htmlspecialchars($invitation['adminname']); ?><br>
+
+                            <?php if ($invitation['status'] === 'Pending') { ?>
+                                <a href="accept.php?projectid=<?php echo $invitation['projectid']; ?>" class="action-btn accept-btn">Accept</a>
+                                <a href="reject.php?projectid=<?php echo $invitation['projectid']; ?>" class="action-btn reject-btn">Reject</a>
+                            <?php } elseif ($invitation['status'] === 'Accepted') { ?>
+                                <button class="accepted-btn" disabled>Accepted</button>
+                            <?php } elseif ($invitation['status'] === 'Rejected') { ?>
+                                <button class="rejected-btn" disabled>Rejected</button>
+                            <?php } ?>
                         </li>
                     <?php } ?>
                 </ul>
             <?php } else { ?>
-                <h3 style="center" ;>You have no pending invitations.</h3>
+                <h3>You have no invitations.</h3>
             <?php } ?>
-            </div>
-            </div>
+        </div>
+    </div>
 
-            <!-- IONICONS -->
-            <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
-
-            <!-- MAIN JS -->
-            <script src="js/dash.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <!-- IONICONS -->
+    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+    <script src="js/dash.js"></script>
 </body>
-
 </html>

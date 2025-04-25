@@ -48,7 +48,7 @@ if (mysqli_query($conn, $sql)) {
     echo "Error creating 'projects' table: " . mysqli_error($conn) . "<br>";
 }
 
-// Create 'users' table after 'projects' table
+// this is users table
 $sql = "CREATE TABLE IF NOT EXISTS users (
     userid INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(30) NOT NULL,

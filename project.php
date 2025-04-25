@@ -43,9 +43,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Fetch projects based on membership
-$sql = "SELECT projects.* FROM projects 
-        JOIN project_members ON projects.projectid = project_members.projectid 
-        WHERE project_members.userid = ? AND projects.is_projectdeleted = 0";
+$sql = $sql = "SELECT DISTINCT p.* 
+FROM projects p
+JOIN project_members pm ON p.projectid = pm.projectid
+WHERE 
+    (
+        pm.userid = ? AND 
+        (pm.role = 'Admin' OR pm.status = 'Accepted')
+    )
+    AND p.is_projectdeleted = 0";
+
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $userid);
 mysqli_stmt_execute($stmt);
