@@ -27,9 +27,9 @@ if ($stmt) {
 
     // Only allow removal if the user is an "admin" or "owner" of the project
     if ($userRole !== 'Admin' && $userRole !== 'Owner') {
-        
+        {
         die("You do not have permission to remove members.");
-    }
+    }}
 }
 
 // Remove member from the project
