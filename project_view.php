@@ -53,6 +53,55 @@ mysqli_close($conn);
 </head>
 
 <body>
+    <!-- Navbar -->
+    <div class="l-navbar" id="navbar">
+        <nav class="nav">
+            <div>
+                <div class="nav__brand">
+                    <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
+                    <span class="nav__logo" style="display: flex; align-items: center;">
+                        ToDoze
+                        <a href="invitation.php"> <!-- Added a link to redirect to the invitations page -->
+                            <ion-icon name="notifications-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
+                        </a>
+                    </span>
+                </div>
+
+                <div class="nav__list">
+                    <a href="dash.php" class="nav__link">
+                        <ion-icon name="home-outline" class="nav__icon"></ion-icon>
+                        <span class="nav__name">Home</span>
+                    </a>
+
+                    <a href="task.php" class="nav__link ">
+                        <ion-icon name="add-outline" class="nav__icon"></ion-icon>
+                        <span class="nav__name">Task</span>
+                    </a>
+
+                    <a href="project.php" class="nav__link active">
+                        <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
+                        <span class="nav__name">Project</span>
+                    </a>
+
+                    <a href="review.php" class="nav__link">
+                        <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
+                        <span class="nav__name">Review</span>
+                    </a>
+
+                    <a href="profile.php" class="nav__link">
+                        <ion-icon name="people-outline" class="nav__icon"></ion-icon>
+                        <span class="nav__name">Profile</span>
+                    </a>
+                </div>
+            </div>
+
+            <a href="logout.php" class="nav__link logout">
+                <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+                <span class="nav__name">Log Out</span>
+            </a>
+        </nav>
+    </div>
+
 <div class="container">
     <div class="box">
         <h2><?php echo htmlspecialchars($project['projectname']); ?></h2>
@@ -60,22 +109,30 @@ mysqli_close($conn);
         <p><strong>Due Date:</strong> <?php echo htmlspecialchars($project['projectduedate']); ?></p>
 
         <div class="icons">
-            <!-- Add Task Icon -->
-            <ion-icon name="add-circle-outline" class="task-icon" onclick="window.location.href='project_task.php?projectid=<?php echo $projectId; ?>'"></ion-icon>
+        <div class="icons" style="display: flex; gap: 20px; margin-top: 15px;">
+            
+    <!-- Add Task Button -->
+    <a href="project_task.php?projectid=<?php echo $projectId; ?>" 
+       style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background-color: #4CAF50; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">
+        <ion-icon name="add-circle-outline" style="font-size: 20px;"></ion-icon> 
+        Add Task
+    </a>
 
-            <!-- Add Member Icon -->
-            <a href="member.php?projectid=<?php echo $projectId; ?>">
-                <ion-icon name="people-outline" class="member-icon"></ion-icon>
-            </a>
-           
-
-            <a href="project.php">Back </a>
+    <!-- Add Member Button -->
+    <a href="member.php?projectid=<?php echo $projectId; ?>" 
+       style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background-color: #2196F3; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">
+        <ion-icon name="people-outline" style="font-size: 20px;"></ion-icon> 
+        Add Member
+    </a>
+        
         </div>
     </div>
 </div>
 
 <!-- Displaying the tasks -->
-<div class="task-container">
+
+<div class="container">
+        <div class="box">
     <h3>Project Tasks</h3>
     <?php if (!empty($tasks)) { ?>
         <?php foreach ($tasks as $task) { ?>
@@ -107,6 +164,7 @@ mysqli_close($conn);
     <?php } else { ?>
         <p>No tasks available for this project.</p>
     <?php } ?>
+</div>
 </div>
 
 <script>

@@ -1,5 +1,9 @@
 <?php
-session_start();
+// Safe session start
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 include 'config/database.php';
 
 // Check if user is logged in
@@ -52,10 +56,8 @@ $conn->close();
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Profile</title>
-
-  <link rel="stylesheet" href="css/profile.css">
   <link rel="stylesheet" href="css/dash.css">
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
@@ -108,50 +110,55 @@ $conn->close();
 </div>
 
 <!-- Profile Section -->
-<div class="box">
+<div class="container">
   <h4>Profile</h4>
   <div class="profile-content">
     <div class="profile-image">
-      <img src="img/userprofile.jpeg" alt="User Image" class="user-img">
+      <img src="<?php echo isset($_SESSION['profile_pic']) && $_SESSION['profile_pic'] ? 'uploads/' . $_SESSION['profile_pic'] : 'img/userprofile.jpeg'; ?>" alt="User Image" class="user-img">
     </div>
     <div class="profile-info">
       <h2 class="user-name"><?php echo htmlspecialchars($_SESSION['username']); ?></h2>
       <p class="user-email"><?php echo htmlspecialchars($_SESSION['useremail']); ?></p>
     </div>
   </div>
+
+  <!-- Edit name button -->
+  <div style="margin-top: 10px;">
+    <a href="edit_profile.php" class="btn">Edit Name</a>
+  </div>
+
+  <!-- Upload Profile Picture Form -->
+  <form action="upload_profile.php" method="POST" enctype="multipart/form-data" style="margin-top: 20px;">
+    <label for="profile_pic">Upload New Photo:</label><br>
+    <input type="file" name="profile_pic" accept="image/*" required><br><br>
+    <button type="submit" class="btn">Upload Photo</button>
+  </form>
 </div>
 
+
 <!-- Task Summary Section -->
-<div class="box task-summary">
+<div class="container">
+  <h2>Task Statistics</h2>
   <div>
-    <h3>Total Tasks</h3>
-    <p id="totalTasks"><?php echo $totalTasks; ?></p>
-  </div>
-  <div>
-    <h3>Pending Tasks</h3>
-    <p id="pendingTasks"><?php echo $pendingTasks; ?></p>
-  </div>
-  <div>
-    <h3>Completed Tasks</h3>
-    <p id="completedTasks"><?php echo $completedTasks; ?></p>
-  </div>
-  <div>
-    <h3>Overdue Tasks</h3>
-    <p id="overdueTasks"><?php echo $overdueTasks; ?></p>
+    Total: <?php echo $totalTasks; ?> |
+    Completed: <?php echo $completedTasks; ?> |
+    Pending: <?php echo $pendingTasks; ?> |
+    Overdue: <?php echo $overdueTasks; ?>
   </div>
 </div>
 
 <!-- Progress Bar -->
-<div class="box">
+<div class="container">
   <h2>Progress</h2>
   <div class="progress-bar">
     <div class="progress-bar-fill" id="progressBar"
-      style="width: <?php echo $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0; ?>%;"></div>
+      style="width: <?php echo $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0; ?>%;">
+    </div>
   </div>
 </div>
 
 <!-- Task Graph Section -->
-<div class="box">
+<div class="container">
   <h2>Overview</h2>
   <div style="width: 30%; height: 200px; margin: 0 auto;">
     <canvas id="taskGraph"></canvas>
@@ -171,21 +178,14 @@ new Chart(ctx, {
         datasets: [{
             label: 'Tasks',
             data: [<?php echo $pendingTasks; ?>, <?php echo $completedTasks; ?>, <?php echo $overdueTasks; ?>],
-            backgroundColor: [
-                '#f1c40f', // Yellow for Pending
-                '#2ecc71', // Green for Completed
-                '#e74c3c'  // Red for Overdue
-            ],
-            borderRadius: 8, // Slightly rounded bars
-            barThickness: 30, // Slim bars
-            maxBarThickness: 40
+            backgroundColor: ['#f1c40f', '#2ecc71', '#e74c3c'],
+            borderRadius: 8,
+            barThickness: 30
         }]
     },
     options: {
         plugins: {
-            legend: {
-                display: false
-            },
+            legend: { display: false },
             tooltip: {
                 backgroundColor: '#333',
                 titleColor: '#fff',
@@ -195,21 +195,15 @@ new Chart(ctx, {
         scales: {
             y: {
                 beginAtZero: true,
-                ticks: {
-                    stepSize: 1
-                },
-                grid: {
-                    borderDash: [5, 5]
-                }
+                ticks: { stepSize: 1 },
+                grid: { borderDash: [5, 5] }
             },
             x: {
-                grid: {
-                    display: false
-                }
+                grid: { display: false }
             }
         },
         responsive: true,
-        maintainAspectRatio: false, // Important to control height/width
+        maintainAspectRatio: false,
         animation: {
             duration: 1200,
             easing: 'easeOutCubic'
@@ -217,8 +211,6 @@ new Chart(ctx, {
     }
 });
 </script>
-
-
 
 </body>
 </html>

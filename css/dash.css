@@ -26,13 +26,14 @@
 }
 
 body {
-  position: relative;
-  margin: 0;
-  padding: 2rem 0 0 0; /* No left padding initially */
-  font-family: var(--body-font);
-  font-size: var(--normal-font-size);
-  transition: .5s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Full height of the viewport */
+  background-color: #ebedf0; /* Optional: nicer background */
+  padding: 0; /* Remove padding if you want pure centering */
 }
+
 
 h1 {
   margin: 0;
@@ -184,6 +185,7 @@ h1 {
   max-width: 50%;
   margin: 0px auto;
   padding: 0 7rem; /* Add some padding for better spacing */
+
 }
 
 .box {
@@ -524,4 +526,22 @@ button:hover {
 
 .delete-btn:hover {
   background-color: #a00;
+}
+ /* for project view  */
+ /* Main Container */
+.task-container {
+  max-width: 1000px;
+  margin: 40px auto; /* Center horizontally */
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+.task-details {
+  max-width: 1000px;
+  margin: 40px auto; /* Center horizontally */
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
