@@ -27,19 +27,36 @@ $admin = mysqli_fetch_assoc($result);
 $admin_userid = $admin['userid'];
 mysqli_stmt_close($stmt);
 
-// Fetch current project members
+// Fetch accepted members
 $sql = "SELECT users.userid, users.useremail, project_members.role 
         FROM project_members 
         JOIN users ON project_members.userid = users.userid 
-        WHERE project_members.projectid = ?";
+        WHERE project_members.projectid = ? AND project_members.status = 'accepted'";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $projectId);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
-$members = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$accepted_members = mysqli_fetch_all($result, MYSQLI_ASSOC);
 mysqli_stmt_close($stmt);
 
-// Fetch users eligible to be invited (not in project and not current user)
+// Fetch pending (request sent) members
+// Fetch pending (request sent) members, excluding the admin
+$sql = "SELECT users.userid, users.useremail 
+        FROM project_members 
+        JOIN users ON project_members.userid = users.userid 
+        WHERE project_members.projectid = ? 
+        AND project_members.status = 'pending'
+        AND users.userid != ?";
+
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "ii", $projectId, $admin_userid);
+
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$pending_members = mysqli_fetch_all($result, MYSQLI_ASSOC);
+mysqli_stmt_close($stmt);
+
+// Fetch users who are eligible to be invited
 $sql = "SELECT userid, useremail 
         FROM users 
         WHERE userid != ? 
@@ -47,10 +64,10 @@ $sql = "SELECT userid, useremail
             SELECT userid FROM project_members WHERE projectid = ?
         )";
 $stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "ii", $userid, $projectId);  
+mysqli_stmt_bind_param($stmt, "ii", $userid, $projectId);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
-$users = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$available_users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 mysqli_stmt_close($stmt);
 ?>
 
@@ -62,11 +79,11 @@ mysqli_stmt_close($stmt);
     <title>Project Members</title>
     <link rel="stylesheet" href="css/dash.css">
     <style>
-        .members-list ul {
+        .members-list ul, .pending-list ul {
             list-style: none;
             padding-left: 0;
         }
-        .members-list li {
+        .members-list li, .pending-list li {
             margin-bottom: 10px;
         }
         .remove-btn {
@@ -87,6 +104,9 @@ mysqli_stmt_close($stmt);
             color: red;
             margin: 10px 0;
         }
+        .section {
+            margin-bottom: 30px;
+        }
     </style>
 </head>
 <body>
@@ -106,16 +126,15 @@ mysqli_stmt_close($stmt);
         </div>
     <?php endif; ?>
 
-    <!-- Existing Members -->
-    <div class="members-list">
-        <h3>Existing Members</h3>
-        <?php if (!empty($members)) { ?>
+    <!-- Accepted Members -->
+    <div class="members-list section">
+        <h3>Accepted Members</h3>
+        <?php if (!empty($accepted_members)) { ?>
             <ul>
-                <?php foreach ($members as $member) { ?>
+                <?php foreach ($accepted_members as $member) { ?>
                     <li>
                         <?php echo htmlspecialchars($member['useremail']); ?>
                         <span class="role">(<?php echo htmlspecialchars($member['role']); ?>)</span>
-                        
                         <?php if ($member['userid'] != $admin_userid) { ?>
                             <a href="remove_member.php?userid=<?php echo $member['userid']; ?>&projectid=<?php echo $projectId; ?>" 
                                class="remove-btn" 
@@ -129,27 +148,45 @@ mysqli_stmt_close($stmt);
                 <?php } ?>
             </ul>
         <?php } else { ?>
-            <p>No members found for this project.</p>
+            <p>No accepted members yet.</p>
+        <?php } ?>
+    </div>
+
+    <!-- Pending Invitations -->
+    <div class="pending-list section">
+        <h3>Pending Invitations (Request Sent)</h3>
+        <?php if (!empty($pending_members)) { ?>
+            <ul>
+                <?php foreach ($pending_members as $pending) { ?>
+                    <li>
+                        <?php echo htmlspecialchars($pending['useremail']); ?> (Pending)
+                    </li>
+                <?php } ?>
+            </ul>
+        <?php } else { ?>
+            <p>No pending invitations.</p>
         <?php } ?>
     </div>
 
     <!-- Add Member Form -->
-    <div class="add-member-form">
-        <h3>Add Member</h3>
+    <div class="add-member-form section">
+        <h3>Send Invitation</h3>
         <form action="send_invitation.php" method="POST">
             <input type="hidden" name="projectid" value="<?php echo $projectId; ?>">
             <label for="email">Member Email:</label>
             <select name="useremail" id="useremail" required>
                 <option value="" disabled selected>Select User</option>
-                <?php if (!empty($users)) { ?>
-                    <?php foreach ($users as $user) { ?>
-                        <option value="<?php echo htmlspecialchars($user['useremail']); ?>"><?php echo htmlspecialchars($user['useremail']); ?></option>
+                <?php if (!empty($available_users)) { ?>
+                    <?php foreach ($available_users as $user) { ?>
+                        <option value="<?php echo htmlspecialchars($user['useremail']); ?>">
+                            <?php echo htmlspecialchars($user['useremail']); ?>
+                        </option>
                     <?php } ?>
                 <?php } else { ?>
-                    <option value="" disabled selected>No users available</option>
+                    <option value="" disabled>No users available to invite</option>
                 <?php } ?>
             </select>
-            <button type="submit">Add</button>
+            <button type="submit">Send Invite</button>
         </form>
     </div>
 

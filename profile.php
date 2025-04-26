@@ -14,6 +14,7 @@ $userid = $_SESSION['userid'];
 $sqlTotalTasks = "SELECT COUNT(*) as total FROM tasks WHERE userid = ?";
 $sqlPendingTasks = "SELECT COUNT(*) as pending FROM tasks WHERE userid = ? AND taskstatus = 'Pending'";
 $sqlCompletedTasks = "SELECT COUNT(*) as completed FROM tasks WHERE userid = ? AND taskstatus = 'Completed'";
+$sqlOverdueTasks = "SELECT COUNT(*) as overdue FROM tasks WHERE userid = ? AND taskstatus = 'Overdue'";
 
 $stmtTotal = $conn->prepare($sqlTotalTasks);
 $stmtTotal->bind_param("i", $userid);
@@ -33,9 +34,16 @@ $stmtCompleted->execute();
 $resultCompleted = $stmtCompleted->get_result();
 $completedTasks = $resultCompleted->fetch_assoc()['completed'] ?? 0;
 
+$stmtOverdue = $conn->prepare($sqlOverdueTasks);
+$stmtOverdue->bind_param("i", $userid);
+$stmtOverdue->execute();
+$resultOverdue = $stmtOverdue->get_result();
+$overdueTasks = $resultOverdue->fetch_assoc()['overdue'] ?? 0;
+
 $stmtTotal->close();
 $stmtPending->close();
 $stmtCompleted->close();
+$stmtOverdue->close();
 $conn->close();
 ?>
 
@@ -43,120 +51,174 @@ $conn->close();
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <link rel="stylesheet" href="css/profile.css">
-    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+
+  <link rel="stylesheet" href="css/profile.css">
+  <link rel="stylesheet" href="css/dash.css">
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
 
 <body id="body-pd">
 
-    <!-- Navbar -->
-    <div class="l-navbar" id="navbar">
-        <nav class="nav">
-            <div>
-                <div class="nav__brand">
-                    <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                    <span class="nav__logo" style="display: flex; align-items: center;">
-                        ToDoze
-                        <a href="invitation.php"> <!-- Added a link to redirect to the invitations page -->
-                            <ion-icon name="notifications-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                        </a>
-                    </span>
-                </div>
-                <div class="nav__list">
-                    <a href="dash.php" class="nav__link">
-                        <ion-icon name="home-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Home</span>
-                    </a>
-                    <a href="task.php" class="nav__link">
-                        <ion-icon name="add-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Task</span>
-                    </a>
-                    <a href="project.php" class="nav__link">
-                        <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Project</span>
-                    </a>
-                    <a href="review.php" class="nav__link">
-                        <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Review</span>
-                    </a>
-                    <a href="profile.php" class="nav__link active">
-                        <ion-icon name="people-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Profile</span>
-                    </a>
-                </div>
-            </div>
-            <a href="logout.php" class="nav__link logout">
-                <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-                <span class="nav__name">Log Out</span>
-            </a>
-        </nav>
-    </div>
+<!-- Navbar -->
+<div class="l-navbar" id="navbar">
+<nav class="nav">
+<div>
+<div class="nav__brand">
+<ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
+<span class="nav__logo" style="display: flex; align-items: center;">
+    ToDoze
+    <a href="invitation.php">
+        <ion-icon name="notifications-outline"></ion-icon>
+    </a>
+</span>
+</div>
 
-    <!-- Profile Section -->
-    <div class="box">
-        <h2>Profile</h2>
-        <div class="profile-content">
-            <div class="profile-image">
-                <img src="img/userprofile.jpeg" alt="User Image" class="user-img">
-            </div>
-            <div class="profile-info">
-                <h2 class="user-name"><?php echo $_SESSION['username'] ?? "User"; ?></h2>
-                <p class="user-email"><?php echo $_SESSION['useremail'] ?? "user@example.com"; ?></p>
-            </div>
-        </div>
-    </div>
+<div class="nav__list">
+    <a href="dash.php" class="nav__link">
+        <ion-icon name="home-outline" class="nav__icon"></ion-icon>
+        <span class="nav__name">Home</span>
+    </a>
+    <a href="task.php" class="nav__link">
+        <ion-icon name="add-outline" class="nav__icon"></ion-icon>
+        <span class="nav__name">Task</span>
+    </a>
+    <a href="project.php" class="nav__link">
+        <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
+        <span class="nav__name">Project</span>
+    </a>
+    <a href="review.php" class="nav__link">
+        <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
+        <span class="nav__name">Review</span>
+    </a>
+    <a href="profile.php" class="nav__link active">
+        <ion-icon name="people-outline" class="nav__icon"></ion-icon>
+        <span class="nav__name">Profile</span>
+    </a>
+</div>
 
-    <!-- Task Summary Section -->
-    <div class="box task-summary">
-        <div>
-            <h3>Total Tasks</h3>
-            <p id="totalTasks"><?php echo $totalTasks; ?></p>
-        </div>
-        <div>
-            <h3>Pending Tasks</h3>
-            <p id="pendingTasks"><?php echo $pendingTasks; ?></p>
-        </div>
-        <div>
-            <h3>Completed Tasks</h3>
-            <p id="completedTasks"><?php echo $completedTasks; ?></p>
-        </div>
-    </div>
+</div>
+<a href="logout.php" class="nav__link logout">
+    <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+    <span class="nav__name">Log Out</span>
+</a>
+</nav>
+</div>
 
-    <!-- Progress Bar -->
-    <div class="box">
-        <h2>Progress</h2>
-        <div class="progress-bar">
-            <div class="progress-bar-fill" id="progressBar"
-                style="width: <?php echo $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0; ?>%;"></div>
-        </div>
+<!-- Profile Section -->
+<div class="box">
+  <h4>Profile</h4>
+  <div class="profile-content">
+    <div class="profile-image">
+      <img src="img/userprofile.jpeg" alt="User Image" class="user-img">
     </div>
-
-    <!-- Task Graph Section -->
-    <div class="box">
-        <h2>Overview</h2>
-        <canvas id="taskGraph"></canvas>
+    <div class="profile-info">
+      <h2 class="user-name"><?php echo htmlspecialchars($_SESSION['username']); ?></h2>
+      <p class="user-email"><?php echo htmlspecialchars($_SESSION['useremail']); ?></p>
     </div>
+  </div>
+</div>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Task overview chart
-        const ctx = document.getElementById('taskGraph').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Pending', 'Completed'],
-                datasets: [{
-                    data: [<?php echo $pendingTasks; ?>, <?php echo $completedTasks; ?>],
-                    backgroundColor: ['#f39c12', '#2ecc71']
-                }]
+<!-- Task Summary Section -->
+<div class="box task-summary">
+  <div>
+    <h3>Total Tasks</h3>
+    <p id="totalTasks"><?php echo $totalTasks; ?></p>
+  </div>
+  <div>
+    <h3>Pending Tasks</h3>
+    <p id="pendingTasks"><?php echo $pendingTasks; ?></p>
+  </div>
+  <div>
+    <h3>Completed Tasks</h3>
+    <p id="completedTasks"><?php echo $completedTasks; ?></p>
+  </div>
+  <div>
+    <h3>Overdue Tasks</h3>
+    <p id="overdueTasks"><?php echo $overdueTasks; ?></p>
+  </div>
+</div>
+
+<!-- Progress Bar -->
+<div class="box">
+  <h2>Progress</h2>
+  <div class="progress-bar">
+    <div class="progress-bar-fill" id="progressBar"
+      style="width: <?php echo $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0; ?>%;"></div>
+  </div>
+</div>
+
+<!-- Task Graph Section -->
+<div class="box">
+  <h2>Overview</h2>
+  <div style="width: 30%; height: 200px; margin: 0 auto;">
+    <canvas id="taskGraph"></canvas>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('taskGraph').getContext('2d');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Pending', 'Completed', 'Overdue'],
+        datasets: [{
+            label: 'Tasks',
+            data: [<?php echo $pendingTasks; ?>, <?php echo $completedTasks; ?>, <?php echo $overdueTasks; ?>],
+            backgroundColor: [
+                '#f1c40f', // Yellow for Pending
+                '#2ecc71', // Green for Completed
+                '#e74c3c'  // Red for Overdue
+            ],
+            borderRadius: 8, // Slightly rounded bars
+            barThickness: 30, // Slim bars
+            maxBarThickness: 40
+        }]
+    },
+    options: {
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                backgroundColor: '#333',
+                titleColor: '#fff',
+                bodyColor: '#fff'
             }
-        });
-    </script>
-</body>
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                },
+                grid: {
+                    borderDash: [5, 5]
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                }
+            }
+        },
+        responsive: true,
+        maintainAspectRatio: false, // Important to control height/width
+        animation: {
+            duration: 1200,
+            easing: 'easeOutCubic'
+        }
+    }
+});
+</script>
 
+
+
+</body>
 </html>
