@@ -1,4 +1,4 @@
-<?php
+<st?php
 session_start();
 date_default_timezone_set('Asia/Kathmandu'); 
 include 'config/database.php';
@@ -73,7 +73,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <link rel="stylesheet" href="css/dash.css">
 <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 18px;
+    font-size: 14px;
+    color: white;
+    background-color: #007BFF;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
 
+.back-link:hover {
+    background-color: #0056b3;
+}
+
+h2 {
+    text-align: center;
+}
+</style>
 </head>
 
 <body>
@@ -112,7 +132,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit">Update Task</button>
       </form>
       <br>
-      <a href="dash.php">Back to Task List</a>
+      <a href="dash.php" class="back-link">← Back to Task List</a>
+
     </div>
   </div>
 </body>

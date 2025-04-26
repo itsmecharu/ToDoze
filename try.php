@@ -1,348 +1,297 @@
+<?php
+session_start();
+date_default_timezone_set('Asia/Kathmandu');
+include 'config/database.php';
+
+if (!isset($_SESSION['userid'])) {
+    header("Location: signin.php");
+    exit();
+}
+$userid = $_SESSION['userid'];
+
+// ✅ Fetch username
+$sqlUser = "SELECT username FROM users WHERE userid = ?";
+$stmtUser = mysqli_prepare($conn, $sqlUser);
+mysqli_stmt_bind_param($stmtUser, "i", $userid);
+mysqli_stmt_execute($stmtUser);
+$resultUser = mysqli_stmt_get_result($stmtUser);
+$userRow = mysqli_fetch_assoc($resultUser);
+$username = $userRow['username'];
+
+// Retrieve all active tasks for the user
+$sql = "SELECT * FROM tasks WHERE userid = ? AND taskstatus != 'completed' AND is_deleted = 0 AND projectid IS NULL";
+$stmt = mysqli_prepare($conn, $sql);
+if ($stmt) {
+    mysqli_stmt_bind_param($stmt, "i", $userid);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+} else {
+    echo "Error preparing statement: " . mysqli_error($conn);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toggle Password Visibility with Image</title>
-    <style>
-        /* Reset some default styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="css/dash.css">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        /* Body styling */
+    <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
+            padding: 0;
+            background-color: #fdfdfd;
         }
 
-        /* Form container */
-        .form-wrapper {
-            background-color: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
+        .container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 20px;
         }
 
-        /* Input field styling */
-        input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            font-size: 1em;
+        /* ✅ Top bar with filter and user info */
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
         }
 
-        /* Password visibility icon styling */
-        .password-wrapper {
-            position: relative;
+        .user-info {
+            color: #444;
+            font-weight: bold;
         }
 
-        .password-wrapper img {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            width: 20px;  /* Adjust image size if necessary */
+        .filter-section {
+            display: flex;
+            gap: 5px;
         }
 
-        /* Submit button styling */
-        button[type="submit"] {
-            width: 100%;
-            padding: 12px;
-            background-color: #4CAF50;
-            color: white;
+        .filter-btn {
+            padding: 5px 12px;
+            font-size: 12px;
             border: none;
-            border-radius: 5px;
-            font-size: 1.1em;
+            border-radius: 4px;
+            background-color: #ddd;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2em;
+            color: #333;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .task-box {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-left: 5px solid #4CAF50;
+            border-radius: 10px;
+            padding: 15px;
+            height: 230px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .task-box:hover {
+            transform: translateY(-3px);
+        }
+
+        .task-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 8px;
+            color: #007BFF;
+        }
+
+        .task-overdue .task-title {
+            color: red;
+        }
+
+        .task-description,
+        .task-meta {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .complete-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #007BFF;
+            border-radius: 4px;
+            background-color: white;
             cursor: pointer;
         }
 
-        button[type="submit"]:hover {
-            background-color: #45a049;
+        .task-actions {
+            margin-top: 10px;
+        }
+
+        .task-actions a {
+            margin-right: 10px;
+            font-size: 14px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .task-actions a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
-<body>
 
-    <div class="form-wrapper">
-        <h3>Sign In</h3>
-        <form method="POST" action="#">
-            <input type="password" name="userpassword" id="password" placeholder="Enter your password" required>
-            <div class="password-wrapper">
-                <!-- Initial hide image -->
-                <img src="img/hide.png" id="toggle-icon" alt="Hide Icon" onclick="togglePassword()">
+<body id="body-pd">
+
+    <!-- Navbar -->
+    <div class="l-navbar" id="navbar">
+        <nav class="nav">
+            <div>
+                <div class="nav__brand">
+                    <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
+                    <span class="nav__logo" style="display: flex; align-items: center;">
+                        ToDoze
+                        <a href="invitation.php">
+                            <ion-icon name="notifications-outline" class="nav__toggle"></ion-icon>
+                        </a>
+                    </span>
+                </div>
+
+                <div class="nav__list">
+                    <a href="dash.php" class="nav__link active">
+                        <ion-icon name="home-outline" class="nav__icon"></ion-icon>
+                        <span class="nav__name">Home</span>
+                    </a>
+                    <a href="task.php" class="nav__link">
+                        <ion-icon name="add-outline" class="nav__icon"></ion-icon>
+                        <span class="nav__name">Task</span>
+                    </a>
+                    <a href="project.php" class="nav__link">
+                        <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
+                        <span class="nav__name">Project</span>
+                    </a>
+                    <a href="review.php" class="nav__link">
+                        <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
+                        <span class="nav__name">Review</span>
+                    </a>
+                    <a href="profile.php" class="nav__link">
+                        <ion-icon name="people-outline" class="nav__icon"></ion-icon>
+                        <span class="nav__name">Profile</span>
+                    </a>
+                </div>
             </div>
-            <button type="submit">Sign In</button>
-        </form>
+            <a href="logout.php" class="nav__link logout">
+                <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+                <span class="nav__name">Log Out</span>
+            </a>
+        </nav>
     </div>
 
-    <!-- JavaScript to toggle password visibility -->
-    <script>
-        function togglePassword() {
-    var passwordField = document.getElementById('password');
-    var icon = document.getElementById('toggle-icon');  // Get the image element
+    <div class="container">
+        <!-- ✅ Top Bar with User Info + Filter Buttons -->
+        <div class="top-bar">
+            <div class="user-info">
+                Logged in as: <strong><?php echo htmlspecialchars($userid); ?> - <?php echo htmlspecialchars($username); ?></strong>
+            </div>
+            <div class="filter-section">
+                <button class="filter-btn active">All</button>
+                <button class="filter-btn">Completed</button>
+            </div>
+        </div>
 
-    // Check if the password is currently hidden or visible
-    if (passwordField.type === "password") {
-        passwordField.type = "text";  // Show password
-        icon.src = "img/show.png";  // Change icon to show image
-    } else {
-        passwordField.type = "password";  // Hide password
-        icon.src = "img/hide.png";  // Change icon to hide image
-    }
-}
+        <h1>Task List</h1>
 
-    </script>
+        <!-- Task Grid -->
+        <div class="task-grid">
+            <?php
+            if ($result && mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $taskDateTime = strtotime($row['taskdate'] . ' ' . $row['tasktime']);
+                    $currentDateTime = time();
+                    $isOverdue = $taskDateTime < $currentDateTime;
 
-</body>
-</html>
+                    echo "<div class='task-box" . ($isOverdue ? " task-overdue" : "") . "'>";
+                    echo "<div class='task-title'>" . htmlspecialchars($row['taskname']) . "</div>";
+                    echo "<div class='task-description'>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "") . "</div>";
 
-<!--  -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Task Form</title>
-    <!-- Add Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* Hide the form container by default */
-        .container {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.7); /* Start smaller for pop effect */
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            border-radius: 10px;
-            opacity: 0; /* Start invisible */
-            transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
-            width: 500px; /* Smaller container width */
-        }
+                    echo "<div class='task-meta'>";
+                    echo (!empty($row['taskdate']) ? htmlspecialchars(date('Y-m-d', strtotime($row['taskdate']))) : "") . "<br>";
+                    echo (!empty($row['tasktime']) ? htmlspecialchars(date('H:i', strtotime($row['tasktime']))) : "") . "<br>";
+                    echo "Reminder: " . (isset($row['reminder_percentage']) ? htmlspecialchars($row['reminder_percentage']) . "%" : "Not set") . "<br>";
+                    if ($isOverdue) {
+                        echo "<span style='color: red; font-weight: bold;'>Overdue Task</span><br>";
+                    }
+                    echo "</div>";
 
-        /* Show the form container with pop effect */
-        .container.active {
-            display: block;
-            opacity: 1; /* Fully visible */
-            transform: translate(-50%, -50%) scale(1); /* Pop to full size */
-        }
+                    echo "<form action='task_completion.php' method='POST'>";
+                    echo "<input type='hidden' name='taskid' value='" . $row['taskid'] . "'>";
+                    echo "<button type='submit' name='complete-box' class='complete-box' title='Mark as completed'></button>";
+                    echo "</form>";
 
-        /* Style the form box */
-        .box {
-            width: 100%; /* Take full width of the container */
-            text-align: center;
-        }
+                    echo "<div class='task-actions'>";
+                    echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a>";
+                    echo "<a href='#' class='delete-task' data-taskid='" . $row['taskid'] . "'>Delete</a>";
+                    echo "</div>";
 
-        /* Style the form inputs */
-        .add-task-form input,
-        .add-task-form select,
-        .add-task-form button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        /* Style the submit button */
-        .add-task-form button {
-            background-color: #45a049;
-            color: white;
-            border: none;
-            cursor: pointer; 
-        }
-
-        .add-task-form button:hover {
-            background-color:rgb(106, 223, 112);
-        }
-
-        /* Overlay background when form is open */
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            transition: opacity 0.3s ease; /* Smooth overlay transition */
-        }
-
-        /* Show the overlay */
-        .overlay.active {
-            display: block;
-            opacity: 1; /* Fully visible */
-        }
-
-        /* Style the "Add Task" button */
-        #addTaskButton {
-            position: fixed; /* Fixed position */
-            bottom: 20px; /* Distance from the bottom */
-            right: 20px; /* Distance from the right */
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            z-index: 1001; /* Ensure it's above other elements */
-        }
-
-        #addTaskButton:hover {
-            background-color: #0056b3;
-        }
-
-        /* Style for date, time, and reminder buttons */
-        .input-button {
-            width: 100%;
-            height: 60%;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #f1f1f1;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: left;
-        }
-
-        .input-button:hover {
-            background-color: #ddd;
-        }
-
-        /* Hide the actual input fields */
-        .hidden-input {
-            display: none;
-        }
-
-        /* Add Task icon styling */
-        .add-task-icon {
-            margin-right: 8px; /* Space between icon and text */
-        }
-
-        /* Flexbox for date and time buttons */
-        .date-time-container {
-            display: flex;
-            gap: 10px; /* Space between date and time buttons */
-        }
-
-        .date-time-container .input-button {
-            flex: 1; /* Equal width for both buttons */
-        }
-    </style>
-</head>
-<body>
-    <!-- Button to show the form with an icon -->
-    <button id="addTaskButton">
-        <i class="fas fa-plus-circle add-task-icon"></i> Add Task
-    </button>
-
-    <!-- Form Container -->
-    <div class="container" id="formContainer">
-        <div class="box">
-            <h2>Add Task Here</h2>
-            <form class="add-task-form">
-                <!-- <label for="taskname">Task Name:</label> -->
-                <input type="text" id="taskname" name="taskname" placeholder="Add task here" required>
-
-                <!-- <label for="taskDescription">Task Description:</label> -->
-                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description..." style="height: 80px;">
-
-                <!-- Date and Time Buttons in the same line -->
-                <!-- <label>Due Date and Time:</label> -->
-                <div class="date-time-container">
-                    <button type="button" class="input-button" id="dateButton">Select Date 📅</button>
-                    <button type="button" class="input-button" id="timeButton">Select Time ⏲️</button>
-                </div>
-                <input type="date" id="taskdate" name="taskdate" class="hidden-input">
-                <input type="time" id="tasktime" name="tasktime" class="hidden-input">
-
-                <!-- Reminder Button and Dropdown -->
-                <!-- <label>Set Reminder:</label> -->
-                <button type="button" class="input-button" id="reminderButton">Set Reminder 🔔</button>
-                <select id="reminder" name="reminder_percentage" class="hidden-input">
-                    <option value="" disabled selected>Set Reminder Here </option>
-                    <option value="50">50% (Halfway to Due Date)</option>
-                    <option value="75">75% (Closer to Due Date)</option>
-                    <option value="90">90% (Near Due Date)</option>
-                    <option value="100">100% (On Time)</option>
-                </select>
-
-                <button type="submit">Done</button>
-            </form>
+                    echo "</div>";
+                }
+            } else {
+                echo "<p>No tasks added yet.</p>";
+            }
+            ?>
         </div>
     </div>
 
-    <!-- Overlay -->
-    <div class="overlay" id="overlay"></div>
-
     <script>
-        // Get references to the button, form container, and overlay
-        const addTaskButton = document.getElementById('addTaskButton');
-        const formContainer = document.getElementById('formContainer');
-        const overlay = document.getElementById('overlay');
-
-        // Show the form container with pop effect
-        addTaskButton.addEventListener('click', () => {
-            formContainer.classList.add('active');
-            overlay.classList.add('active');
-        });
-
-        // Hide the form container when clicking outside of it (on the overlay)
-        overlay.addEventListener('click', () => {
-            formContainer.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-
-        // Handle date button click
-        const dateButton = document.getElementById('dateButton');
-        const dateInput = document.getElementById('taskdate');
-
-        dateButton.addEventListener('click', () => {
-            dateInput.click(); // Trigger the date input
-        });
-
-        // Handle time button click
-        const timeButton = document.getElementById('timeButton');
-        const timeInput = document.getElementById('tasktime');
-
-        timeButton.addEventListener('click', () => {
-            timeInput.click(); // Trigger the time input
-        });
-
-        // Handle reminder button click
-        const reminderButton = document.getElementById('reminderButton');
-        const reminderSelect = document.getElementById('reminder');
-
-        reminderButton.addEventListener('click', () => {
-            reminderSelect.style.display = 'block'; // Show the dropdown
-            reminderSelect.focus(); // Focus on the dropdown
-        });
-
-        // Hide the dropdown when clicking outside
-        document.addEventListener('click', (event) => {
-            if (event.target !== reminderButton && event.target !== reminderSelect) {
-                reminderSelect.style.display = 'none';
-            }
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-task').forEach(function (button) {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    var taskid = this.getAttribute('data-taskid');
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "You won't be able to revert this!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, delete it!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = 'delete_task.php?taskid=' + taskid;
+                        }
+                    });
+                });
+            });
         });
     </script>
+
+    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+    <script src="js/dash.js"></script>
 </body>
+
 </html>

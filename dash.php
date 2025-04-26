@@ -55,6 +55,116 @@ if ($stmt) {
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Dashboard</title>
+   <!-- CSS -->
+   <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fdfdfd;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 20px;
+        }
+
+        .filter-section {
+            display: flex;
+            justify-content: flex-start;
+            gap: 5px;
+            margin-bottom: 30px;
+        }
+
+        .filter-btn {
+            padding: 10px 10px;
+            width:250px;
+            border: none;
+            background-color: #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2em;
+            color: #333;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .task-box {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-left: 5px solid #4CAF50;
+            border-radius: 10px;
+            padding: 15px;
+            height: 230px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .task-box:hover {
+            transform: translateY(-3px);
+        }
+
+        .task-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 8px;
+            color: #007BFF;
+        }
+
+        .task-overdue .task-title {
+            color: red;
+        }
+
+        .task-description,
+        .task-meta {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .complete-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #007BFF;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .task-actions {
+            margin-top: 10px;
+        }
+
+        .task-actions a {
+            margin-right: 10px;
+            font-size: 14px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .task-actions a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body id="body-pd">
@@ -105,57 +215,63 @@ if ($stmt) {
     </div>
     </div>
 
-    <!-- Task List Section -->
     <div class="container">
-        <!-- <div class="box"> -->
-        <h1 style="margin:10%; ;">Task List</h1>
-        <?php
-        if ($result && mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $taskDateTime = strtotime($row['taskdate'] . ' ' . $row['tasktime']);
-                $currentDateTime = time();
-                $isOverdue = $taskDateTime < $currentDateTime;
+        <!-- Filter Buttons -->
+        <div class="filter-section">
+            <button class="filter-btn active">All Tasks</button>
+            <button class="filter-btn">Completed Tasks</button>
+        </div>
 
-                echo "<div class='task' id='task-" . $row['taskid'] . "'>";
-                echo "<div class='task-content'>";
+        <!-- Heading -->
+        <h1>Task List</h1>
 
+        <!-- Task Grid -->
+        <div class="task-grid">
+            <?php
+            if ($result && mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $taskDateTime = strtotime($row['taskdate'] . ' ' . $row['tasktime']);
+                    $currentDateTime = time();
+                    $isOverdue = $taskDateTime < $currentDateTime;
 
+                    echo "<div class='task-box" . ($isOverdue ? " task-overdue" : "") . "'>";
 
-                // Square box for marking the task as completed
-                echo "<form action='task_completion.php' method='POST' class='complete-form' >";
-                echo "<input type='hidden' name='taskid' value='" . $row['taskid'] . "'>";
-                echo "<button type='submit'  name='complete-box' class='complete-box' title='Tick to complete'></button>";
-                echo "</form>";
+                    // Task name with color
+                    echo "<div class='task-title'>" . htmlspecialchars($row['taskname']) . "</div>";
 
-                // Task name and details
-                echo "<div class='task-details'>";
-                // Display overdue message if the task is past due
-                if ($isOverdue) {
-                    echo "<p style='color: red; font-weight: bold;'>Overdue Task</p>";
+                    // Task description
+                    echo "<div class='task-description'>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "") . "</div>";
+
+                    // Task meta info
+                    echo "<div class='task-meta'>";
+                    echo (!empty($row['taskdate']) ? htmlspecialchars(date('Y-m-d', strtotime($row['taskdate']))) : "") . "<br>";
+                    echo (!empty($row['tasktime']) ? htmlspecialchars(date('H:i', strtotime($row['tasktime']))) : "") . "<br>";
+                    echo "Reminder: " . (isset($row['reminder_percentage']) ? htmlspecialchars($row['reminder_percentage']) . "%" : "Not set") . "<br>";
+                    if ($isOverdue) {
+                        echo "<span style='color: red; font-weight: bold;'>Overdue Task</span><br>";
+                    }
+                    echo "</div>";
+
+                    // Complete form
+                    echo "<form action='task_completion.php' method='POST'>";
+                    echo "<input type='hidden' name='taskid' value='" . $row['taskid'] . "'>";
+                    echo "<button type='submit' name='complete-box' class='complete-box' title='Mark as completed'></button>";
+                    echo "</form>";
+
+                    // Edit/Delete links
+                    echo "<div class='task-actions'>";
+                    echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a>";
+                    echo "<a href='#' class='delete-task' data-taskid='" . $row['taskid'] . "'>Delete</a>";
+                    echo "</div>";
+
+                    echo "</div>";
                 }
-
-                // Change task name color to red if overdue
-                echo "<h4 style='" . ($isOverdue ? "color: red;" : "") . "'>" . htmlspecialchars($row['taskname']) . "</h4>";
-
-                echo "<p>" . (!empty($row['taskdescription']) ? htmlspecialchars($row['taskdescription']) : "") . "</p>";
-                echo "<p>" . (!empty($row['taskdate']) ? htmlspecialchars(date('Y-m-d', strtotime($row['taskdate']))) : "") . "</p>";
-                echo "<p>" . (!empty($row['tasktime']) ? htmlspecialchars(date('H:i', strtotime($row['tasktime']))) : "") . "</p>";
-
-                echo "<small>Reminder: " . (isset($row['reminder_percentage']) && $row['reminder_percentage'] !== null ? htmlspecialchars($row['reminder_percentage']) . "%" : "Not set") . "</small><br>";
-                echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a>  ";
-                echo "<a href='#' class='delete-task' data-taskid='" . $row['taskid'] . "'>Delete</a>";
-                echo "</div>"; // Close task-details
-        
-                echo "</div>"; // Close task-content
-                echo "</div>"; // Close task
+            } else {
+                echo "<p>No tasks added yet.</p>";
             }
-
-        } else {
-            echo "<p>No tasks added yet.</p>";
-        }
-        ?>
+            ?>
+        </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Ensure that all delete links with the class 'delete-task' are properly selected
