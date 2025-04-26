@@ -55,6 +55,121 @@ if ($stmt) {
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Dashboard</title>
+    <style>
+        /* Initially align container to the left */
+.container {
+    margin-left: 150px; /* This matches the navbar width */
+    transition: all 0.3s ease-in-out;
+}
+
+/* When navbar is collapsed */
+body.nav-collapsed .container {
+    margin-left: 120px;
+    margin-right: 0px;
+    max-width: 800px; /* Optional: limit the width */
+    text-align: center;
+}
+.container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 20px;
+        }
+
+        .filter-section {
+            display: flex;
+            justify-content: flex-start;
+            gap: 5px;
+            margin-bottom: 30px;
+        }
+
+        .filter-btn {
+            padding: 10px 10px;
+            width:250px;
+            border: none;
+            background-color: #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2em;
+            color: #333;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .task-box {
+            background-color: #468189;
+            border: 1px solid #e0e0e0;
+            border-left: 5px solid #4CAF50;
+            border-radius: 10px;
+            padding: 15px;
+            height: 230px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .task-box:hover {
+            transform: translateY(-3px);
+        }
+
+        .task-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 8px;
+            color: #007BFF;
+        }
+
+        .task-overdue .task-title {
+            color: red;
+        }
+
+        .task-description,
+        .task-meta {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .complete-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #007BFF;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .task-actions {
+            margin-top: 10px;
+        }
+
+        .task-actions a {
+            margin-right: 10px;
+            font-size: 14px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .task-actions a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body id="body-pd">
@@ -99,16 +214,22 @@ if ($stmt) {
     </div>
     <a href="logout.php" class="nav__link logout">
         <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-        <span class="nav__name">Log Out</span>
+        <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
     </a>
     </nav>
     </div>
     </div>
 
-    <!-- Task List Section -->
     <div class="container">
+        <!-- Filter Buttons -->
+        <div class="filter-section">
+            <button class="filter-btn active">All Tasks</button>
+            <button class="filter-btn">Completed Tasks</button>
+        </div>
+
+    
         <!-- <div class="box"> -->
-        <h1 style="margin:10%; ;">Task List</h1>
+        <h1 >Task List</h1>
         <?php
         if ($result && mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
@@ -151,7 +272,7 @@ if ($stmt) {
             }
 
         } else {
-            echo "<p>No tasks added yet.</p>";
+            echo "<h3><p>No tasks yet. Add your first one! 🚀</p></h3>";
         }
         ?>
     </div>

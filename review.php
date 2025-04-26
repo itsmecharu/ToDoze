@@ -45,7 +45,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             border: 2px solid red;
             padding: 5px;
             border-radius: 5px;
+        
         }
+       
+        /* Initially align container to the left */
+.container {
+    margin-left: 150px; /* This matches the navbar width */
+    transition: all 0.3s ease-in-out;
+}
+
+/* When navbar is collapsed */
+body.nav-collapsed .container {
+    margin-left: 120px;
+    margin-right: 0px;
+    max-width: 800px; /* Optional: limit the width */
+    text-align: center;
+}
+   
     </style>
 </head>
 
@@ -88,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <a href="logout.php" class="nav__link logout">
                 <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-                <span class="nav__name">Log Out</span>
+                <span class="nav__name"style="color: red;">Log Out</span>
             </a>
         </nav>
     </div>

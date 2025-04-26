@@ -6,10 +6,11 @@
   --nav-width: 92px;
 
   /*===== Colores =====*/
-  --first-color: #4ff54c;
-  --bg-color: #ebedf0;
-  --sub-color: #1f03f1;
-  --white-color: #060606;
+  --first-color: #031926; /* Pastel Yellow */
+  --bg-color: #468189; /* Pure White */
+  --sub-color: #A0C4FF; /* Soft Pastel Blue */
+  --white-color: #e6d8b6; /* White */
+  --text-color: #333333;
 
   /*===== Fuente y tipografia =====*/
   --body-font: 'Poppins', Tahoma;
@@ -32,6 +33,7 @@ body {
   font-family: var(--body-font);
   font-size: var(--normal-font-size);
   transition: .5s;
+  background-color: #e1fffa;
 }
 
 h1 {
@@ -187,10 +189,11 @@ h1 {
 }
 
 .box {
-  background: #fff;
+  background: #f0f0f1;
   padding:25px;
   border-radius: 15px;
   /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); */
+  margin-left: 50px;
   margin-bottom: 20px;
   /* transition: transform 0.3s ease, box-shadow 0.3s ease; */
 }

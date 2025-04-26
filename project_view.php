@@ -97,7 +97,7 @@ mysqli_close($conn);
 
             <a href="logout.php" class="nav__link logout">
                 <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-                <span class="nav__name">Log Out</span>
+                <span class="nav__name" style="color: red;">Log Out</span>
             </a>
         </nav>
     </div>

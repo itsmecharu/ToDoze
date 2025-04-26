@@ -60,54 +60,70 @@ $conn->close();
   <title>Profile</title>
   <link rel="stylesheet" href="css/dash.css">
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+  <style>
+        /* Initially align container to the left */
+.container {
+    margin-left: 150px; /* This matches the navbar width */
+    transition: all 0.3s ease-in-out;
+}
+
+/* When navbar is collapsed */
+body.nav-collapsed .container {
+    margin-left: 120px;
+    margin-right: 0px;
+    max-width: 800px; /* Optional: limit the width */
+    text-align: center;
+}
+    </style>
 </head>
 
 <body id="body-pd">
 
-<!-- Navbar -->
-<div class="l-navbar" id="navbar">
-<nav class="nav">
-<div>
-<div class="nav__brand">
-<ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-<span class="nav__logo" style="display: flex; align-items: center;">
-    ToDoze
-    <a href="invitation.php">
-        <ion-icon name="notifications-outline"></ion-icon>
-    </a>
-</span>
+    <!-- Navbar -->
+    <div class="l-navbar" id="navbar">
+    <nav class="nav">
+    <div>
+    <div class="nav__brand">
+    <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
+    <span class="nav__logo" style="display: flex; align-items: center;">
+        ToDoze
+        <a href="invitation.php"> <!-- Added a link to redirect to the invitations page -->
+            <ion-icon name="notifications-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
+        </a>
+    </span>
 </div>
 
-<div class="nav__list">
-    <a href="dash.php" class="nav__link">
-        <ion-icon name="home-outline" class="nav__icon"></ion-icon>
-        <span class="nav__name">Home</span>
+            <div class="nav__list">
+                <a href="dash.php" class="nav__link ">
+                    <ion-icon name="home-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Home</span>
+                </a>
+                <a href="task.php" class="nav__link">
+                    <ion-icon name="add-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Task</span>
+                </a>
+                <a href="project.php" class="nav__link">
+                    <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Project</span>
+                </a>
+                <a href="review.php" class="nav__link">
+                    <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Review</span>
+                </a>
+                <a href="profile.php" class="nav__link active">
+                    <ion-icon name="people-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Profile</span>
+                </a>
+            </div>
+        
+    </div>
+    <a href="logout.php" class="nav__link logout">
+        <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+        <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
     </a>
-    <a href="task.php" class="nav__link">
-        <ion-icon name="add-outline" class="nav__icon"></ion-icon>
-        <span class="nav__name">Task</span>
-    </a>
-    <a href="project.php" class="nav__link">
-        <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-        <span class="nav__name">Project</span>
-    </a>
-    <a href="review.php" class="nav__link">
-        <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
-        <span class="nav__name">Review</span>
-    </a>
-    <a href="profile.php" class="nav__link active">
-        <ion-icon name="people-outline" class="nav__icon"></ion-icon>
-        <span class="nav__name">Profile</span>
-    </a>
-</div>
-
-</div>
-<a href="logout.php" class="nav__link logout">
-    <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-    <span class="nav__name">Log Out</span>
-</a>
-</nav>
-</div>
+    </nav>
+    </div>
+    </div>
 
 <!-- Profile Section -->
 <div class="container">
@@ -212,5 +228,12 @@ new Chart(ctx, {
 });
 </script>
 
+  
+    <!-- ===== IONICONS ===== -->
+    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+
+    <!-- ===== MAIN JS ===== -->
+    <script src="js/dash.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
