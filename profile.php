@@ -74,6 +74,96 @@ body.nav-collapsed .container {
     max-width: 800px; /* Optional: limit the width */
     text-align: center;
 }
+body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6fa;
+      margin: 0;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* Top Container */
+    .top-container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .top-container h2 {
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .top-container div {
+      font-size: 1.1rem;
+      color: #7f8c8d;
+    }
+
+    /* Bottom Containers Wrapper */
+    .bottom-container-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    /* Bottom Containers */
+    .bottom-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      flex: 0 0 45%;
+      min-width: 320px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .bottom-container.graph-container {
+      flex: 0 0 100%;
+      margin-top: 20px;
+    }
+
+    .bottom-container h2 {
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    /* Progress Bar only for Progress section */
+    .progress-bar {
+      background-color: #f1f1f1;
+      border-radius: 12px;
+      height: 15px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      background-color: #2ecc71;
+      border-radius: 12px;
+      height: 100%;
+      transition: width 0.4s ease;
+    }
+
+    /* Graph Canvas */
+    .task-graph {
+      width: 60%;
+      height: 300px;
+      margin: 20px auto 0 auto;
+    }
+  
     </style>
 </head>
 
@@ -126,8 +216,8 @@ body.nav-collapsed .container {
     </div>
 
 <!-- Profile Section -->
-<div class="container">
-  <h4>Profile</h4>
+<div class="top-container">
+ 
   <div class="profile-content">
     <div class="profile-image">
       <img src="<?php echo isset($_SESSION['profile_pic']) && $_SESSION['profile_pic'] ? 'uploads/' . $_SESSION['profile_pic'] : 'img/userprofile.jpeg'; ?>" alt="User Image" class="user-img">
@@ -144,41 +234,40 @@ body.nav-collapsed .container {
   </div>
 
   <!-- Upload Profile Picture Form -->
-  <form action="upload_profile.php" method="POST" enctype="multipart/form-data" style="margin-top: 20px;">
-    <label for="profile_pic">Upload New Photo:</label><br>
-    <input type="file" name="profile_pic" accept="image/*" required><br><br>
+  <form action="upload_profile.php" method="POST" enctype="multipart/form-data" style="margin-top: 10px;">
+    <input type="file" name="profile_pic" accept="image/*" required>
     <button type="submit" class="btn">Upload Photo</button>
   </form>
 </div>
 
 
 <!-- Task Summary Section -->
-<div class="container">
+<div class="bottom-container-wrapper">
+  <div class="bottom-container">
   <h2>Task Statistics</h2>
   <div>
     Total: <?php echo $totalTasks; ?> |
     Completed: <?php echo $completedTasks; ?> |
     Pending: <?php echo $pendingTasks; ?> |
     Overdue: <?php echo $overdueTasks; ?>
-  </div>
+  
 </div>
-
-<!-- Progress Bar -->
-<div class="container">
+</div>
+  <div class="bottom-container">
   <h2>Progress</h2>
   <div class="progress-bar">
     <div class="progress-bar-fill" id="progressBar"
       style="width: <?php echo $totalTasks > 0 ? ($completedTasks / $totalTasks) * 100 : 0; ?>%;">
-    </div>
+      <div class="progress-bar-fill" style="width: 50%;"></div>
   </div>
 </div>
-
-<!-- Task Graph Section -->
-<div class="container">
-  <h2>Overview</h2>
+</div>
+<div class="bottom-container graph-container">
+  <h2>Task Overview</h2>
   <div style="width: 30%; height: 200px; margin: 0 auto;">
     <canvas id="taskGraph"></canvas>
   </div>
+</div>
 </div>
 
 <!-- Scripts -->
