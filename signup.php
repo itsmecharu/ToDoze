@@ -129,8 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             </div> 
         <div class="form-container">
             <h1>Sign Up</h1>
-             <h5>Already a member? <a href="signin.php" class="sign-in-link switch"
-              onclick="smoothRedirect('signin.php')">Sign In</a></h5>
+             <h4>Already a member? <a href="signin.php" class="sign-in-link switch"
+              onclick="smoothRedirect('signin.php')"><b>Sign In</b></a></a></h4>
             <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) ?>">
                 <input type="text" placeholder="username" name="username" required>
                 <span class="error"><?php echo $username_err; ?></span>

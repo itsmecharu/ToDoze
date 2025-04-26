@@ -230,7 +230,7 @@ mysqli_close($conn);
 <!-- MAIN JS -->
 <script src="js/dash.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
+63
 
 </body>
 </html>

@@ -202,8 +202,7 @@ $result = mysqli_stmt_get_result($stmt);
     <!-- MAIN JS -->
     <script src="js/dash.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-
+   
 </body >
 </html >
 
