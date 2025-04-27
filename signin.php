@@ -32,19 +32,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else {
         // If not admin, check if it's a normal user
-        $stmt = mysqli_prepare($conn, "SELECT userid, userpassword FROM users WHERE useremail = ?");
+        $stmt = mysqli_prepare($conn, "SELECT userid, userpassword,username FROM users WHERE useremail = ?");
         mysqli_stmt_bind_param($stmt, "s", $useremail);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_store_result($stmt);
 
         if (mysqli_stmt_num_rows($stmt) > 0) {
             // User found
-            mysqli_stmt_bind_result($stmt, $userid, $hashed_password);
+            mysqli_stmt_bind_result($stmt, $userid, $hashed_password,$username);
             mysqli_stmt_fetch($stmt);
 
             // Verify password
             if (password_verify($userpassword, $hashed_password)) {
                 $_SESSION['userid'] = $userid;
+                $_SESSION['username'] = $username;
                 $_SESSION['useremail'] = $useremail;
                 header("Location: dash.php"); // Redirect to user dashboard
                 exit();

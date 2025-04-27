@@ -200,6 +200,14 @@ body.nav-collapsed .container {
     </div>
 
     <div class="container">
+        <!-- Filter Buttons -->
+        <div class="filter-section">
+        <button class="filter-btn active" id="all-tasks">All Tasks</button>
+        <button class="filter-btn" id="pending-tasks">Pending Tasks</button>
+        <button class="filter-btn" id="completed-tasks">Completed Tasks</button>
+        <button class="filter-btn" id="overdue-tasks">Overdue Tasks</button>
+
+        </div>
        
 
     
