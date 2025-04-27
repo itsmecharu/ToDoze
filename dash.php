@@ -20,28 +20,7 @@ if ($stmt) {
 }
 
 
-// // Display pending invitations on the user's profile
-// $sql = "SELECT p.projectid, p.projectname FROM projects p
-//         JOIN project_members pm ON p.projectid = pm.projectid
-//         WHERE pm.userid = ? AND pm.status = 'Pending'";
 
-// $stmt = mysqli_prepare($conn, $sql);
-// mysqli_stmt_bind_param($stmt, "i", $_SESSION['userid']);
-// mysqli_stmt_execute($stmt);
-// $result = mysqli_stmt_get_result($stmt);
-
-// $invitations = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-// if ($invitations) {
-//     foreach ($invitations as $invitation) {
-//         echo "You have a pending invitation to join the project: " . htmlspecialchars($invitation['projectname']);
-//         // Provide options to accept or reject
-//         echo "<a href='accept_invite.php?projectid=" . $invitation['projectid'] . "'>Accept</a>";
-//         echo "<a href='reject_invite.php?projectid=" . $invitation['projectid'] . "'>Reject</a>";
-//     }
-// } else {
-//     echo "No pending invitations.";
-// }
 
 ?>
 
@@ -221,11 +200,7 @@ body.nav-collapsed .container {
     </div>
 
     <div class="container">
-        <!-- Filter Buttons -->
-        <div class="filter-section">
-            <button class="filter-btn active">All Tasks</button>
-            <button class="filter-btn">Completed Tasks</button>
-        </div>
+       
 
     
         <!-- <div class="box"> -->
