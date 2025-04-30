@@ -3,22 +3,20 @@ session_start();
 date_default_timezone_set('Asia/Kathmandu');
 include 'config/database.php';
 
-// Check if user is logged in
 if (!isset($_SESSION['userid'])) {
-  header("Location: signin.php");
-  exit();
+    header("Location: signin.php");
+    exit();
 }
 
 $userid = $_SESSION['userid'];
 
 if (!isset($_GET['taskid'])) {
-  echo "Task ID is missing.";
-  exit();
+    echo "Task ID missing.";
+    exit();
 }
 
 $taskid = $_GET['taskid'];
 
-// Fetch task details (only if not deleted)
 $sql = "SELECT * FROM tasks WHERE taskid = ? AND userid = ? AND is_deleted = 0";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "ii", $taskid, $userid);
@@ -26,130 +24,89 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
 if (mysqli_num_rows($result) == 0) {
-  echo "Task not found.";
-  exit();
+    echo "Task not found.";
+    exit();
 }
 
 $task = mysqli_fetch_assoc($result);
+
 $taskname = $task['taskname'];
 $taskdescription = $task['taskdescription'];
+$taskdate = $task['taskdate'];
+$tasktime = $task['tasktime'];
 $reminder_percentage = $task['reminder_percentage'];
+$reminder_repeat = $task['reminder_repeat'];
 
-$taskdate = isset($task['taskdate']) ? $task['taskdate'] : '';  
-$tasktime = isset($task['tasktime']) ? $task['tasktime'] : ''; 
-
-// Handle Task Update Submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $taskname = trim($_POST['taskname']);
-    $taskdescription = isset($_POST['taskdescription']) ? trim($_POST['taskdescription']) : null;
-    $taskdate = isset($_POST['taskdate']) ? trim($_POST['taskdate']) : null;
-    $tasktime = isset($_POST['tasktime']) ? trim($_POST['tasktime']) : null;
-    $reminder_percentage = isset($_POST['reminder_percentage']) ? $_POST['reminder_percentage'] : null;
-
-    // Initialize update values with the current data
-    $update_values = [
-        'taskname' => $taskname,
-        'taskdescription' => $taskdescription,
-        'taskdate' => $taskdate,
-        'tasktime' => $tasktime,
-        'reminder_percentage' => $reminder_percentage
-    ];
-
-    // Check if any field is empty, and if so, don't update it in the database
-    $sql = "UPDATE tasks SET ";
+    $taskname_new = trim($_POST['taskname']);
+    $taskdescription_new = trim($_POST['taskdescription'] ?? '');
+    $taskdate_new = trim($_POST['taskdate'] ?? '');
+    $tasktime_new = trim($_POST['tasktime'] ?? '');
+    $reminder_percentage_new = $_POST['reminder_percentage'] ?? null;
+    $reminder_repeat_new = $_POST['reminder_repeat'] ?? 'none';
 
     $fields = [];
     $params = [];
     $types = "";
 
-    if (!empty($taskname) && $taskname !== $task['taskname']) {
+    if ($taskname_new !== $taskname && $taskname_new !== '') {
         $fields[] = "taskname = ?";
-        $params[] = $taskname;
+        $params[] = $taskname_new;
         $types .= "s";
     }
-    if (!empty($taskdescription) && $taskdescription !== $task['taskdescription']) {
+    if ($taskdescription_new !== $taskdescription) {
         $fields[] = "taskdescription = ?";
-        $params[] = $taskdescription;
+        $params[] = $taskdescription_new;
         $types .= "s";
     }
-    if (!empty($taskdate) && $taskdate !== $task['taskdate']) {
+    if ($taskdate_new !== $taskdate) {
         $fields[] = "taskdate = ?";
-        $params[] = $taskdate;
+        $params[] = $taskdate_new;
         $types .= "s";
     }
-    if (!empty($tasktime) && $tasktime !== $task['tasktime']) {
+    if ($tasktime_new !== $tasktime) {
         $fields[] = "tasktime = ?";
-        $params[] = $tasktime;
+        $params[] = $tasktime_new;
         $types .= "s";
     }
-    if (isset($reminder_percentage) && $reminder_percentage !== $task['reminder_percentage']) {
+    if ($reminder_percentage_new !== $reminder_percentage) {
         $fields[] = "reminder_percentage = ?";
-        $params[] = $reminder_percentage;
+        $params[] = $reminder_percentage_new;
         $types .= "i";
     }
+    if ($reminder_repeat_new !== $reminder_repeat) {
+        $fields[] = "reminder_repeat = ?";
+        $params[] = $reminder_repeat_new;
+        $types .= "s";
+    }
 
-    // Only execute the update if there are any fields to update
-    if (count($fields) > 0) {
-        $sql .= implode(", ", $fields) . " WHERE taskid = ? AND userid = ?";
+    if (!empty($fields)) {
         $params[] = $taskid;
         $params[] = $userid;
         $types .= "ii";
 
-        // Prepare and execute the statement
-        $stmt = mysqli_prepare($conn, $sql);
+        $sql_update = "UPDATE tasks SET " . implode(", ", $fields) . " WHERE taskid = ? AND userid = ?";
+        $stmt = mysqli_prepare($conn, $sql_update);
         mysqli_stmt_bind_param($stmt, $types, ...$params);
+
         if (mysqli_stmt_execute($stmt)) {
-            header("Location: dash.php");
+            $_SESSION['success_message'] = "Task updated successfully!";
+            header("Location: task.php");
             exit();
         } else {
-            echo "Error updating task: " . mysqli_error($conn);
+            echo "Update failed: " . mysqli_error($conn);
         }
-    } else {
-        // No fields to update
-        header("Location: dash.php");
-        exit();
     }
 }
 ?>
 
 <!DOCTYPE html>
-<head>
 <html lang="en">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Edit Task</title>
-<link rel="stylesheet" href="css/dash.css">
-<link rel="icon" type="image/x-icon" href="img/favicon.ico">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<style>
-.back-link {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 18px;
-    font-size: 14px;
-    color: white;
-    background-color: #007BFF;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
-
-.back-link:hover {
-    background-color: #0056b3;
-}
-.box {
-    width: 550px; /* adjust size as you like */
-    margin: 50px 0 0 200px; /* top, right, bottom, left */
-    transition: all 0.3s ease-in-out;
-}
-
-/* When nav is collapsed (body has nav-collapsed class) */
-body.nav-collapsed .box {
-    margin: 50px auto; /* center horizontally */
-}
-
-</style>
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Task</title>
+    <link rel="stylesheet" href="css/dash.css">
 </head>
-
 <body id="body-pd">
     <!-- Navbar -->
     <div class="l-navbar" id="navbar">
@@ -199,60 +156,52 @@ body.nav-collapsed .box {
             </a>
         </nav>
     </div>
+    <div class="container" style="margin-top: 80px;">
+        <div class="box">
+            <h2>Edit Task</h2>
+            <form class="add-task-form" method="POST" action="">
+                <input type="text" name="taskname" value="<?php echo htmlspecialchars($taskname); ?>" required>
 
-    <div class="box">
-      <h2 style="text-align: center; ">Edit Task</h2>
-      <form method="POST" action="" class="add-task-form">
-        <input type="text" name="taskname" id="taskname" placeholder="Add task here" value="<?php echo htmlspecialchars($taskname); ?>" required>
+                <input type="text" name="taskdescription" placeholder="Task Description"
+                    style="height: 80px;" value="<?php echo htmlspecialchars($taskdescription); ?>">
 
-        <input type="text" name="taskdescription" id="taskdescription" placeholder="Task Description" style="height: 80px;" value="<?php echo htmlspecialchars($taskdescription); ?>">
+                <div style="margin-bottom: 10px;">
+                    <label>Select Due Date 📅</label><br>
+                    <input type="date" name="taskdate" value="<?php echo htmlspecialchars($taskdate); ?>">
+                </div>
 
-        <div>
-            <div style="display: inline-block; vertical-align: top; margin-right: 20px;">
-                <label for="taskdate" style="display: block;">Select Due Date 📅</label>
-                <input type="date" id="taskdate" name="taskdate" value="<?php echo htmlspecialchars($taskdate); ?>" style="width: 170px;">
-            </div>
+                <div style="margin-bottom: 10px;">
+                    <label>Select Time 🕰️</label><br>
+                    <input type="time" name="tasktime" value="<?php echo htmlspecialchars($tasktime); ?>">
+                </div>
 
-            <div style="display: inline-block; vertical-align: top;">
-                <label for="tasktime" style="display: block;">Select Time 🕰️</label>
-                <input type="time" id="tasktime" name="tasktime" value="<?php echo htmlspecialchars($tasktime); ?>" style="width: 170px;">
-            </div>
+                <label for="reminder">Reminder:</label>
+                <select name="reminder_percentage" id="reminder">
+                    <option value="" <?php if ($reminder_percentage === null) echo "selected"; ?>>None</option>
+                    <option value="50" <?php if ($reminder_percentage == 50) echo "selected"; ?>>50%</option>
+                    <option value="75" <?php if ($reminder_percentage == 75) echo "selected"; ?>>75%</option>
+                    <option value="90" <?php if ($reminder_percentage == 90) echo "selected"; ?>>90%</option>
+                    <option value="100" <?php if ($reminder_percentage == 100) echo "selected"; ?>>100%</option>
+                </select>
+
+                <label for="reminder_repeat">Repeat:</label>
+                <select name="reminder_repeat" id="reminder_repeat">
+                    <option value="none" <?php if ($reminder_repeat === 'none') echo 'selected'; ?>>None</option>
+                    <option value="daily" <?php if ($reminder_repeat === 'daily') echo 'selected'; ?>>Daily</option>
+                    <option value="weekly" <?php if ($reminder_repeat === 'weekly') echo 'selected'; ?>>Weekly</option>
+                    <option value="monthly" <?php if ($reminder_repeat === 'monthly') echo 'selected'; ?>>Monthly</option>
+                </select>
+
+                <button type="submit" style="margin-top: 20px;">Update Task</button>
+            </form>
         </div>
-
-        <select id="reminder" name="reminder_percentage">
-            <option value="" disabled selected >Set Reminder Here 🔔</option>
-            <option value="50" <?php if ($reminder_percentage == 50) echo "selected"; ?>>50% (Halfway to Due Date)</option>
-            <option value="75" <?php if ($reminder_percentage == 75) echo "selected"; ?>>75% (Closer to Due Date)</option>
-            <option value="90" <?php if ($reminder_percentage == 90) echo "selected"; ?>>90% (Near Due Date)</option>
-            <option value="100" <?php if ($reminder_percentage == 100) echo "selected"; ?>>100% (On Time)</option>
-        </select>
-
-        <button type="submit">Update Task</button>
-      </form>
-      <br>
-      <a href="dash.php" class="back-link">← Back to Task List</a>
     </div>
-  </div>
-  </script>
-  <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const toggle = document.getElementById('nav-toggle');
-    const body = document.getElementById('body-pd');
+</body>
+</html>
+ <!-- IONICONS -->
+ <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
 
-    toggle.addEventListener('click', () => {
-        body.classList.toggle('nav-collapsed');
-    });
-});
-</script>
-
-
-<!-- ===== IONICONS ===== -->
-<script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
-
-<!-- ===== MAIN JS ===== -->
+<!-- MAIN JS -->
 <script src="js/dash.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-</body>
-
-</html>
+<script>

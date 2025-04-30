@@ -8,71 +8,60 @@ if (!isset($_SESSION['userid'])) {
     exit();
 }
 
-$userid = $_SESSION['userid'];
-
-// Ensure project ID and user email are provided
-$projectid = $_POST['projectid'] ?? $_GET['projectid'] ?? null;
+$inviter_id = $_SESSION['userid'];
+$project_id = $_POST['projectid'] ?? $_GET['projectid'] ?? null;
 $user_email = $_POST['useremail'] ?? null;
-$message = "";  // To hold feedback message
 
-// Validate inputs
-if (!$projectid || !$user_email) {
+$message = ""; // To hold feedback message
+
+// Check if project ID and user email are provided
+if (!$project_id || !$user_email) {
     $message = "Missing project ID or user email.";
 } else {
-    // Check if the user is the admin of the project
-    $sql = "SELECT pm.userid
-            FROM project_members pm
-            WHERE pm.projectid = ? AND pm.userid = ? AND pm.role = 'Admin'";
+    // Fetch the user ID for the provided email
+    $sql = "SELECT userid FROM users WHERE useremail = ?";
     $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "ii", $projectid, $userid);
+    mysqli_stmt_bind_param($stmt, "s", $user_email);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
 
-    // If the user is not the admin
-    if (mysqli_num_rows($result) == 0) {
-        $message = "You must be the admin of the project to send invitations.";
+    // Check if the user exists
+    if (!$user) {
+        $message = "User not found.";
     } else {
-        // Fetch the user ID for the provided email
-        $sql = "SELECT userid FROM users WHERE useremail = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "s", $user_email);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        $user = mysqli_fetch_assoc($result);
+        $invitee_id = $user['userid'];
 
-        if (!$user) {
-            $message = "User not found.";
+        // Prevent self-invitation - immediately stop the process if the inviter is the same as the invitee
+        if ($inviter_id == $invitee_id) {
+            $message = "You cannot invite yourself to the project.";
         } else {
-            $invitee_id = $user['userid'];
+            // Check if the user is already a member or has a pending invitation
+            $sql = "SELECT * FROM project_members WHERE projectid = ? AND userid = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "ii", $project_id, $invitee_id);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            $existing = mysqli_fetch_assoc($result);
+            mysqli_stmt_close($stmt);
 
-            // Prevent self-invitation
-            if ($userid == $invitee_id) {
-                $message = "You cannot invite yourself to the project.";
+            // If the user is already a member or has a pending invitation
+            if ($existing) {
+                $message = "This user is already a member or has a pending invitation.";
             } else {
-                // Check if the user is already invited or a member of the project
-                $sql = "SELECT * FROM project_members WHERE projectid = ? AND userid = ?";
+                // Send the invitation (add as Pending)
+                $sql = "INSERT INTO project_members (projectid, userid, role, status) VALUES (?, ?, 'Member', 'Pending')";
                 $stmt = mysqli_prepare($conn, $sql);
-                mysqli_stmt_bind_param($stmt, "ii", $projectid, $invitee_id);
-                mysqli_stmt_execute($stmt);
-                $result = mysqli_stmt_get_result($stmt);
-                $existing = mysqli_fetch_assoc($result);
+                mysqli_stmt_bind_param($stmt, "ii", $project_id, $invitee_id);
 
-                if ($existing) {
-                    $message = "This user is already a member or has a pending invitation.";
+                if (mysqli_stmt_execute($stmt)) {
+                    $message = "Invitation sent successfully.";
                 } else {
-                    // Send the invitation (insert into project_members with 'Pending' status)
-                    $sql = "INSERT INTO project_members (projectid, userid, role, status) VALUES (?, ?, 'Member', 'Pending')";
-                    $stmt = mysqli_prepare($conn, $sql);
-                    mysqli_stmt_bind_param($stmt, "ii", $projectid, $invitee_id);
-
-                    if (mysqli_stmt_execute($stmt)) {
-                        $message = "Invitation sent successfully.";
-                    } else {
-                        $message = "Failed to send invitation: " . mysqli_error($conn);
-                    }
-
-                    mysqli_stmt_close($stmt);
+                    $message = "Failed to send invitation: " . mysqli_error($conn);
                 }
+
+                mysqli_stmt_close($stmt);
             }
         }
     }
@@ -85,29 +74,25 @@ mysqli_close($conn);
 <!-- HTML to show SweetAlert -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send Invitation</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-
 <body>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             <?php if ($message): ?>
                 Swal.fire({
                     title: "<?php echo addslashes($message); ?>",
                     icon: "<?php echo strpos($message, 'successfully') !== false ? 'success' : 'error'; ?>",
                     timer: 1500,
                     showConfirmButton: false
-                }).then(function () {
-                    window.location.href = "member.php?projectid=<?php echo $projectid; ?>"; // Redirect to members page after showing the message
+                }).then(function() {
+                    window.location.href = "member.php?projectid=<?php echo $project_id; ?>"; // Redirect to members page after showing the message
                 });
             <?php endif; ?>
         });
     </script>
 </body>
-
 </html>

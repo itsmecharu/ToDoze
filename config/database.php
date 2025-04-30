@@ -126,6 +126,9 @@ $sql = "CREATE TABLE IF NOT EXISTS tasks(
     tasktime TIME NULL,
     reminder_percentage INT NULL, 
     reminder_sent TINYINT(1) DEFAULT 0,
+    reminder_repeat ENUM('none', 'daily', 'weekly', 'monthly') DEFAULT 'none',
+    reminder_repeat_until DATETIME NULL,
+    last_reminder_sent DATETIME NULL,
     taskstatus ENUM('Pending','Completed') DEFAULT 'Pending',
     is_deleted TINYINT(1) DEFAULT 0,       -- 0 = active, 1 = deleted
     deleted_at DATETIME NULL,              -- When the task was marked as deleted
