@@ -10,7 +10,7 @@ if (!isset($_SESSION['userid'])) {
 }
 
 $userid = $_SESSION['userid'];
-$taskname = $taskdescription = $taskdate = $tasktime = $reminder_percentage =$reminder_repeat= "";
+$taskname = $taskdescription = $taskdate = $tasktime = $reminder_percentage = "";
 
 // Handle Task Submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -18,16 +18,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taskdescription = isset($_POST['taskdescription']) ? trim($_POST['taskdescription']) : null;
     $taskdate = (!empty($_POST['taskdate'])) ? ($_POST['taskdate']) : null;
     $tasktime = (!empty($_POST['tasktime'])) ? ($_POST['tasktime']) : null;
-    $reminder_percentage = !empty($_POST['reminder_percentage']) ? $_POST['reminder_percentage'] : null;
-    $reminder_repeat = isset($_POST['reminder_repeat']) ? $_POST['reminder_repeat'] : 'none';
+    $reminder_percentage = isset($_POST['reminder_percentage']) ? trim($_POST['reminder_percentage']) : null;
     // echo $tasktime;
     // exit();
-    $sql = "INSERT INTO tasks (userid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, reminder_repeat, taskstatus) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')";
+    $sql = "INSERT INTO tasks (userid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, taskstatus) VALUES (?, ?, ?, ?, ?, ?, 'pending')";
     $stmt = mysqli_prepare($conn, $sql);
-    
+
     if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "issssss", $userid, $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage, $reminder_repeat);
-    
+        mysqli_stmt_bind_param($stmt, "isssss", $userid, $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage);
         if (mysqli_stmt_execute($stmt)) {
             $_SESSION['success_message'] = "Task added successfully!";
             header("Location: task.php"); // Redirect to avoid form resubmission
@@ -152,27 +150,14 @@ body.nav-collapsed .container {
                         <input type="time" id="tasktime" name="tasktime" style="width: 170px;">
                     </div>
 
-
-               
-                <select id="reminder" name="reminder_percentage">
-                    <option value="" disabled selected>Select Reminder 🔔</option>
-                    <option value="">None</option>
-                    <option value="50">50% (Halfway to Due Date)</option>
-                    <option value="75">75% (Closer to Due Date)</option>
-                    <option value="90">90% (Near Due Date)</option>
-                    <option value="100">100% (On Time)</option>
-                </select>
-
-                
-                <label for="reminder_repeat">Repeat:</label>
-                <select name="reminder_repeat" id="reminder_repeat">
-                    <option value="none" selected>None</option>
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                </select>
-
-
+                    <!-- <label for="reminder">Set Reminder:</label> -->
+                    <select id="reminder" name="reminder_percentage">
+                        <option value="" disabled selected>Set Reminder Here 🔔</option>
+                        <option value="50">50% (Halfway to Due Date)</option>
+                        <option value="75">75% (Closer to Due Date)</option>
+                        <option value="90">90% (Near Due Date)</option>
+                        <option value="100">100% (On Time)</option>
+                    </select>
                     <button type="submit" style="margin-top: 20px;">Done</button>
             </form>
         </div>
@@ -237,47 +222,36 @@ body.nav-collapsed .container {
             container.classList.toggle('actives');
         });
     </script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const taskDate = document.getElementById('taskdate');
-    const taskTime = document.getElementById('tasktime');
-    const reminderSelect = document.getElementById('reminder');
-    const repeatSelect = document.getElementById('reminder_repeat');
-    const form = document.querySelector('.add-task-form');
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const taskDate = document.getElementById('taskdate');
+            const taskTime = document.getElementById('tasktime');
+            const reminderSelect = document.getElementById('reminder');
+            const form = document.querySelector('.add-task-form');
 
-    function hasDateTime() {
-        return taskDate.value && taskTime.value;
-    }
+            function checkDateAndTime() {
+                reminderSelect.disabled = !(taskDate.value && taskTime.value);
+                if (reminderSelect.disabled) reminderSelect.value = "";
+            }
 
-    function toggleReminderAndRepeat() {
-        const enabled = hasDateTime();
-        reminderSelect.disabled = !enabled;
-        repeatSelect.disabled = !enabled;
+            taskDate.addEventListener('input', checkDateAndTime);
+            taskTime.addEventListener('input', checkDateAndTime);
 
-        if (!enabled) {
-            reminderSelect.value = "";
-            repeatSelect.value = "none";
-        }
-    }
+            reminderSelect.addEventListener('change', function () {
+                if (!taskDate.value || !taskTime.value) {
+                    alert("Set both date and time before selecting a reminder.");
+                    this.value = "";
+                }
+            });
 
-    taskDate.addEventListener('input', toggleReminderAndRepeat);
-    taskTime.addEventListener('input', toggleReminderAndRepeat);
-
-    form.addEventListener('submit', function (event) {
-        const reminderVal = reminderSelect.value;
-        const repeatVal = repeatSelect.value;
-
-        if ((reminderVal || repeatVal !== "none") && !hasDateTime()) {
-            event.preventDefault();
-            alert("Please set both due date and time before setting a reminder or repeat.");
-        }
-    });
-
-    toggleReminderAndRepeat();
-});
-</script>
-
-
+            form.addEventListener('submit', function (event) {
+                if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
+                    alert("Set both date and time before setting a reminder.");
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
