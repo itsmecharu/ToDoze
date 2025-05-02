@@ -35,22 +35,17 @@ if ($stmt) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Dashboard</title>
     <style>
-        /* Initially align container to the left */
-.container {
-    margin-left: 150px; /* This matches the navbar width */
-    transition: all 0.3s ease-in-out;
-}
+        body {
+            font-family: Arial, sans-serif;
+            margin: 120px;
+            margin-left: 220px;
+            padding: 0;
+            background-color: #fdfdfd;
+        }
 
-/* When navbar is collapsed */
-body.nav-collapsed .container {
-    margin-left: 120px;
-    margin-right: 0px;
-    max-width: 800px; /* Optional: limit the width */
-    text-align: center;
-}
-.container {
-            max-width: 1200px;
-            margin: 60px auto;
+        .container {
+            max-width: 100px;
+            margin: 610px auto;
             padding: 20px;
         }
 
@@ -90,18 +85,19 @@ body.nav-collapsed .container {
         }
 
         .task-box {
-            background-color: #468189;
+            width: 50px;
+            background-color: #fff;
             border: 1px solid #e0e0e0;
             border-left: 5px solid #4CAF50;
             border-radius: 10px;
             padding: 15px;
-            height: 230px;
+            height: 130px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             transition: transform 0.2s;
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         .task-box:hover {
@@ -150,69 +146,97 @@ body.nav-collapsed .container {
         }
     </style>
 </head>
+  <!-- Top Bar -->
+  <div class="top-bar">
+  <div class="top-left">
+    <a href="profile.php" class="profile-circle">
+      <ion-icon name="person-outline"></ion-icon>
+    </a>
+    <div class="username">Username</div>
+  </div>
 
-<body id="body-pd">
-
-    <!-- Navbar -->
-    <div class="l-navbar" id="navbar">
-    <nav class="nav">
     <div>
-    <div class="nav__brand">
-    <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-    <span class="nav__logo" style="display: flex; align-items: center;">
-        ToDoze
-        <a href="invitation.php"> <!-- Added a link to redirect to the invitations page -->
-            <ion-icon name="notifications-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-        </a>
-    </span>
-</div>
-
-            <div class="nav__list">
-                <a href="dash.php" class="nav__link active">
-                    <ion-icon name="home-outline" class="nav__icon"></ion-icon>
-                    <span class="nav__name">Home</span>
-                </a>
-                <a href="task.php" class="nav__link">
-                    <ion-icon name="add-outline" class="nav__icon"></ion-icon>
-                    <span class="nav__name">Task</span>
-                </a>
-                <a href="project.php" class="nav__link">
-                    <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-                    <span class="nav__name">Project</span>
-                </a>
-                <a href="review.php" class="nav__link">
-                    <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
-                    <span class="nav__name">Review</span>
-                </a>
-                <a href="profile.php" class="nav__link">
-                    <ion-icon name="people-outline" class="nav__icon"></ion-icon>
-                    <span class="nav__name">Profile</span>
-                </a>
-            </div>
-        
+      <ion-icon name="menu-outline" class="menu-toggle" id="menu-toggle"></ion-icon>
+      <a href="invitation.php" class="top-icon">
+        <ion-icon name="notifications-outline"></ion-icon>
+      </a>
     </div>
-    <a href="logout.php" class="nav__link logout">
+  </div>
+ <!-- Filter Dropdown -->
+ <div class="filter-wrapper">
+    <div class="filter-dropdown">
+      <div class="filter-toggle" id="filter-toggle">
+        <span>Filter</span>
+        <ion-icon name="chevron-down-outline"></ion-icon>
+      </div>
+      <div class="filter-options" id="filter-options">
+        <button id="all-tasks">All Tasks</button>
+        <button id="pending-tasks">Pending Tasks</button>
+        <button id="completed-tasks">Completed Tasks</button>
+        <button id="overdue-tasks">Overdue Tasks</button>
+      </div>
+    </div>
+  </div>
+  <!-- Sidebar Navigation -->
+  <div class="l-navbar" id="navbar">
+    <nav class="nav">
+      <div class="nav__list">
+        <a href="dash.php" class="nav__link active">
+          <ion-icon name="home-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name">Home</span>
+        </a>
+        <a href="task.php" class="nav__link">
+          <ion-icon name="add-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name">Task</span>
+        </a>
+        <div class="nav__link project-toggle" id="project-toggle">
+          <div>
+            <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
+            <span class="nav__name">Project</span>
+          </div>
+          <ion-icon name="chevron-down-outline" id="project-arrow" style="margin-right: 15px;"></ion-icon>
+        </div>
+        <div class="submenu" id="project-submenu">
+          <a href="#" class="nav__link">Project 1</a>
+          <a href="#" class="nav__link">Project 2</a>
+        </div>
+        <a href="review.php" class="nav__link">
+          <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name">Review</span>
+        </a>
+      </div>
+      <a href="logout.php" class="nav__link logout">
         <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
         <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
-    </a>
+      </a>
     </nav>
-    </div>
-    </div>
+  </div>
 
-    <div class="container">
-        <!-- Filter Buttons -->
-        <div class="filter-section">
-        <button class="filter-btn active" id="all-tasks">All Tasks</button>
-        <button class="filter-btn" id="pending-tasks">Pending Tasks</button>
-        <button class="filter-btn" id="completed-tasks">Completed Tasks</button>
-        <button class="filter-btn" id="overdue-tasks">Overdue Tasks</button>
+  <script>
+    const toggle = document.getElementById('menu-toggle');
+    const navbar = document.getElementById('navbar');
+    toggle.addEventListener('click', () => {
+      navbar.classList.toggle('active');
+    });
 
-        </div>
-       
+    const projectToggle = document.getElementById('project-toggle');
+    const projectSubmenu = document.getElementById('project-submenu');
+    const projectArrow = document.getElementById('project-arrow');
+
+    projectToggle.addEventListener('click', () => {
+      projectSubmenu.classList.toggle('show');
+      projectArrow.name = projectSubmenu.classList.contains('show') ? 'chevron-up-outline' : 'chevron-down-outline';
+    });
+    const filterToggle = document.getElementById('filter-toggle');
+    const filterOptions = document.getElementById('filter-options');
+    filterToggle.addEventListener('click', () => {
+      filterOptions.classList.toggle('show');
+    });
+  </script>
+
 
     
-        <!-- <div class="box"> -->
-        <h1 >Task List</h1>
+        
         <?php
         if ($result && mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
@@ -255,7 +279,14 @@ body.nav-collapsed .container {
             }
 
         } else {
-            echo "<h3><p>No tasks yet. Add your first one! 🚀</p></h3>";
+            echo '
+  <div class="centered-content">
+    <!-- Centered Image and Text -->
+    <div class="content-wrapper">
+      <img src="img/notask.png" alt="No tasks yet" />
+      <h3><p>No tasks yet. Add your first one! 🚀</p></h3>
+    </div>
+  </div>';
         }
         ?>
     </div>

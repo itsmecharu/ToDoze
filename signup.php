@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     
     <div class="form-wrapper">
     <div class="logo-container">
-                <img src="img/form.png" alt="Logo">
+                <img src="img/signup.svg" alt="Logo">
             </div> 
         <div class="form-container">
             <h1>Sign Up</h1>

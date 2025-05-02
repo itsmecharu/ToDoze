@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <!-- <h3>ToDoze</h3>
         <p>Boost Your Productivity – Organize, Prioritize, and Achieve More with Ease.</p>
     --><div class="logo-container">
-                <img src="img/form.png" alt="Logo">
+                <img src="img/signin.svg" alt="Logo">
             </div> 
         <div class="form-container">
             <h1>Sign In</h1>

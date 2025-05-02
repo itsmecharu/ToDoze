@@ -19,9 +19,8 @@ body {
     align-items: center;
     background: #fff;
     border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    width: 600px;
+    width: 800px;
 }
 
 .logo-container {
@@ -148,8 +147,7 @@ button:hover {
     background-color: white;
     padding: 40px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    /* width: 100%; */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.01);
     max-width: 1000px;
     text-align: center;
 }

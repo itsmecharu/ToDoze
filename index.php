@@ -24,8 +24,8 @@
       <h1>Organize Your Tasks with Todoze</h1>
       <p>The smart way to manage your time, tasks, and team.</p>
       <div class="hero-buttons">
-        <a href="#" class="cta-button cta-button-signin">Sign In</a>
-        <a href="#" class="cta-button cta-button-signup">Sign Up</a>
+        <a href="signin.php" class="cta-button cta-button-signin">Sign In</a>
+        <a href="signup.php" class="cta-button cta-button-signup">Sign Up</a>
       </div>
     </div>
   </section>
