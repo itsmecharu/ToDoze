@@ -45,8 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             border: 2px solid red;
             padding: 5px;
             border-radius: 5px;
-        
         }
+        
        
         /* Initially align container to the left */
 .container {
@@ -65,49 +65,58 @@ body.nav-collapsed .container {
     </style>
 </head>
 
-<body id="body-pd">
-    <!-- Navbar -->
-    <div class="l-navbar" id="navbar">
-        <nav class="nav">
-            <div>
-                <div class="nav__brand">
-                    <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                    <span class="nav__logo" style="display: flex; align-items: center;">
-                        ToDoze
-                        <a href="invitation.php"> <!-- Added a link to redirect to the invitations page -->
-                            <ion-icon name="notifications-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                        </a>
-                    </span>
-                </div>
-                <div class="nav__list">
-                    <a href="dash.php" class="nav__link">
-                        <ion-icon name="home-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Home</span>
-                    </a>
-                    <a href="task.php" class="nav__link">
-                        <ion-icon name="add-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Task</span>
-                    </a>
-                    <a href="project.php" class="nav__link">
-                        <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Project</span>
-                    </a>
-                    <a href="review.php" class="nav__link active">
-                        <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Review</span>
-                    </a>
-                    <a href="profile.php" class="nav__link">
-                        <ion-icon name="people-outline" class="nav__icon"></ion-icon>
-                        <span class="nav__name">Profile</span>
-                    </a>
-                </div>
-            </div>
-            <a href="logout.php" class="nav__link logout">
-                <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-                <span class="nav__name"style="color: red;">Log Out</span>
-            </a>
-        </nav>
+<body id="body">
+    <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-left">
+      <!-- Removed profile from here -->
     </div>
+
+    <div class="top-right-icons">
+      <!-- Notification Icon -->
+      <a href="invitation.php" class="top-icon">
+        <ion-icon name="notifications-outline"></ion-icon>
+      </a>
+      
+      <!-- Profile Icon -->
+      <a href="profile.php" class="profile-circle">
+        <ion-icon name="person-outline"></ion-icon>
+      </a>
+    </div>
+  </div>
+
+  <!-- Logo Above Sidebar -->
+  <div class="logo-container">
+    <img src="img/logo.png" alt="Logo" class="logo">
+  </div>
+
+  <!-- Sidebar Navigation -->
+  <div class="l-navbar" id="navbar">
+    <nav class="nav">
+      <div class="nav__list">
+        <a href="dash.php" class="nav__link ">
+          <ion-icon name="home-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name">Home</span>
+        </a>
+        <a href="task.php" class="nav__link">
+          <ion-icon name="add-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name">Task</span>
+        </a>
+        <a href="project.php" class="nav__link">
+          <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name">Project</span>
+        </a>
+        <a href="review.php" class="nav__link active">
+          <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name">Review</span>
+        </a>
+      </div>
+      <a href="logout.php" class="nav__link logout">
+        <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+        <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
+      </a>
+    </nav>
+  </div>
 
     <div class="review-form-container">
         <h3>Share Review</h3>

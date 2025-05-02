@@ -43,41 +43,7 @@ if ($stmt) {
             background-color: #fdfdfd;
         }
 
-        .container {
-            max-width: 100px;
-            margin: 610px auto;
-            padding: 20px;
-        }
-
-        .filter-section {
-            display: flex;
-            justify-content: flex-start;
-            gap: 5px;
-            margin-bottom: 30px;
-        }
-
-        .filter-btn {
-            padding: 10px 10px;
-            width:250px;
-            border: none;
-            background-color: #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .filter-btn.active,
-        .filter-btn:hover {
-            background-color: #007BFF;
-            color: white;
-        }
-
-        h1 {
-            margin-bottom: 30px;
-            font-size: 2em;
-            color: #333;
-        }
-
+      
         .task-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -85,19 +51,16 @@ if ($stmt) {
         }
 
         .task-box {
-            width: 50px;
             background-color: #fff;
             border: 1px solid #e0e0e0;
             border-left: 5px solid #4CAF50;
             border-radius: 10px;
             padding: 15px;
-            height: 130px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            cursor: pointer;
             transition: transform 0.2s;
-            margin-top: 5px;
         }
 
         .task-box:hover {
@@ -111,23 +74,18 @@ if ($stmt) {
             color: #007BFF;
         }
 
-        .task-overdue .task-title {
-            color: red;
+        .task-detail {
+            display: block;
+        }
+
+        .task-box.minimized .task-detail {
+            display: none;
         }
 
         .task-description,
         .task-meta {
             font-size: 14px;
             color: #555;
-        }
-
-        .complete-box {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #007BFF;
-            border-radius: 4px;
-            background-color: white;
-            cursor: pointer;
         }
 
         .task-actions {
@@ -144,39 +102,103 @@ if ($stmt) {
         .task-actions a:hover {
             text-decoration: underline;
         }
+        
+    .profile-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #fff;
+    }
+
+    .username {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .top-right-icons {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      z-index: 1000; /* Ensure it is above other content */
+    }
+
+    /* Notification Icon Styling */
+    .top-icon {
+      margin-right: 20px; /* Space between notification and profile icon */
+    }
+
+    .top-icon ion-icon {
+      font-size: 28px; /* Size of the notification icon */
+      color: #333; /* Icon color */
+      cursor: pointer; /* Change cursor to pointer on hover */
+    }
+
+    /* Optional: Add a hover effect */
+    .top-icon ion-icon:hover {
+      color: #007bff; /* Change color on hover */
+    }
+
+    /* Optional: Adding a notification badge */
+    .top-icon {
+      position: relative;
+    }
+    .logo-container {
+  position: fixed;
+  top: 5px;  /* Adjust the position from the top */
+  left: 35px;  /* Adjust the position from the left */
+  z-index: 1000;  /* Ensure it's above the sidebar */
+}
+
+.logo {
+  width: 120px;  /* Adjust the width of the logo */
+  height: auto;
+}
+.delete-task {
+  color: red !important;
+}
+.delete-task:hover {
+  text-decoration: underline;
+}
     </style>
 </head>
+
+<body>
   <!-- Top Bar -->
   <div class="top-bar">
-  <div class="top-left">
-    <a href="profile.php" class="profile-circle">
-      <ion-icon name="person-outline"></ion-icon>
-    </a>
-    <div class="username">Username</div>
-  </div>
+    <div class="top-left">
+      <!-- Removed profile from here -->
+    </div>
 
-    <div>
-      <ion-icon name="menu-outline" class="menu-toggle" id="menu-toggle"></ion-icon>
+    <div class="top-right-icons">
+      <!-- Notification Icon -->
       <a href="invitation.php" class="top-icon">
         <ion-icon name="notifications-outline"></ion-icon>
       </a>
+      
+      <!-- Profile Icon -->
+      <a href="profile.php" class="profile-circle">
+        <ion-icon name="person-outline"></ion-icon>
+      </a>
     </div>
   </div>
- <!-- Filter Dropdown -->
- <div class="filter-wrapper">
-    <div class="filter-dropdown">
-      <div class="filter-toggle" id="filter-toggle">
-        <span>Filter</span>
-        <ion-icon name="chevron-down-outline"></ion-icon>
-      </div>
-      <div class="filter-options" id="filter-options">
-        <button id="all-tasks">All Tasks</button>
-        <button id="pending-tasks">Pending Tasks</button>
-        <button id="completed-tasks">Completed Tasks</button>
-        <button id="overdue-tasks">Overdue Tasks</button>
-      </div>
-    </div>
+  
+  <div class="task-categories">
+    <div class="task-category active" id="all-tasks">All Tasks</div>
+    <div class="task-category" id="completed-tasks">Completed Tasks</div>
   </div>
+
+  <!-- Logo Above Sidebar -->
+  <div class="logo-container">
+    <img src="img/logo.png" alt="Logo" class="logo">
+  </div>
+
   <!-- Sidebar Navigation -->
   <div class="l-navbar" id="navbar">
     <nav class="nav">
@@ -190,9 +212,9 @@ if ($stmt) {
           <span class="nav__name">Task</span>
         </a>
         <a href="project.php" class="nav__link">
-                    <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-                    <span class="nav__name">Project</span>
-                </a>
+          <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name">Project</span>
+        </a>
         <a href="review.php" class="nav__link">
           <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Review</span>
@@ -204,28 +226,6 @@ if ($stmt) {
       </a>
     </nav>
   </div>
-
-  <script>
-    const toggle = document.getElementById('menu-toggle');
-    const navbar = document.getElementById('navbar');
-    toggle.addEventListener('click', () => {
-      navbar.classList.toggle('active');
-    });
-
-    const projectToggle = document.getElementById('project-toggle');
-    const projectSubmenu = document.getElementById('project-submenu');
-    const projectArrow = document.getElementById('project-arrow');
-
-    projectToggle.addEventListener('click', () => {
-      projectSubmenu.classList.toggle('show');
-      projectArrow.name = projectSubmenu.classList.contains('show') ? 'chevron-up-outline' : 'chevron-down-outline';
-    });
-    const filterToggle = document.getElementById('filter-toggle');
-    const filterOptions = document.getElementById('filter-options');
-    filterToggle.addEventListener('click', () => {
-      filterOptions.classList.toggle('show');
-    });
-  </script>
 
 
     
@@ -264,7 +264,7 @@ if ($stmt) {
 
                 echo "<small>Reminder: " . (isset($row['reminder_percentage']) && $row['reminder_percentage'] !== null ? htmlspecialchars($row['reminder_percentage']) . "%" : "Not set") . "</small><br>";
                 echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "'>Edit</a>  ";
-                echo "<a href='#' class='delete-task' data-taskid='" . $row['taskid'] . "'>Delete</a>";
+                echo "<a href='#' class='delete-task' data-taskid=' " . $row['taskid'] . "'>Delete</a>";
                 echo "</div>"; // Close task-details
         
                 echo "</div>"; // Close task-content
@@ -355,6 +355,10 @@ if ($stmt) {
     <!-- ===== MAIN JS ===== -->
     <script src="js/dash.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <!-- Ionicons CDN -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
 </body>
 
 </html>
