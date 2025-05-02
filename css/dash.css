@@ -62,7 +62,6 @@ body {
   font-size: 2rem;
   cursor: pointer;
 }
-
 /* Sidebar Navigation */
 .l-navbar {
   position: fixed;
@@ -103,6 +102,14 @@ body {
 
 .nav__link:hover {
   background-color: #f0f0f0;
+  border-radius: 10px;
+  padding: 5px 10px;
+}
+
+.nav__link.active {
+  background-color: #e53935; /* dark gray */
+  color: white;
+  font-weight: bold;
   border-radius: 10px;
   padding: 5px 10px;
 }

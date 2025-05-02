@@ -189,17 +189,10 @@ if ($stmt) {
           <ion-icon name="add-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Task</span>
         </a>
-        <div class="nav__link project-toggle" id="project-toggle">
-          <div>
-            <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-            <span class="nav__name">Project</span>
-          </div>
-          <ion-icon name="chevron-down-outline" id="project-arrow" style="margin-right: 15px;"></ion-icon>
-        </div>
-        <div class="submenu" id="project-submenu">
-          <a href="#" class="nav__link">Project 1</a>
-          <a href="#" class="nav__link">Project 2</a>
-        </div>
+        <a href="project.php" class="nav__link">
+                    <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Project</span>
+                </a>
         <a href="review.php" class="nav__link">
           <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Review</span>
