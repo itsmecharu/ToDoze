@@ -164,7 +164,26 @@ mysqli_stmt_close($stmt);
   width: 120px;  /* Adjust the width of the logo */
   height: auto;
 }
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 18px;
+    font-size: 14px;
+    color: white;
+    background-color: #007BFF;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
 
+.back-link:hover {
+    background-color: #0056b3;
+}
+.box {
+    width: 550px; /* adjust size as you like */
+    margin: 50px 0 0 200px; /* top, right, bottom, left */
+    transition: all 0.3s ease-in-out;
+}
     </style>
 </head>
 <body>
@@ -296,9 +315,11 @@ mysqli_stmt_close($stmt);
             </select>
             <button type="submit">Send Invite</button>
         </form>
+        <button onclick="window.history.back();" class="back-link">Go Back</button>
     </div>
 
-    <button onclick="window.history.back();" class="back-btn">Go Back</button>
+ 
+
 </div>
 
 </body>

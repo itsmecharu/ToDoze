@@ -59,21 +59,21 @@ a {
   }
   
   .profile-image .user-img {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid var(--first-color);
   }
-  
+/*   
   .profile-info {
     margin-top: 1rem;
   }
-  
+   */
   .user-name {
     font-size: 1.5rem;
     color: var(--bg-color);
-    margin-bottom: 0.5rem;
+    /* margin-bottom: 0.5rem; */
   }
   
   .user-email {
@@ -91,6 +91,7 @@ a {
     font-size: 1rem;
     margin-top: 1rem;
     transition: background 0.3s ease;
+  
   }
   
   .edit-btn:hover {

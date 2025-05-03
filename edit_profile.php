@@ -48,6 +48,24 @@ $conn->close();
   <meta charset="UTF-8">
   <title>Edit Profile</title>
   <link rel="stylesheet" href="css/dash.css">
+  <style>
+    .back-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 18px;
+    font-size: 14px;
+    color: white;
+    background-color: #007BFF;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.back-link:hover {
+    background-color: #0056b3;
+}
+
+  </style>
 </head>
 <body>
 
@@ -59,10 +77,16 @@ $conn->close();
 
     <label for="email">Email:</label><br>
     <input type="email" name="email" value="<?php echo htmlspecialchars($user['useremail']); ?>" required><br><br>
+     
+     <!-- Upload Profile Picture Form -->
+  <form action="upload_profile.php" method="POST" enctype="multipart/form-data" style="margin-top: 10px;">
+    <input type="file" name="profile_pic" accept="image/*" required>
+    <button type="submit" class="btn">Upload Photo</button>
+  </form>
+</div>
 
     <button type="submit">Save Changes</button>
-  </form>
-  <a href="profile.php" style="display:inline-block; margin-top:10px;">Back to Profile</a>
+  </form> <a href="dash.php" class="back-link">← Back to Task List</a>
 </div>
 
 </body>

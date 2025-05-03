@@ -276,12 +276,7 @@ body {
     <a href="edit_profile.php" class="btn">Edit Name</a>
   </div>
 
-  <!-- Upload Profile Picture Form -->
-  <form action="upload_profile.php" method="POST" enctype="multipart/form-data" style="margin-top: 10px;">
-    <input type="file" name="profile_pic" accept="image/*" required>
-    <button type="submit" class="btn">Upload Photo</button>
-  </form>
-</div>
+ </div>
 
 
 <!-- Task Summary Section -->
