@@ -2,6 +2,8 @@
 session_start();
 date_default_timezone_set('Asia/Kathmandu');
 include 'config/database.php';
+include 'load_username.php';
+
 
 // Ensure user is logged in
 if (!isset($_SESSION['userid'])) {
@@ -70,9 +72,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </a>
       
       <!-- Profile Icon -->
-      <a href="profile.php" class="profile-circle">
-        <ion-icon name="person-outline"></ion-icon>
-      </a>
+      <div class="profile-info">
+  <a href="profile.php" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+    <ion-icon name="person-outline"></ion-icon>
+  </a>
+  <span class="username-text"><?= htmlspecialchars($username) ?></span>
+</div>
+
+
     </div>
   </div>
 
@@ -206,38 +213,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             container.classList.toggle('actives');
         });
     </script>
-    <script>
-   document.addEventListener("DOMContentLoaded", function () {
+   <script>
+document.addEventListener("DOMContentLoaded", function () {
     const taskDate = document.getElementById('taskdate');
     const taskTime = document.getElementById('tasktime');
     const reminderSelect = document.getElementById('reminder');
     const form = document.querySelector('.add-task-form');
 
+    // Disable reminder initially
     function checkDateAndTime() {
-        reminderSelect.disabled = !(taskDate.value && taskTime.value);
-        if (reminderSelect.disabled) reminderSelect.value = "";
+        const disableReminder = !(taskDate.value && taskTime.value);
+        reminderSelect.disabled = disableReminder;
+        if (disableReminder) reminderSelect.value = "";
     }
 
+    // Run check on load and on input
+    checkDateAndTime();
     taskDate.addEventListener('input', checkDateAndTime);
     taskTime.addEventListener('input', checkDateAndTime);
-    
-    // Call on load to ensure correct state
-    checkDateAndTime();
 
+    // Prevent setting reminder without date & time (extra safety)
     reminderSelect.addEventListener('change', function () {
         if (!taskDate.value || !taskTime.value) {
-            alert("Set both date and time before selecting a reminder.");
+            alert("Please set both date and time before choosing a reminder.");
             this.value = "";
         }
     });
 
+    // Prevent form submit if reminder is set but date/time is missing
     form.addEventListener('submit', function (event) {
         if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
-            alert("Set both date and time before setting a reminder.");
+            alert("You must select both date and time if you want to set a reminder.");
             event.preventDefault();
         }
     });
 });
+</script>
+
 
 </body>
 

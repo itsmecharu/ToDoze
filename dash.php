@@ -2,6 +2,7 @@
 session_start();
 date_default_timezone_set('Asia/Kathmandu');
 include 'config/database.php';
+include 'load_username.php';
 
 if (!isset($_SESSION['userid'])) {
     header("Location: signin.php");
@@ -62,9 +63,13 @@ if ($stmt) {
   <a href="invitation.php" class="top-icon">
     <ion-icon name="notifications-outline"></ion-icon>
   </a>
-  <a href="profile.php" class="profile-circle">
+    <!-- Profile Icon -->
+    <div class="profile-info">
+  <a href="profile.php" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
     <ion-icon name="person-outline"></ion-icon>
   </a>
+  <span class="username-text"><?= htmlspecialchars($username) ?></span>
+</div>
 </div>
 
 <div class="task-categories">
@@ -88,7 +93,7 @@ if ($stmt) {
     <a href="logout.php" class="nav__link logout"><ion-icon name="log-out-outline" class="nav__icon"></ion-icon><span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span></a>
   </nav>
 </div>
-
+ <p>Your Tasks</p>
 <?php
 if ($result && mysqli_num_rows($result) > 0) {
   while ($row = mysqli_fetch_assoc($result)) {
@@ -152,6 +157,20 @@ if ($result && mysqli_num_rows($result) > 0) {
 </div>';
 }
 ?>
+<!-- for filters -->
+ <script>
+document.getElementById("showFiltersBtn").addEventListener("click", function() {
+  var filters = document.getElementById("taskCategories");
+  // Toggle visibility
+  if (filters.style.display === "none" || filters.style.display === "") {
+    filters.style.display = "flex";
+    this.textContent = "Hide Filters"; // Change button text
+  } else {
+    filters.style.display = "none";
+    this.textContent = "Show Filters"; // Change button text back
+  }
+});
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

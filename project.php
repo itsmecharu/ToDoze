@@ -2,6 +2,7 @@
 
 session_start();
 include 'config/database.php';
+include 'load_username.php';
 
 // Ensure user is logged in
 if (!isset($_SESSION['userid'])) {
@@ -75,7 +76,6 @@ $result = mysqli_stmt_get_result($stmt);
 <body id="body-pd">
 <div class="top-bar">
     <div class="top-left">
-      <!-- Removed profile from here -->
     </div>
 
     <div class="top-right-icons">
@@ -84,10 +84,13 @@ $result = mysqli_stmt_get_result($stmt);
         <ion-icon name="notifications-outline"></ion-icon>
       </a>
       
-      <!-- Profile Icon -->
-      <a href="profile.php" class="profile-circle">
-        <ion-icon name="person-outline"></ion-icon>
-      </a>
+        <!-- Profile Icon -->
+        <div class="profile-info">
+  <a href="profile.php" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+    <ion-icon name="person-outline"></ion-icon>
+  </a>
+  <span class="username-text"><?= htmlspecialchars($username) ?></span>
+</div>
     </div>
   </div>
 

@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'config/database.php';
+include 'load_username.php';
 if (!isset($_SESSION['userid'])) {
     header("Location: signin.php");
     exit();
@@ -78,10 +79,13 @@ body.nav-collapsed .container {
         <ion-icon name="notifications-outline"></ion-icon>
       </a>
       
-      <!-- Profile Icon -->
-      <a href="profile.php" class="profile-circle">
-        <ion-icon name="person-outline"></ion-icon>
-      </a>
+         <!-- Profile Icon -->
+         <div class="profile-info">
+  <a href="profile.php" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+    <ion-icon name="person-outline"></ion-icon>
+  </a>
+  <span class="username-text"><?= htmlspecialchars($username) ?></span>
+</div>
     </div>
   </div>
 
