@@ -202,7 +202,7 @@ $result = mysqli_stmt_get_result($stmt);
         </div>
     </div>
 
-    <div class="i-container">
+    <!-- <div class="i-container"> -->
         <div class="box">
             <h2>Your Projects</h2>
             <?php if (mysqli_num_rows($result) > 0): ?>
