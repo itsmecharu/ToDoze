@@ -44,7 +44,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taskdescription = isset($_POST['taskdescription']) ? trim($_POST['taskdescription']) : null;
     $taskdate = isset($_POST['taskdate']) ? trim($_POST['taskdate']) : null;
     $tasktime = isset($_POST['tasktime']) ? trim($_POST['tasktime']) : null;
-    $reminder_percentage = isset($_POST['reminder_percentage']) ? $_POST['reminder_percentage'] : null;
+    $reminder_percentage = (!empty($_POST['reminder_percentage'])) ? $_POST['reminder_percentage'] : null;
+
 
     // Initialize update values with the current data
     $update_values = [
@@ -85,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($reminder_percentage) && $reminder_percentage !== $task['reminder_percentage']) {
         $fields[] = "reminder_percentage = ?";
         $params[] = $reminder_percentage;
-        $types .= "i";
+        $types .= "s";
     }
 
     // Only execute the update if there are any fields to update
@@ -120,91 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <link rel="stylesheet" href="css/dash.css">
 <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<style>
-.back-link {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 18px;
-    font-size: 14px;
-    color: white;
-    background-color: #007BFF;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
 
-.back-link:hover {
-    background-color: #0056b3;
-}
-.box {
-    width: 550px; /* adjust size as you like */
-    margin: 50px 0 0 200px; /* top, right, bottom, left */
-    transition: all 0.3s ease-in-out;
-}
-
-/* When nav is collapsed (body has nav-collapsed class) */
-body.nav-collapsed .box {
-    margin: 50px auto; /* center horizontally */
-}
-     
-.profile-circle {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #ccc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: #fff;
-    }
-
-    .username {
-      font-weight: 600;
-      color: #333;
-    }
-
-    .top-right-icons {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      align-items: center;
-      z-index: 1000; /* Ensure it is above other content */
-    }
-
-    /* Notification Icon Styling */
-    .top-icon {
-      margin-right: 20px; /* Space between notification and profile icon */
-    }
-
-    .top-icon ion-icon {
-      font-size: 28px; /* Size of the notification icon */
-      color: #333; /* Icon color */
-      cursor: pointer; /* Change cursor to pointer on hover */
-    }
-
-    /* Optional: Add a hover effect */
-    .top-icon ion-icon:hover {
-      color: #007bff; /* Change color on hover */
-    }
-
-    /* Optional: Adding a notification badge */
-    .top-icon {
-      position: relative;
-    }
-    .logo-container {
-  position: fixed;
-  top: 5px;  /* Adjust the position from the top */
-  left: 35px;  /* Adjust the position from the left */
-  z-index: 1000;  /* Ensure it's above the sidebar */
-}
-
-.logo {
-  width: 120px;  /* Adjust the width of the logo */
-  height: auto;
-}
-</style>
 </head>
 
 <body id="body-pd">
@@ -279,12 +196,15 @@ body.nav-collapsed .box {
         </div>
 
         <select id="reminder" name="reminder_percentage">
-            <option value="" disabled selected >Set Reminder Here 🔔</option>
-            <option value="50" <?php if ($reminder_percentage == 50) echo "selected"; ?>>50% (Halfway to Due Date)</option>
-            <option value="75" <?php if ($reminder_percentage == 75) echo "selected"; ?>>75% (Closer to Due Date)</option>
-            <option value="90" <?php if ($reminder_percentage == 90) echo "selected"; ?>>90% (Near Due Date)</option>
-            <option value="100" <?php if ($reminder_percentage == 100) echo "selected"; ?>>100% (On Time)</option>
-        </select>
+    <option value="" <?php if ($reminder_percentage === null || $reminder_percentage === "") echo "selected"; ?>>
+        No Reminder 🔕
+    </option>
+    <option value="50" <?php if ($reminder_percentage == 50) echo "selected"; ?>>50% (Halfway to Due Date)</option>
+    <option value="75" <?php if ($reminder_percentage == 75) echo "selected"; ?>>75% (Closer to Due Date)</option>
+    <option value="90" <?php if ($reminder_percentage == 90) echo "selected"; ?>>90% (Near Due Date)</option>
+    <option value="100" <?php if ($reminder_percentage == 100) echo "selected"; ?>>100% (On Time)</option>
+</select>
+
 
         <button type="submit">Update Task</button>
       </form>
@@ -303,6 +223,31 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const dateInput = document.getElementById('taskdate');
+    const timeInput = document.getElementById('tasktime');
+    const reminderSelect = document.getElementById('reminder');
+
+    function toggleReminderAvailability() {
+        if (dateInput.value && timeInput.value) {
+            reminderSelect.disabled = false;
+        } else {
+            reminderSelect.disabled = true;
+            reminderSelect.value = ""; // Reset the reminder if disabling
+        }
+    }
+
+    // Run on page load
+    toggleReminderAvailability();
+
+    // Attach events to inputs
+    dateInput.addEventListener('input', toggleReminderAvailability);
+    timeInput.addEventListener('input', toggleReminderAvailability);
+});
+</script>
+
 
 
 <!-- ===== IONICONS ===== -->

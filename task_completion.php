@@ -17,7 +17,7 @@ $userid = $_SESSION['userid'];
 $taskid = $_POST['taskid'];
 
 // Update the task: set status to completed and record the completion time in taskdate
-$sql = "UPDATE tasks SET taskstatus = 'completed', taskdate = NOW() WHERE taskid = ? AND userid = ?";
+$sql = "UPDATE tasks SET taskstatus = 'completed', completed_at = NOW() WHERE taskid = ? AND userid = ?";
 $stmt = mysqli_prepare($conn, $sql);
 if (!$stmt) {
     echo "Error preparing statement: " . mysqli_error($conn);

@@ -18,7 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taskdescription = isset($_POST['taskdescription']) ? trim($_POST['taskdescription']) : null;
     $taskdate = (!empty($_POST['taskdate'])) ? ($_POST['taskdate']) : null;
     $tasktime = (!empty($_POST['tasktime'])) ? ($_POST['tasktime']) : null;
-    $reminder_percentage = isset($_POST['reminder_percentage']) ? trim($_POST['reminder_percentage']) : null;
+    $reminder_percentage = (!empty($_POST['reminder_percentage'])) ? $_POST['reminder_percentage'] : null;
+
     // echo $tasktime;
     // exit();
     $sql = "INSERT INTO tasks (userid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, taskstatus) VALUES (?, ?, ?, ?, ?, ?, 'pending')";
@@ -54,86 +55,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/dash.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        /* Initially align container to the left */
-.container {
-    margin-left: 150px; /* This matches the navbar width */
-    transition: all 0.3s ease-in-out;
-}
-
-/* When navbar is collapsed */
-body.nav-collapsed .container {
-    margin-left: 120px;
-    margin-right: 0px;
-    max-width: 800px; /* Optional: limit the width */
-    text-align: center;
-    
-}
-      
-.profile-circle {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #ccc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: #fff;
-    }
-
-    .username {
-      font-weight: 600;
-      color: #333;
-    }
-
-    .top-right-icons {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      align-items: center;
-      z-index: 1000; /* Ensure it is above other content */
-    }
-
-    /* Notification Icon Styling */
-    .top-icon {
-      margin-right: 20px; /* Space between notification and profile icon */
-    }
-
-    .top-icon ion-icon {
-      font-size: 28px; /* Size of the notification icon */
-      color: #333; /* Icon color */
-      cursor: pointer; /* Change cursor to pointer on hover */
-    }
-
-    /* Optional: Add a hover effect */
-    .top-icon ion-icon:hover {
-      color: #007bff; /* Change color on hover */
-    }
-
-    /* Optional: Adding a notification badge */
-    .top-icon {
-      position: relative;
-    }
-    .logo-container {
-  position: fixed;
-  top: 5px;  /* Adjust the position from the top */
-  left: 35px;  /* Adjust the position from the left */
-  z-index: 1000;  /* Ensure it's above the sidebar */
-}
-
-.logo {
-  width: 120px;  /* Adjust the width of the logo */
-  height: auto;
-}
-
-.box {
-    width: 550px; /* adjust size as you like */
-    margin: 80px 0 0 200px; /* top, right, bottom, left */
-    transition: all 0.3s ease-in-out;
-}
-    </style>
 </head>
 
 <body id="body-pd">
@@ -286,35 +207,38 @@ body.nav-collapsed .container {
         });
     </script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const taskDate = document.getElementById('taskdate');
-            const taskTime = document.getElementById('tasktime');
-            const reminderSelect = document.getElementById('reminder');
-            const form = document.querySelector('.add-task-form');
+   document.addEventListener("DOMContentLoaded", function () {
+    const taskDate = document.getElementById('taskdate');
+    const taskTime = document.getElementById('tasktime');
+    const reminderSelect = document.getElementById('reminder');
+    const form = document.querySelector('.add-task-form');
 
-            function checkDateAndTime() {
-                reminderSelect.disabled = !(taskDate.value && taskTime.value);
-                if (reminderSelect.disabled) reminderSelect.value = "";
-            }
+    function checkDateAndTime() {
+        reminderSelect.disabled = !(taskDate.value && taskTime.value);
+        if (reminderSelect.disabled) reminderSelect.value = "";
+    }
 
-            taskDate.addEventListener('input', checkDateAndTime);
-            taskTime.addEventListener('input', checkDateAndTime);
+    taskDate.addEventListener('input', checkDateAndTime);
+    taskTime.addEventListener('input', checkDateAndTime);
+    
+    // Call on load to ensure correct state
+    checkDateAndTime();
 
-            reminderSelect.addEventListener('change', function () {
-                if (!taskDate.value || !taskTime.value) {
-                    alert("Set both date and time before selecting a reminder.");
-                    this.value = "";
-                }
-            });
+    reminderSelect.addEventListener('change', function () {
+        if (!taskDate.value || !taskTime.value) {
+            alert("Set both date and time before selecting a reminder.");
+            this.value = "";
+        }
+    });
 
-            form.addEventListener('submit', function (event) {
-                if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
-                    alert("Set both date and time before setting a reminder.");
-                    event.preventDefault();
-                }
-            });
-        });
-    </script>
+    form.addEventListener('submit', function (event) {
+        if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
+            alert("Set both date and time before setting a reminder.");
+            event.preventDefault();
+        }
+    });
+});
+
 </body>
 
 </html>

@@ -132,10 +132,16 @@ $sql = "CREATE TABLE IF NOT EXISTS tasks(
     is_deleted TINYINT(1) DEFAULT 0,       -- 0 = active, 1 = deleted
     deleted_at DATETIME NULL,              -- When the task was marked as deleted
     taskcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_overdue TINYINT(1) DEFAULT 0,
+    completed_at DATETIME NULL,
     FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
     FOREIGN KEY (assigned_to) REFERENCES users(userid) ON DELETE SET NULL
 )";
+
+
+
+
 
 
 if (mysqli_query($conn, $sql)) {
