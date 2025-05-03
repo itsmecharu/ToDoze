@@ -82,12 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'todoze9@gmail.com';
-            $mail->Password   = 'aslu umcq hqhq ebhr';
+            $mail->Username   = 'todoze3@gmail.com';
+            $mail->Password   = 'bwwz veye ktcd mfxb';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = 465;
 
-            $mail->setFrom('todoze9@gmail.com', 'ToDoze');
+            $mail->setFrom('todoze3@gmail.com', 'ToDoze');
             $mail->addAddress($useremail, $username);
 
             $mail->isHTML(true);
@@ -129,8 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             </div> 
         <div class="form-container">
             <h1>Sign Up</h1>
-             <h4>Already a member? <a href="signin.php" class="sign-in-link switch"
-              onclick="smoothRedirect('signin.php')"><b>Sign In</b></a></a></h4>
+           
             <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) ?>">
                 <input type="text" placeholder="username" name="username" required>
                 <span class="error"><?php echo $username_err; ?></span>
@@ -152,7 +151,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <span class="error"><?php echo $confirmpassword_err; ?></span>
                 <button type="submit" name="send">Sign Up</button>
             </form>
-                   </div>
+            <h4>Already a member? <a href="signin.php" class="sign-in-link switch"
+            onclick="smoothRedirect('signin.php')"><b>Sign In</b></a></a></h4>
+            </div>
     </div>
     <script>
     function togglePassword(passwordFieldId, iconId) {
