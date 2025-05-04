@@ -34,12 +34,12 @@ $sql = "CREATE TABLE IF NOT EXISTS projects(
     projectid INT PRIMARY KEY AUTO_INCREMENT,
     projectname VARCHAR(30) NOT NULL,
     projectdescription VARCHAR(255),
-    projectduedate DATETIME,
+    projectduedate DATETIME DEFAULT Null,
     projectstatus Enum('Inactive','Active','Hold','Completed') DEFAULT 'Inactive',
     projectcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    projectstarted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    projectcompleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    projectdeleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    projectstarted_at TIMESTAMP NULL DEFAULT NULL,
+    projectcompleted_at TIMESTAMP NULL DEFAULT NULL,
+    projectdeleted_at TIMESTAMP NULL DEFAULT Null,
     is_projectdeleted TINYINT(1) DEFAULT 0
 )";
 if (mysqli_query($conn, $sql)) {
@@ -76,8 +76,8 @@ $sql = "CREATE TABLE IF NOT EXISTS project_members (
     userid INT NOT NULL,
     role ENUM('Admin', 'Member') DEFAULT 'Member',
     status ENUM('Pending', 'Accepted', 'Rejected') DEFAULT 'Pending',
-    invited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    joinedproject_at TIMESTAMP NULL,
+    invited_at TIMESTAMP NULL DEFAULT NULL,
+    joinedproject_at TIMESTAMP NULL DEFAULT NULL,
     FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE
 )";

@@ -75,9 +75,6 @@ $result = mysqli_stmt_get_result($stmt);
 
 <body id="body-pd">
 <div class="top-bar">
-    <div class="top-left">
-    </div>
-
     <div class="top-right-icons">
       <!-- Notification Icon -->
       <a href="invitation.php" class="top-icon">
@@ -138,7 +135,7 @@ $result = mysqli_stmt_get_result($stmt);
                 <label for="projectdescription">Project Description:</label>
                 <input type="text" id="projectdescription" name="projectdescription" style="height: 80px;">
 
-                <label for="projectduedate">Due Date:</label>
+                <label for="projectduedate">Select Due Date 📅:</label>
                 <input type="datetime-local" id="projectduedate" name="projectduedate" style="width:35%">
 
                 <button type="submit">Create Project</button>

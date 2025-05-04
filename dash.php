@@ -72,11 +72,15 @@ if ($stmt) {
 </div>
 </div>
 
-<div class="task-categories">
-  <a href="dash.php" class="task-category <?= $filter == 'all' ? 'active' : '' ?>">Pending Tasks</a>
-  <a href="dash.php?filter=completed" class="task-category <?= $filter == 'completed' ? 'active' : '' ?>">Completed Tasks</a>
-  <a href="dash.php?filter=overdue" class="task-category <?= $filter == 'overdue' ? 'active' : '' ?>">Overdue Tasks</a>
+<div class="filter-container">
+  <a href="dash.php" class="task-filter <?= $filter == 'all' ? 'active' : '' ?>">🕒 Pending</a>
+  <a href="dash.php?filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed</a>
+  <a href="dash.php?filter=overdue" class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue</a>
 </div>
+
+
+
+
 
 <div class="logo-container">
   <img src="img/logo.png" alt="Logo" class="logo">
@@ -93,7 +97,6 @@ if ($stmt) {
     <a href="logout.php" class="nav__link logout"><ion-icon name="log-out-outline" class="nav__icon"></ion-icon><span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span></a>
   </nav>
 </div>
- <p>Your Tasks</p>
 <?php
 if ($result && mysqli_num_rows($result) > 0) {
   while ($row = mysqli_fetch_assoc($result)) {
