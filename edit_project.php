@@ -16,7 +16,7 @@ if (!isset($_GET['projectid'])) {
     exit();
 }
 
-$projectid = $_GET['projectid'];  // Get the project ID from the URL
+$projectid = $_GET['projectid'];
 
 // Fetch project details (ensure only the owner or member can edit)
 $sql = "SELECT projects.* 
@@ -49,7 +49,10 @@ $projectduedate = isset($project['projectduedate']) ? $project['projectduedate']
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $projectname = trim($_POST['projectname']);
     $projectdescription = isset($_POST['projectdescription']) ? trim($_POST['projectdescription']) : null;
-    $projectduedate = isset($_POST['projectduedate']) ? trim($_POST['projectduedate']) : null;
+
+    // Handle empty due date as null
+    $projectduedate = trim($_POST['projectduedate']);
+    $projectduedate = $projectduedate === '' ? null : $projectduedate;
 
     $sql = "UPDATE projects 
             SET projectname = ?, projectdescription = ?, projectduedate = ? 
@@ -64,10 +67,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_bind_param($stmt, "sssii", $projectname, $projectdescription, $projectduedate, $projectid, $userid);
 
     if (mysqli_stmt_execute($stmt)) {
-      
         header("Location: project.php?projectid=$projectid");
-       exit();
-
+        exit();
     } else {
         echo "Error updating project: " . mysqli_error($conn);
     }
@@ -91,8 +92,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
                     <span class="nav__logo" style="display: flex; align-items: center;">
                         ToDoze
-                        <a href="invitation.php"> <!-- Added a link to redirect to the invitations page -->
-                            <ion-icon name="notifications-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
+                        <a href="invitation.php">
+                            <ion-icon name="notifications-outline" class="nav__toggle"></ion-icon>
                         </a>
                     </span>
                 </div>
@@ -103,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <span class="nav__name">Home</span>
                     </a>
 
-                    <a href="task.php" class="nav__link ">
+                    <a href="task.php" class="nav__link">
                         <ion-icon name="add-outline" class="nav__icon"></ion-icon>
                         <span class="nav__name">Task</span>
                     </a>
@@ -131,6 +132,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </a>
         </nav>
     </div>
+
     <div class="container">
         <div class="box">
             <h2>Edit Project</h2>
@@ -139,11 +141,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="text" name="projectname" id="projectname" value="<?php echo htmlspecialchars($projectname); ?>" required><br>
 
                 <label for="projectdescription">Project Description:</label>
-                <input type="text" name="projectdescription" id="projectdescription" value="<?php echo htmlspecialchars($projectdescription); ?>"> <br>
+                <input type="text" name="projectdescription" id="projectdescription" value="<?php echo htmlspecialchars($projectdescription); ?>"><br>
 
                 <label for="projectduedate">Due Date:</label>
                 <input type="datetime-local" id="projectduedate" name="projectduedate" 
-                       value="<?php echo date('Y-m-d\TH:i', strtotime($projectduedate)); ?>"><br>
+                    value="<?php echo $projectduedate ? date('Y-m-d\TH:i', strtotime($projectduedate)) : ''; ?>"><br>
 
                 <button type="submit">Update Project</button>
             </form>

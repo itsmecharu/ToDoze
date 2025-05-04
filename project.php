@@ -6,41 +6,42 @@ include 'load_username.php';
 
 // Ensure user is logged in
 if (!isset($_SESSION['userid'])) {
-    header("Location: signin.php");
-    exit();
+  header("Location: signin.php");
+  exit();
 }
 
 $userid = $_SESSION['userid'];
 
 // Handle project creation
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $projectName = trim($_POST['projectname']);
-    $projectDescription = trim($_POST['projectdescription']);
-    $projectDueDate = trim($_POST['projectduedate']);
+  $projectName = trim($_POST['projectname']);
+  $projectDescription = trim($_POST['projectdescription']);
+  $projectDueDate = trim($_POST['projectduedate']);
+  $projectDueDate = $projectDueDate === '' ? null : $projectDueDate;
 
-    // Insert into 'projects' table
-    $sql = "INSERT INTO projects (projectname, projectdescription, projectduedate) VALUES (?, ?, ?)";
-    $stmt = mysqli_prepare($conn, $sql);
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "sss", $projectName, $projectDescription, $projectDueDate);
-        if (mysqli_stmt_execute($stmt)) {
-            $projectId = mysqli_insert_id($conn);
+  // Insert into 'projects' table
+  $sql = "INSERT INTO projects (projectname, projectdescription, projectduedate) VALUES (?, ?, ?)";
+  $stmt = mysqli_prepare($conn, $sql);
+  if ($stmt) {
+    mysqli_stmt_bind_param($stmt, "sss", $projectName, $projectDescription, $projectDueDate);
+    if (mysqli_stmt_execute($stmt)) {
+      $projectId = mysqli_insert_id($conn);
 
-            // Assign the creator as "Admin" in project_members
-            $sql = "INSERT INTO project_members (userid, projectid, role) VALUES (?, ?, 'Admin')";
-            $stmt2 = mysqli_prepare($conn, $sql);
-            if ($stmt2) {
-                mysqli_stmt_bind_param($stmt2, "ii", $userid, $projectId);
-                mysqli_stmt_execute($stmt2);
-                mysqli_stmt_close($stmt2);
-            }
+      // Assign the creator as "Admin" in project_members
+      $sql = "INSERT INTO project_members (userid, projectid, role) VALUES (?, ?, 'Admin')";
+      $stmt2 = mysqli_prepare($conn, $sql);
+      if ($stmt2) {
+        mysqli_stmt_bind_param($stmt2, "ii", $userid, $projectId);
+        mysqli_stmt_execute($stmt2);
+        mysqli_stmt_close($stmt2);
+      }
 
-            $_SESSION['success_message'] = "Project created successfully!";
-            header("Location: project.php");
-            exit();
-        }
-        mysqli_stmt_close($stmt);
+      $_SESSION['success_message'] = "Project created successfully!";
+      header("Location: project.php");
+      exit();
     }
+    mysqli_stmt_close($stmt);
+  }
 }
 
 // Fetch projects based on membership
@@ -64,30 +65,30 @@ $result = mysqli_stmt_get_result($stmt);
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Project</title>
-    <link rel="stylesheet" href="css/dash.css">
-    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Project</title>
+  <link rel="stylesheet" href="css/dash.css">
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body id="body-pd">
-<div class="top-bar">
+  <div class="top-bar">
     <div class="top-right-icons">
       <!-- Notification Icon -->
       <a href="invitation.php" class="top-icon">
         <ion-icon name="notifications-outline"></ion-icon>
       </a>
-      
-        <!-- Profile Icon -->
-        <div class="profile-info">
-  <a href="profile.php" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
-    <ion-icon name="person-outline"></ion-icon>
-  </a>
-  <span class="username-text"><?= htmlspecialchars($username) ?></span>
-</div>
+
+      <!-- Profile Icon -->
+      <div class="profile-info">
+        <a href="profile.php" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+          <ion-icon name="person-outline"></ion-icon>
+        </a>
+        <span class="username-text"><?= htmlspecialchars($username) ?></span>
+      </div>
     </div>
   </div>
 
@@ -124,96 +125,153 @@ $result = mysqli_stmt_get_result($stmt);
     </nav>
   </div>
 
-    <div class="container">
-        <button id="createProjectBtn" class="create-btn"> + Create New Project</button>
-        <div id="projectForm" class="box" style="display:none;">
-            <h2>Create New Project</h2>
-            <form method="POST">
-                <label for="projectname">Project Name:</label>
-                <input type="text" id="projectname" name="projectname" required>
+  <div class="container">
+    <!-- Button -->
+    <button id="createProjectBtn" class="create-btn"> + Create New Project</button>
 
-                <label for="projectdescription">Project Description:</label>
-                <input type="text" id="projectdescription" name="projectdescription" style="height: 80px;">
+    <!-- Modal -->
+    <div id="projectModal" class="modal-overlay" style="display: none;">
+      <div class="modal-content">
+        <span class="close-modal" id="closeModalBtn">&times;</span>
+        <h2>Create New Project</h2>
+        <form method="POST">
+          <label for="projectname">Project Name:</label>
+          <input type="text" id="projectname" name="projectname" required>
 
-                <label for="projectduedate">Select Due Date 📅:</label>
-                <input type="datetime-local" id="projectduedate" name="projectduedate" style="width:35%">
+          <label for="projectdescription">Project Description:</label>
+          <input type="text" id="projectdescription" name="projectdescription" style="height: 80px;">
 
-                <button type="submit">Create Project</button>
+          <label for="projectduedate">Select Due Date 📅:</label>
+          <input type="datetime-local" id="projectduedate" name="projectduedate" style="width:35%">
 
-            </form>
-        </div>
-    </div>
+          <button type="submit">Create Project</button>
 
-    <!-- <div class="i-container"> -->
-        <div class="box">
-            <h2>Your Projects</h2>
-            <?php if (mysqli_num_rows($result) > 0): ?>
-                <div class="project-list">
-                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                        <div class="project-box">
-
-
-                            <a href="project_view.php?projectid=<?php echo $row['projectid']; ?>" class="project-link">
-                                <h3><?php echo htmlspecialchars($row['projectname']); ?></h3>
-
-                            </a>
-                            <div class="project-actions">
-                                <a href="edit_project.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn">Edit</a>
-                                <a href="#" class="delete-btn"
-                                    onclick="confirmDelete(<?php echo $row['projectid']; ?>)">Delete</a>
-                            </div>
-
-                        </div>
-                    <?php endwhile; ?>
-                </div>
-            <?php else: ?>
-                
-  <div class="centered-content">
-    <!-- Centered Image and Text -->
-    <div class="content-wrapper">
-      <img src="img/noproject.svg" alt="No tasks yet" />
-      <h3><p>No project yet. Add your first one! 🚀</p></h3>
+        </form>
+      </div>
     </div>
   </div>
-            <?php endif; ?>
+  </div>
+
+  <div class="box">
+    <h2>Your Projects</h2>
+    <?php if (mysqli_num_rows($result) > 0): ?>
+      <div class="project-list">
+        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+          <div class="project-box">
+            <!-- Project Name on its own line -->
+            <div class="project-title">
+              <a href="project_view.php?projectid=<?php echo $row['projectid']; ?>">
+                <h3><?php echo htmlspecialchars($row['projectname']); ?></h3>
+              </a>
+            </div>
+
+            <!-- All other info in a single line -->
+            <div class="project-info-line">
+              <?php if (!empty($row['projectdescription'])): ?>
+                <div class="project-description">
+                  <strong>Description:</strong> <?php echo htmlspecialchars($row['projectdescription']); ?>
+                </div>
+              <?php endif; ?>
+
+              <?php if (!empty($row['projectduedate'])): ?>
+                <div class="project-duedate">
+                  <strong>Due:</strong> <?php echo htmlspecialchars($row['projectduedate']); ?>
+                </div>
+              <?php endif; ?>
+
+              
+
+              <div class="project-actions">
+              <a href="project_task.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
+                  <ion-icon name="add-circle-outline"></ion-icon> Edit
+                </a>
+              <a href="member.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
+                  <ion-icon name="people-outline"></ion-icon>Member
+                </a>
+                <a href="edit_project.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
+                  <ion-icon name="create-outline"></ion-icon> Edit
+                </a>
+                <a href="#" class="delete-btn" title="Delete" onclick="confirmDelete(<?php echo $row['projectid']; ?>)">
+                  <ion-icon name="trash-outline"></ion-icon> Delete
+                </a>
+              </div>
+            </div>
+
+          </div>
+        <?php endwhile; ?>
+      </div>
+    <?php else: ?>
+      <div class="centered-content">
+        <div class="content-wrapper">
+          <img src="img/noproject.svg" alt="No tasks yet" />
+          <h3>
+            <p>No project yet. Add your first one! 🚀</p>
+          </h3>
         </div>
-    </div>
-    <!-- for delete msg -->
-    <script>
-        function confirmDelete(projectId) {
-            Swal.fire({
-                title: "Are you sure?",
-                text: "This action cannot be undone!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, delete it!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "delete_project.php?projectid=" + projectId;
-                }
-            });
+      </div>
+    <?php endif; ?>
+  </div>
+
+
+  <!-- for delete msg -->
+  <script>
+    function confirmDelete(projectId) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "This action cannot be undone!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "delete_project.php?projectid=" + projectId;
         }
-    </script>
+      });
+    }
+  </script>
 
 
 
-    <script>
-        document.getElementById("createProjectBtn").addEventListener("click", function () {
-            document.getElementById("projectForm").style.display = "block";
-            this.style.display = "none";
-        });
-    </script>
+  <script>
+    const modal = document.getElementById("projectModal");
+    const openBtn = document.getElementById("createProjectBtn");
+    const closeBtn = document.getElementById("closeModalBtn");
 
-    <!-- IONICONS -->
-    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+    // Open modal
+    openBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+      openBtn.style.display = "none";
+    });
 
-    <!-- MAIN JS -->
-    <script src="js/dash.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-   
-</body >
-</html >
+    // Close modal
+    closeBtn.addEventListener("click", closeModal);
 
-            <?php mysqli_close($conn); ?>
+    // Close modal when clicking outside the content
+    window.addEventListener("click", function (event) {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    function closeModal() {
+      modal.style.display = "none";
+      openBtn.style.display = "inline-block"; // or "block" based on styling
+    }
+  </script>
+
+
+
+  <!-- IONICONS -->
+  <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+
+  <!-- MAIN JS -->
+  <script src="js/dash.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
+
+</html>
+
+<?php mysqli_close($conn); ?>

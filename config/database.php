@@ -34,14 +34,16 @@ $sql = "CREATE TABLE IF NOT EXISTS projects(
     projectid INT PRIMARY KEY AUTO_INCREMENT,
     projectname VARCHAR(30) NOT NULL,
     projectdescription VARCHAR(255),
-    projectduedate DATETIME DEFAULT Null,
-    projectstatus Enum('Inactive','Active','Hold','Completed') DEFAULT 'Inactive',
+    projectduedate DATETIME NULL,
+    projectstatus ENUM('Pending', 'Completed') DEFAULT 'Pending',
     projectcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     projectstarted_at TIMESTAMP NULL DEFAULT NULL,
     projectcompleted_at TIMESTAMP NULL DEFAULT NULL,
     projectdeleted_at TIMESTAMP NULL DEFAULT Null,
-    is_projectdeleted TINYINT(1) DEFAULT 0
+    is_projectdeleted TINYINT(1) DEFAULT 0,
+    is_overdue TINYINT(1) DEFAULT 0
 )";
+
 if (mysqli_query($conn, $sql)) {
     // echo "Table 'projects' created successfully.<br>";
 } else {

@@ -137,13 +137,13 @@ if ($result && mysqli_num_rows($result) > 0) {
     // Task Actions (Edit/Delete or Completed Date)
     echo "<div class='task-actions'>";
     if (!$isCompleted) {
-      echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "' class='info'><ion-icon name='create-outline'></ion-icon> Edit</a>";
-      echo "<a href='#' class='info delete-task' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon> Delete</a>";
+      echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "' class='edit-btn'><ion-icon name='create-outline'></ion-icon> Edit</a>";
+      echo "<a href='#' class='delete-btn' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon> Delete</a>";
     } else {
       if (!empty($row['completed_at'])) {
         echo "<span class='info' style='color: green;'><ion-icon name='checkmark-done-outline'></ion-icon> Completed on: " . date('Y-m-d H:i', strtotime($row['completed_at'])) . "</span>";
       }
-      echo "<a href='#' class='info delete-task' data-taskid='" . $row['taskid'] . "' style='color: red; margin-left: 10px;'><ion-icon name='trash-outline'></ion-icon> Delete</a>";
+      echo "<a href='#' class='delete-btn' data-taskid='" . $row['taskid'] . "' ><ion-icon name='trash-outline'></ion-icon> Delete</a>";
     }
     
     echo "</div>"; // task-actions

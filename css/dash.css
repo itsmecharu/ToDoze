@@ -412,6 +412,7 @@ body {
       margin-bottom: 10px;
       padding: 10px;
       background-color: #f9f9f9;
+      border-left: 5px solid  #4CAF50;
     }
     
     .task-content {
@@ -443,6 +444,7 @@ body {
       align-items: center;
       flex-wrap: wrap;
       margin-top: 5px;
+    
     }
     
     .task-details-left {
@@ -519,25 +521,7 @@ body {
       border-color: #4CAF50;
     }
     
-    
-    /* for project part (the connection to the task */
-    
-    .project-box {
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 10px;
-      background-color: #f9f9f9;
-    }
-    
-    /* Make sure project name and buttons are on the same row */
-    .project-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;  /* Pushes project name left, buttons right */
-      width: 100%;
-      gap: 15px;
-    }
+    /* project css */
     
     /* Prevent project name from shrinking */
     .project-title {
@@ -561,7 +545,7 @@ body {
       text-decoration: none;
       cursor: pointer;
       font-size: 14px;
-      white-space: nowrap; /* Prevents text from wrapping */
+    
     }
     
     .delete-btn {
@@ -598,38 +582,45 @@ body {
 
   .project-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .project-box {
-    background-color: #f8f9fc;
-    width: 200%;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-left: 5px solid  #4CAF50;;
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-left: 5px solid #4CAF50;
+    border-radius: 8px;
   }
-
-  .project-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(90, 103, 216, 0.15);
-  }
-
-  .project-box h3 {
-    margin-top: 0;
+  
+  .project-title h3 {
+    margin: 0 0 10px 0;
     color: #2d3748;
-    font-size: 18px;
-    margin-bottom: 10px;
   }
-
-  .project-box p {
-    color: #4a5568;
+  
+  .project-info-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Allows responsiveness */
+    gap: 8px;
     font-size: 14px;
-    margin: 5px 0;
+    color: #444;
   }
+  
+  .project-description,
+  .project-duedate {
 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .project-actions {
+    display: flex;
+    gap: 10px;
+  }
 
 
 
@@ -780,4 +771,34 @@ color: red !important;
 text-decoration: underline;
 }
 
+
+
+
+
+
+/* for floating the project form */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.close-modal {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+}
 
