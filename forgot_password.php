@@ -75,6 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <title>Forgot Password</title>
     <link rel="stylesheet" href="css/form.css">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <style>.error { color: red; font-size: 12px; }</style>
 </head>
 <body>
