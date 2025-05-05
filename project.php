@@ -27,14 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (mysqli_stmt_execute($stmt)) {
       $projectId = mysqli_insert_id($conn);
 
-      // Assign the creator as "Admin" in project_members
-      $sql = "INSERT INTO project_members (userid, projectid, role) VALUES (?, ?, 'Admin')";
-      $stmt2 = mysqli_prepare($conn, $sql);
-      if ($stmt2) {
-        mysqli_stmt_bind_param($stmt2, "ii", $userid, $projectId);
-        mysqli_stmt_execute($stmt2);
-        mysqli_stmt_close($stmt2);
-      }
+
+// Add the creator as accepted member
+$sql = "INSERT INTO project_members (projectid, userid, role, status) VALUES (?, ?, 'Admin', 'accepted')";
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "ii", $projectid, $userid); // $userid = creator
+mysqli_stmt_execute($stmt);
+mysqli_stmt_close($stmt);
+
 
       $_SESSION['success_message'] = "Project created successfully!";
       header("Location: project.php");

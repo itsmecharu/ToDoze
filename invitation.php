@@ -24,8 +24,10 @@ JOIN
 JOIN 
     users u_admin ON pm_admin.userid = u_admin.userid
 WHERE 
-    pm_user.userid = ?
+    pm_user.userid = ? AND
+    pm_user.userid != pm_admin.userid
 ";
+
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $userid);
 mysqli_stmt_execute($stmt);
