@@ -6,7 +6,7 @@ $otp_err = "";
 $timeMessage = "";
 $remainingTime = 0;
 
-// Check if OTP expiry time exists
+// OTP countdown logic
 if (isset($_SESSION['otp_expiry'])) {
     $remainingTime = $_SESSION['otp_expiry'] - time();
     if ($remainingTime <= 0) {
@@ -22,10 +22,15 @@ if (isset($_SESSION['otp_expiry'])) {
     $timeMessage = "No OTP generated.";
 }
 
-// Process OTP submission
+// Handle POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['resend'])) {
-        header("Location: signup.php"); // Redirect to resend OTP
+        // Redirect based on context
+        if ($_SESSION['otp_type'] === 'reset') {
+            header("Location: forgot_password.php");
+        } else {
+            header("Location: signup.php");
+        }
         exit();
     }
 
@@ -36,25 +41,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (!isset($_SESSION['otp'])) {
         $otp_err = "OTP has expired. Please request a new one.";
     } elseif ($enteredOtp == $_SESSION['otp'] && $remainingTime > 0) {
-        // Store user data
-        $username = $_SESSION['username'];
-        $useremail = $_SESSION['useremail'];
-        $userpassword = $_SESSION['userpassword'];
 
-        // Insert user into database
-        $sql = "INSERT INTO users (username, useremail, userpassword, is_verified) VALUES (?, ?, ?, '1')";
-        if ($stmt = mysqli_prepare($conn, $sql)) {
-            mysqli_stmt_bind_param($stmt, "sss", $username, $useremail, $userpassword);
-            if (mysqli_stmt_execute($stmt)) {
-                unset($_SESSION['otp']);
-                unset($_SESSION['otp_expiry']);
-                header("Location: signin.php");
-                exit();
-            } else {
-                $otp_err = "Something went wrong. Try again.";
+        if ($_SESSION['otp_type'] === 'signup') {
+            // Register new user
+            $username = $_SESSION['username'];
+            $useremail = $_SESSION['useremail'];
+            $userpassword = $_SESSION['userpassword'];
+
+            $sql = "INSERT INTO users (username, useremail, userpassword, is_verified) VALUES (?, ?, ?, '1')";
+            if ($stmt = mysqli_prepare($conn, $sql)) {
+                mysqli_stmt_bind_param($stmt, "sss", $username, $useremail, $userpassword);
+                if (mysqli_stmt_execute($stmt)) {
+                    unset($_SESSION['otp'], $_SESSION['otp_expiry'], $_SESSION['otp_type']);
+                    header("Location: signin.php");
+                    exit();
+                } else {
+                    $otp_err = "Something went wrong. Try again.";
+                }
+                mysqli_stmt_close($stmt);
             }
-            mysqli_stmt_close($stmt);
+
+        } elseif ($_SESSION['otp_type'] === 'reset') {
+            // Verified OTP for password reset
+            $_SESSION['verified_email'] = $_SESSION['useremail'];
+            unset($_SESSION['otp'], $_SESSION['otp_expiry'], $_SESSION['otp_type']);
+            header("Location: reset_password.php");
+            exit();
         }
+
     } else {
         $otp_err = "Invalid OTP. Please try again.";
     }
@@ -82,9 +96,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <div class="form-container">
             <h3>OTP Verification</h3>
-            <form method="POST" action="verifyotp.php">
+            <form method="POST" action="">
                 <label for="otp">Enter OTP sent to your email:</label>
-                <p id="countdown" class="countdown"><?php echo $timeMessage; ?></p> <!-- Countdown Display -->
+                <p id="countdown" class="countdown"><?php echo $timeMessage; ?></p>
                 
                 <input type="number" name="otp" id="otp" required <?php echo ($remainingTime <= 0) ? 'disabled' : ''; ?>>
                 <span class="error"><?php echo $otp_err; ?></span>
@@ -113,7 +127,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 var minutes = Math.floor(remainingTime / 60);
                 var seconds = remainingTime % 60;
                 document.getElementById('countdown').innerHTML = "Time remaining: " + minutes + "m " + seconds + "s";
-                
                 if (remainingTime <= 30) {
                     document.getElementById('countdown').classList.add("expiring");
                 } else {

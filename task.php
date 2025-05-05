@@ -117,7 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
 
 
-    <div class="container" style="color:rgb(52, 51, 50);">
+    <div class="container">
         <!-- Add Task Section -->
         <div class="box">
         <h2 style="text-align: center;">Add Task Here </h2>

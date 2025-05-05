@@ -75,6 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $otp = rand(100000, 999999);
         $_SESSION['otp'] = $otp;
         $_SESSION['otp_expiry'] = time() + 180; // OTP expires in 3 minutes
+        $_SESSION['otp_type'] = 'signup';
+
 
         // Send OTP via email
         $mail = new PHPMailer(true);

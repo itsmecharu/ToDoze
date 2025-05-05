@@ -166,22 +166,22 @@ $result = mysqli_stmt_get_result($stmt);
             </div>
 
             <!-- All other info in a single line -->
-            <div class="project-info-line">
+            <div class="task-info-line">
               <?php if (!empty($row['projectdescription'])): ?>
-                <div class="project-description">
+                <div class="info">
                   <strong>Description:</strong> <?php echo htmlspecialchars($row['projectdescription']); ?>
                 </div>
               <?php endif; ?>
 
               <?php if (!empty($row['projectduedate'])): ?>
-                <div class="project-duedate">
+                <div class="info">
                   <strong>Due:</strong> <?php echo htmlspecialchars($row['projectduedate']); ?>
                 </div>
               <?php endif; ?>
 
               
 
-              <div class="project-actions">
+              <div class="task-actions">
               <a href="project_task.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
                   <ion-icon name="add-circle-outline"></ion-icon> Edit
                 </a>

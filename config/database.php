@@ -136,6 +136,7 @@ $sql = "CREATE TABLE IF NOT EXISTS tasks(
     taskcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     is_overdue TINYINT(1) DEFAULT 0,
     completed_at DATETIME NULL,
+   taskpriority ENUM('High','Medium','Low','none') DEFAULT 'none',
     FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
     FOREIGN KEY (assigned_to) REFERENCES users(userid) ON DELETE SET NULL
