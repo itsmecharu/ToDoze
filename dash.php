@@ -161,23 +161,24 @@ if ($result && mysqli_num_rows($result) > 0) {
 }
 ?>
 <!-- for filters -->
- <script>
-document.getElementById("showFiltersBtn").addEventListener("click", function() {
-  var filters = document.getElementById("taskCategories");
-  // Toggle visibility
-  if (filters.style.display === "none" || filters.style.display === "") {
-    filters.style.display = "flex";
-    this.textContent = "Hide Filters"; // Change button text
-  } else {
-    filters.style.display = "none";
-    this.textContent = "Show Filters"; // Change button text back
-  }
-});
-
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  document.querySelectorAll('.delete-task').forEach(function (button) {
+  // Optional: If "showFiltersBtn" exists
+  const showFiltersBtn = document.getElementById("showFiltersBtn");
+  const taskCategories = document.getElementById("taskCategories");
+  if (showFiltersBtn && taskCategories) {
+    showFiltersBtn.addEventListener("click", function () {
+      if (taskCategories.style.display === "none" || taskCategories.style.display === "") {
+        taskCategories.style.display = "flex";
+        this.textContent = "Hide Filters";
+      } else {
+        taskCategories.style.display = "none";
+        this.textContent = "Show Filters";
+      }
+    });
+  }
+
+  document.querySelectorAll('.delete-btn').forEach(function (button) {
     button.addEventListener('click', function (e) {
       e.preventDefault();
       var taskid = this.getAttribute('data-taskid');
