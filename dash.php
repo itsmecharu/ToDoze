@@ -58,174 +58,6 @@ if ($stmt) {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
    rel="stylesheet">
   <title>Dashboard</title>
-  <style>
-    /* Task container */
-.task {
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-left: 4px solid green;
-  border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  margin-left: 70px;
-  width: 1100px;
-  padding: 16px;
-  overflow: hidden;
-}
-
-/* Task content */
-.task-content {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Checkbox styling */
-.complete-form {
-  display: inline-block;
-  margin-right: 10px;
-  vertical-align: middle;
-}
-
-.complete-box {
-  width: 20px;
-  height: 20px;
-  background-color: #fff;
-  border: 2px solid #28a745;
-  border-radius: 3px;
-  cursor: pointer;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.complete-box:hover {
-  background-color: #28a745;
-}
-/* Wrap DueDate, DueTime, and Reminder in a row */
-.task-details-left {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-/* Description remains block */
-.task-details-left .info:first-child {
-  display: block;
-}
-
-/* Group DueDate, Time, and Reminder into a row */
-.task-details-left .info-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  font-size: 14px;
-  color: #333;
-}
-
-.task-details-left .info-group .info {
-  margin: 0;
-  white-space: nowrap;
-}
-
-/* Task title */
-.task-details h4 {
-  display: inline-block;
-  vertical-align: middle;
-  margin: 0;
-  font-size: 18px;
-  color: #333;
-}
-
-/* Task details layout */
-.task-details {
-  display: flex;
-  flex-direction: column;
-  margin-top: 10px;
-}
-
-/* Keep due info on one line */
-.task-details-left {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 8px;
-}
-
-/* Description block with transition for toggle */
-.task-details-left .info {
-  font-size: 14px;
-  color: #333;
-  transition: all 0.3s ease-in-out;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  max-width: 100%;
-}
-
-/* Group due info together */
-.task-details-left .info:nth-child(n+2) {
-  display: inline-block;
-  margin-right: 16px;
-  white-space: nowrap;
-}
-
-/* Optional: wrap due items in flex row if needed */
-.task-details-left .due-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  font-size: 14px;
-  color: #666;
-}
-
-/* Action buttons */
-.task-actions {
-  margin-top: 12px;
-  display: flex;
-  gap: 12px;
-}
-
-.edit-btn,
-.delete-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  font-size: 14px;
-  border-radius: 4px;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-}
-
-.edit-btn {
- 
-  color: black;
-}
-
-.delete-btn {
-  background-color: transparent;
-  color: red;
-  border: 1px solid red;
-}
-
-.edit-btn:hover {
-  background-color: whitesmoke;
-}
-
-.delete-btn:hover {
-  background-color: whitesmoke;
-  color: red;
-}
-
-.collapsed-description {
-  max-height: 3.6em; /* Approx. 2 lines */
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.expanded-description {
-  max-height: none;
-}
-  </style>
 </head>
 <body>
 
@@ -304,7 +136,13 @@ if ($stmt) {
     <a href="logout.php" class="nav__link logout"><ion-icon name="log-out-outline" class="nav__icon"></ion-icon><span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span></a>
   </nav>
 </div>
-
+<!-- Modal -->
+<div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+  <div style="background: #fff; border-radius: 8px; width: 90%; max-width: 700px; height: 90%; position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+    <button onclick="closeModal()" style="position: absolute; top: 10px; right: 15px; font-size: 20px; background: none; border: none; cursor: pointer;">&times;</button>
+    <iframe id="editFrame" src="" style="width: 100%; height: 100%; border: none; border-radius: 8px;"></iframe>
+  </div>
+</div>
 <?php
 if ($result && mysqli_num_rows($result) > 0) {
   while ($row = mysqli_fetch_assoc($result)) {
