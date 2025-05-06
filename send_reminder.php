@@ -24,7 +24,7 @@ while ($task = mysqli_fetch_assoc($result)) {
     
     error_log("Task ID: {$task['taskid']} | Reminder Time: $reminder_time | Current Time: $current_time");
 
-    if ($current_time >= $reminder_time) { 
+    if (strtotime($current_time) >= strtotime($reminder_time)) {
         error_log("Sending reminder for Task ID: {$task['taskid']}");
 
         sendReminderEmail($task['userid'], $task['taskname'], $task['taskdate'], $task['tasktime'], $task['reminder_percentage'], $task['projectid']);
@@ -90,12 +90,12 @@ function sendReminderEmail($userid, $taskname, $taskdate, $tasktime, $reminder_p
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'todoze9@gmail.com';
-        $mail->Password = 'aslu umcq hqhq ebhr';  
+        $mail->Username = 'todoze3@gmail.com';
+        $mail->Password = 'bwwz veye ktcd mfxb';  
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port = 465;
 
-        $mail->setFrom('todoze9@gmail.com', 'ToDoze');
+        $mail->setFrom('todoze3@gmail.com', 'ToDoze');
         $mail->addAddress($useremail);
 
         $mail->isHTML(true);

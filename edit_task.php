@@ -101,14 +101,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, $types, ...$params);
         if (mysqli_stmt_execute($stmt)) {
-            header("Location: dash.php");
+            header("Location: task.php");
             exit();
         } else {
             echo "Error updating task: " . mysqli_error($conn);
         }
     } else {
         // No fields to update
-        header("Location: dash.php");
+        header("Location: task.php");
         exit();
     }
 }

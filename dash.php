@@ -9,42 +9,7 @@ if (!isset($_SESSION['userid'])) {
     exit();
 }
 $userid = $_SESSION['userid'];
-$filter = $_GET['filter'] ?? 'all';
 
-// for overdue part
-$now = date('Y-m-d H:i:s');
-$update_sql = "UPDATE tasks 
-    SET is_overdue = 
-        CASE 
-            WHEN CONCAT(taskdate, ' ', IFNULL(tasktime, '00:00:00')) < ? 
-            THEN 1 
-            ELSE 0 
-        END 
-    WHERE userid = ? AND taskstatus != 'Completed' AND is_deleted = 0 AND projectid IS NULL
-";
-$update_stmt = mysqli_prepare($conn, $update_sql);
-if ($update_stmt) {
-    mysqli_stmt_bind_param($update_stmt, "si", $now, $userid);
-    mysqli_stmt_execute($update_stmt);
-}
-
-// --- Task query based on filter ---
-if ($filter === 'completed') {
-  $sql = "SELECT * FROM tasks WHERE userid = ? AND taskstatus = 'completed' AND is_deleted = 0 AND projectid IS NULL ORDER BY completed_at DESC";
-}elseif ($filter === 'overdue') {
-    $sql = "SELECT * FROM tasks WHERE userid = ? AND is_overdue = 1 AND is_deleted = 0 AND taskstatus != 'completed' AND projectid IS NULL";
-} else {
-    $sql = "SELECT * FROM tasks WHERE userid = ? AND taskstatus != 'completed' AND is_deleted = 0 AND projectid IS NULL";
-}
-
-$stmt = mysqli_prepare($conn, $sql);
-if ($stmt) {
-    mysqli_stmt_bind_param($stmt, "i", $userid);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-} else {
-    echo "Error preparing statement: " . mysqli_error($conn);
-}
 ?>
 
 <!DOCTYPE html>
@@ -115,11 +80,6 @@ if ($stmt) {
         </div>
     </div>
     </div>
-<div class="filter-container">
-  <a href="dash.php" class="task-filter <?= $filter == 'all' ? 'active' : '' ?>">🕒 Pending</a>
-  <a href="dash.php?filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed</a>
-  <a href="dash.php?filter=overdue" class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue</a>
-</div>
 
   <div class="logo-container">
     <img src="img/logo.png" alt="App Logo" class="logo">
@@ -136,95 +96,9 @@ if ($stmt) {
     <a href="logout.php" class="nav__link logout"><ion-icon name="log-out-outline" class="nav__icon"></ion-icon><span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span></a>
   </nav>
 </div>
-<!-- Modal -->
-<div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
-  <div style="background: #fff; border-radius: 8px; width: 90%; max-width: 700px; height: 90%; position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
-    <button onclick="closeModal()" style="position: absolute; top: 10px; right: 15px; font-size: 20px; background: none; border: none; cursor: pointer;">&times;</button>
-    <iframe id="editFrame" src="" style="width: 100%; height: 100%; border: none; border-radius: 8px;"></iframe>
-  </div>
-</div>
-<?php
-if ($result && mysqli_num_rows($result) > 0) {
-  while ($row = mysqli_fetch_assoc($result)) {
-    $isOverdue = $row['is_overdue'] == 1;
-    $isCompleted = strtolower($row['taskstatus']) === 'completed';
 
-    echo "<div class='task' id='task-" . $row['taskid'] . "'>";
-    echo "<div class='task-content'>";
-
-    // Tick box (only if not completed)
-    if (!$isCompleted) {
-      echo "<form action='task_completion.php' method='POST' class='complete-form'>";
-      echo "<input type='hidden' name='taskid' value='" . $row['taskid'] . "'>";
-      echo "<button type='submit' name='complete-box' class='complete-box' title='Tick to complete'></button>";
-      echo "</form>";
-    }
-
-    echo "<div class='task-details'>";
-    echo "<h4 style='display: inline; margin-right: 10px;";
-    if ($isOverdue && !$isCompleted) {
-        echo "color: red;";
-    }
-    echo "'>" . htmlspecialchars($row['taskname']) . "</h4>";
-    
-    if ($isOverdue && !$isCompleted) {
-        echo "<span style='color: red; font-weight: light;'>(Overdue)</span>";
-    }
-
-
-    echo "<div class='task-info-line'>";
-    echo "<div class='task-details-left'>";
-    echo (!empty($row['taskdescription']) ? "<span class='info'>Description: " . htmlspecialchars($row['taskdescription']) . "</span>" : "");
-    echo "<div class='info-group'>"; // NEW WRAPPER
-    echo (!empty($row['taskdate']) ? "<span class='info'>DueDate: " . htmlspecialchars(date('Y-m-d', strtotime($row['taskdate']))) . "</span>" : "");
-    echo (!empty($row['tasktime']) ? "<span class='info'>DueTime: " . htmlspecialchars(date('H:i', strtotime($row['tasktime']))) . "</span>" : "");
-    echo "<span class='info'>Reminder: " . (isset($row['reminder_percentage']) && $row['reminder_percentage'] !== null ? htmlspecialchars($row['reminder_percentage']) . "%" : "Not set") . "</span>";
-    echo "</div>"; // END WRAPPER
-       echo "</div>";
-
-    // Task Actions (Edit/Delete or Completed Date)
-    echo "<div class='task-actions'>";
-    if (!$isCompleted) {
-      echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "' class='edit-btn'><ion-icon name='create-outline'></ion-icon> Edit</a>";
-      echo "<a href='#' class='delete-btn' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon> Delete</a>";
-    } else {
-      if (!empty($row['completed_at'])) {
-        echo "<span class='info' style='color: green;'><ion-icon name='checkmark-done-outline'></ion-icon> Completed on: " . date('Y-m-d H:i', strtotime($row['completed_at'])) . "</span>";
-      }
-      echo "<a href='#' class='delete-btn' data-taskid='" . $row['taskid'] . "' ><ion-icon name='trash-outline'></ion-icon> Delete</a>";
-    }
-    
-    echo "</div>"; // task-actions
-
-    echo "</div></div></div></div>"; // task-info-line, task-details, task-content, task
-  }
-} else {
-    echo '
-<div class="centered-content">
-  <div class="content-wrapper">
-    <img src="img/notask.png" alt="No tasks yet" />
-    <h3><p>No tasks yet 🚀</p></h3>
-  </div>
-</div>';
-}
-?>
 <!-- for filters -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  // Optional: If "showFiltersBtn" exists
-  const showFiltersBtn = document.getElementById("showFiltersBtn");
-  const taskCategories = document.getElementById("taskCategories");
-  if (showFiltersBtn && taskCategories) {
-    showFiltersBtn.addEventListener("click", function () {
-      if (taskCategories.style.display === "none" || taskCategories.style.display === "") {
-        taskCategories.style.display = "flex";
-        this.textContent = "Hide Filters";
-      } else {
-        taskCategories.style.display = "none";
-        this.textContent = "Show Filters";
-      }
-    });
-  }
 
   document.querySelectorAll('.delete-btn').forEach(function (button) {
     button.addEventListener('click', function (e) {
@@ -262,34 +136,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     });
-  
   });
-});
 </script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const descriptions = document.querySelectorAll('.task-details-left .info');
-
-  descriptions.forEach(desc => {
-    if (desc.textContent.startsWith("Description:")) {
-      const fullText = desc.textContent.trim().replace("Description:", "").trim();
-      if (fullText.length > 8) {
-        const shortText = fullText.substring(0, 8) + "..........";
-
-        let toggled = false;
-        desc.textContent = "Description: " + shortText;
-        desc.classList.add("truncated");
-
-        desc.addEventListener("click", function () {
-          toggled = !toggled;
-          desc.textContent = "Description: " + (toggled ? fullText : shortText);
-        });
-      }
-    }
-  });
-});
-</script>
-
 
 <!-- Icons and Charts -->
 <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
