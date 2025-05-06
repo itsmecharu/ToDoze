@@ -212,8 +212,8 @@ if ($stmt) {
 }
 
 .delete-btn:hover {
-  background-color: red;
-  color: white;
+  background-color: whitesmoke;
+  color: red;
 }
 
 .collapsed-description {
