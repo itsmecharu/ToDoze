@@ -55,6 +55,8 @@ if ($stmt) {
   <link rel="stylesheet" href="css/dash.css"/>
   <link rel="icon" type="image/x-icon" href="img/favicon.ico"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+   rel="stylesheet">
   <title>Dashboard</title>
 </head>
 <body>
@@ -71,20 +73,57 @@ if ($stmt) {
   <span class="username-text"><?= htmlspecialchars($username) ?></span>
 </div>
 </div>
-
+<div class="wide-summary">
+        <div class="wide-header">
+            <!-- <span>Task Overview Dashboard</span> -->
+            <span class="wide-timestamp">Last updated: Today, 10:45 AM</span>
+        </div>
+        
+        <div class="wide-metrics">
+            <!-- Total Tasks -->
+            <div class="wide-metric">
+                <div class="wide-label">
+                    <span><span class="status-indicator total-indicator"></span>Total Tasks</span>
+                    <span>100%</span>
+                </div>
+                <div class="wide-value wide-total">83</div>
+                <div class="wide-progress-container">
+                    <div class="wide-progress wide-total-progress"></div>
+                </div>
+               </div>
+            
+            <!-- Completed -->
+            <div class="wide-metric">
+                <div class="wide-label">
+                    <span><span class="status-indicator completed-indicator"></span>Completed</span>
+                </div>
+                <div class="wide-value wide-completed">56</div>
+                <div class="wide-progress-container">
+                    <div class="wide-progress wide-completed-progress"></div>
+                </div>
+            </div>
+            
+            <!-- Pending -->
+            <div class="wide-metric">
+                <div class="wide-label">
+                    <span><span class="status-indicator pending-indicator"></span>Pending</span>
+                </div>
+                <div class="wide-value wide-pending">27</div>
+                <div class="wide-progress-container">
+                    <div class="wide-progress wide-pending-progress"></div>
+                </div>
+        </div>
+    </div>
+    </div>
 <div class="filter-container">
   <a href="dash.php" class="task-filter <?= $filter == 'all' ? 'active' : '' ?>">🕒 Pending</a>
   <a href="dash.php?filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed</a>
   <a href="dash.php?filter=overdue" class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue</a>
 </div>
 
-
-
-
-
-<div class="logo-container">
-  <img src="img/logo.png" alt="Logo" class="logo">
-</div>
+  <div class="logo-container">
+    <img src="img/logo.png" alt="App Logo" class="logo">
+  </div>
 
 <div class="l-navbar" id="navbar">
   <nav class="nav">
@@ -97,6 +136,7 @@ if ($stmt) {
     <a href="logout.php" class="nav__link logout"><ion-icon name="log-out-outline" class="nav__icon"></ion-icon><span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span></a>
   </nav>
 </div>
+
 <?php
 if ($result && mysqli_num_rows($result) > 0) {
   while ($row = mysqli_fetch_assoc($result)) {
@@ -124,7 +164,7 @@ if ($result && mysqli_num_rows($result) > 0) {
     if ($isOverdue && !$isCompleted) {
         echo "<span style='color: red; font-weight: light;'>(Overdue)</span>";
     }
-    
+
 
     echo "<div class='task-info-line'>";
     echo "<div class='task-details-left'>";

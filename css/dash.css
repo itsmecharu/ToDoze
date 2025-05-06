@@ -12,96 +12,45 @@ body {
   padding-left: 180px;
 }
 
-/* Top bar */
-.top-bar {
-  width: 100%;
-  height: 60px;
-  background: transparent;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 30px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1001;
-}
-
-.top-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.profile-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  color: #fff;
-}
-
-.username {
-  font-weight: 600;
-  color: #333;
-}
-
-.top-icon {
-  font-size: 1.8rem;
-  color: #333;
-  text-decoration: none;
-  margin-left: 15px;
-  margin-top: 12px;
-}
- /* Top-right corner icon container */
- .top-right-icons {
+.logo-container {
   position: fixed;
   top: 20px;
-  right: 20px;
-  display: flex;
-  align-items: center;
-  z-index: 1000; /* Ensure it is above other content */
+  left: 30px;
+  z-index: 1000;
+  width: auto; /* Let the logo determine container width */
 }
 
-/* Notification Icon Styling */
-.top-icon ion-icon {
-  font-size: 28px; /* Size of the notification icon */
-  color: #333; /* Icon color */
-  cursor: pointer; /* Change cursor to pointer on hover */
+.logo {
+  height: 60px; /* Increased from 40px to 50px */
+  width: auto; /* Changed from 100% to maintain aspect ratio */
+  display: block;
+  transition: transform 0.2s ease; /* Smooth hover effect */
 }
 
-/* Optional: Add a hover effect */
-.top-icon ion-icon:hover {
-  color: #007bff; /* Change color on hover */
+/* Optional hover animation */
+.logo:hover {
+  transform: scale(1.05); /* Subtle enlargement on hover */
 }
 
-/* Optional: Adding a notification badge */
-.top-icon {
-  position: relative;
-}
+/* Responsive adjustment for smaller screens */
+@media (max-width: 768px) {
+  .logo {
+    height: 50px; /* Slightly smaller on mobile */
+  }
+}  
 
-
-.menu-toggle {
-  display: none;
-  font-size: 2rem;
-  cursor: pointer;
-}
-/* Sidebar Navigation */
+/* Sidebar Navigation - Enlarged */
 .l-navbar {
   position: fixed;
-  top: 60px;
+  top: 70px;
   left: 30px;
-  width: 180px;
+  width: 220px; /* Increased from 180px */
   height: calc(100% - 60px);
   background: #ffffff;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-  padding-top: 20px;
+  border-top-right-radius: 25px; /* Increased from 20px */
+  border-bottom-right-radius: 25px; /* Increased from 20px */
+  box-shadow: 3px 0 8px rgba(0,0,0,0.12); /* Slightly stronger shadow */
+  padding-top: 25px; /* Increased from 20px */
   transition: left 0.3s ease;
 }
 
@@ -115,8 +64,8 @@ body {
 .nav__list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding-left: 20px;
+  gap: 1.2rem; /* Increased from 1rem */
+  padding-left: 25px; /* Increased from 20px */
 }
 
 .nav__link {
@@ -125,32 +74,169 @@ body {
   text-decoration: none;
   color: #333;
   font-weight: 500;
-  transition: background 0.2s;
+  font-size: 1.1rem; /* Added font size */
+  transition: all 0.2s; /* Changed from just background */
+  padding: 8px 15px; /* Added consistent padding */
+  border-radius: 10px;
 }
 
 .nav__link:hover {
   background-color: #f0f0f0;
-  border-radius: 10px;
-  padding: 5px 10px;
+  transform: translateX(3px); /* Added slight movement */
 }
 
 .nav__link.active {
-  background-color: #4CAF50; /* dark gray */
+  background-color: #4CAF50;
   color: white;
-  font-weight: bold;
-  border-radius: 10px;
-  padding: 5px 10px;
+  font-weight: 600; /* Slightly bolder */
+  padding: 8px 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Added shadow */
 }
 
 .nav__icon {
-  font-size: 1.5rem;
-  margin-right: 10px;
+  font-size: 1.7rem; /* Increased from 1.5rem */
+  margin-right: 12px; /* Increased from 10px */
+  width: 24px; /* Added fixed width */
+  text-align: center;
 }
 
 .nav__link.logout {
-  padding: 10px 20px;
-  margin-bottom: 20px;
+  padding: 12px 20px; /* Increased from 10px */
+  margin-bottom: 25px; /* Increased from 20px */
+  font-size: 1.1rem; /* Added font size */
 }
+
+/* For better spacing */
+.nav__name {
+  margin-top: 2px; /* Helps align text with icon */
+}
+
+/* Container for top-right icons */
+.top-right-icons {
+  position: fixed;
+  top: 25px;
+  right: 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Increased gap */
+  z-index: 1000;
+}
+
+/* Notification icon - bigger */
+.top-icon {
+  color: #5f6368;
+  font-size: 1.8rem; /* Increased from 1.4rem */
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px; /* Increased from 36px */
+  height: 48px; /* Increased from 36px */
+  border-radius: 50%;
+}
+
+.top-icon:hover {
+  color: #4361ee;
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.1);
+}
+
+/* Profile container - bigger */
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Increased from 10px */
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 8px 16px 8px 8px; /* Increased padding */
+  border-radius: 50px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.profile-info:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Profile circle/avatar - bigger */
+.profile-circle {
+  width: 42px; /* Increased from 32px */
+  height: 42px; /* Increased from 32px */
+  border-radius: 50%;
+  background-color: #f0f2f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4361ee;
+  font-size: 1.4rem; /* Added font-size for icon */
+  transition: all 0.3s ease;
+}
+
+.profile-circle:hover {
+  background-color: #4361ee;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Username text - bigger */
+.username-text {
+  font-weight: 600; /* Bolder */
+  color: #333;
+  font-size: 1.1rem; /* Increased from 0.9rem */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px; /* Wider */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .top-right-icons {
+    top: 20px;
+    right: 20px;
+    gap: 15px;
+  }
+  
+  .username-text {
+    display: none;
+  }
+  
+  .profile-info {
+    padding: 8px;
+  }
+  
+  .profile-circle {
+    width: 48px;
+    height: 48px;
+    font-size: 1.6rem;
+  }
+
+  .top-icon {
+    font-size: 1.6rem;
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* For very large screens */
+@media (min-width: 1600px) {
+  .top-right-icons {
+    top: 30px;
+    right: 30px;
+  }
+  
+  .profile-circle {
+    width: 48px;
+    height: 48px;
+    font-size: 1.6rem;
+  }
+  
+  .username-text {
+    font-size: 1.2rem;
+  }
+}
+
 
 .project-toggle {
   display: flex;
@@ -413,6 +499,8 @@ body {
       padding: 10px;
       background-color: #f9f9f9;
       border-left: 5px solid  #4CAF50;
+      width: 1100px;
+      margin-left: 80px;
     }
     
     .task-content {
@@ -699,71 +787,6 @@ body {
 .task-actions a:hover {
     text-decoration: underline;
 }
-
-.profile-circle {
-width: 40px;
-height: 40px;
-border-radius: 50%;
-background-color: hsl(243, 92%, 74%);
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 1.5rem;
-color: hsl(0, 0%, 100%);
-}
-
-.username {
-font-weight: 600;
-color: #333;
-}
-
-.username-text {
-  margin-top: 20px;
-  margin-right: 20px;
-  font-weight: bold;
-  color: #121211;
-  }
-
-.top-right-icons {
-position: fixed;
-top: 20px;
-right: 20px;
-display: flex;
-align-items: center;
-z-index: 1000; /* Ensure it is above other content */
-}
-
-/* Notification Icon Styling */
-.top-icon {
-margin-right: 20px; /* Space between notification and profile icon */
-}
-
-.top-icon ion-icon {
-font-size: 28px; /* Size of the notification icon */
-color: #333; /* Icon color */
-cursor: pointer; /* Change cursor to pointer on hover */
-}
-
-/* Optional: Add a hover effect */
-.top-icon ion-icon:hover {
-color: #007bff; /* Change color on hover */
-}
-
-/* Optional: Adding a notification badge */
-.top-icon {
-position: relative;
-}
-.logo-container {
-position: fixed;
-top: 5px;  /* Adjust the position from the top */
-left: 35px;  /* Adjust the position from the left */
-z-index: 1000;  /* Ensure it's above the sidebar */
-}
-
-.logo {
-width: 120px;  /* Adjust the width of the logo */
-height: auto;
-}
 .delete-task {
 color: red !important;
 }
@@ -802,3 +825,139 @@ text-decoration: underline;
   cursor: pointer;
 }
 
+
+        /* Wide Task Summary Container */
+        .wide-summary {
+          background: #FFFFFF;
+          border-radius: 12px;
+          padding: 30px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+          border: 1px solid rgba(0, 0, 0, 0.03);
+          width: 90%;
+          max-width: 1200px;
+          margin: 0 auto;
+      }
+
+      /* Header */
+      .wide-header {
+          color: #1A1A1A;
+          font-size: 18px;
+          font-weight: 600;
+          margin-bottom: 25px;
+          letter-spacing: 0.2px;
+          text-transform: uppercase;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+
+      /* Metrics Layout */
+      .wide-metrics {
+          display: flex;
+          gap: 30px;
+      }
+
+      .wide-metric {
+          flex: 1;
+          padding: 20px;
+          background: #F9FAFB;
+          border-radius: 8px;
+      }
+
+      /* Metric Typography */
+      .wide-label {
+          color: #6B7280;
+          font-size: 14px;
+          margin-bottom: 10px;
+          letter-spacing: 0.2px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+      }
+
+      .wide-value {
+          font-size: 32px;
+          font-weight: 600;
+          letter-spacing: -0.5px;
+          margin: 15px 0;
+      }
+
+      .wide-total {
+          color: #111827;
+      }
+
+      .wide-completed {
+          color: #059669;
+      }
+
+      .wide-pending {
+          color: #DC2626;
+      }
+
+      /* Progress Bars */
+      .wide-progress-container {
+          height: 6px;
+          background: #E5E7EB;
+          border-radius: 3px;
+          overflow: hidden;
+          margin-top: 20px;
+      }
+
+      .wide-progress {
+          height: 100%;
+          border-radius: 3px;
+      }
+
+      .wide-total-progress {
+          width: 100%;
+          background: #4B5563;
+      }
+
+      .wide-completed-progress {
+          width: 67%;
+          background: #10B981;
+      }
+
+      .wide-pending-progress {
+          width: 33%;
+          background: #EF4444;
+      }
+
+      /* Additional Info */
+      .wide-info {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 5px;
+          font-size: 12px;
+          color: #9CA3AF;
+      }
+
+      /* Timestamp */
+      .wide-timestamp {
+          margin-top: 30px;
+          font-size: 13px;
+          color: #9CA3AF;
+          text-align: right;
+          font-weight: 500;
+      }
+
+      /* Status Indicators */
+      .status-indicator {
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          margin-right: 6px;
+      }
+
+      .total-indicator {
+          background: #4B5563;
+      }
+
+      .completed-indicator {
+          background: #10B981;
+      }
+
+      .pending-indicator {
+          background: #EF4444;
+      }
