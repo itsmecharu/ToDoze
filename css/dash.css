@@ -480,101 +480,6 @@ body {
     .add-task-form input, .add-task-form button {
       margin: 0;
     }
-    
-    
-    /* css for toggleing  task list  */
-    .container {
-      max-width: 800px;
-      margin: 80px;
-      margin-left: 270px ;
-      padding: 20px;
-      margin-bottom: 5px;
-      padding: 5px 5px 10px 15px;
-    }
-    
-    .task {
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      padding: 10px;
-      background-color: #f9f9f9;
-      border-left: 5px solid  #4CAF50;
-      width: 1100px;
-      margin-left: 80px;
-    }
-    
-    .task-content {
-      display: flex;
-      align-items: center;
-    }
-    
-    .complete-form {
-      margin-right: 10px;
-      margin-bottom: 30px;
-    }
-    
-    .complete-box {
-      width: 20px;
-      height: 20px;
-      border: 2px solid #007bff;
-      border-radius: 4px;
-      background-color: white;
-      cursor: pointer;
-    }
-    
-    .complete-box:hover {
-      background-color: #007bff;
-    }
-    
-    .task-info-line {
-      display: flex;
-      justify-content: space-between; /* Push left and right apart */
-      align-items: center;
-      flex-wrap: wrap;
-      margin-top: 5px;
-    
-    }
-    
-    .task-details-left {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    
-    .task-actions {
-      display: flex;
-      margin-right: 90px;
-      gap: 15px;
-    }
-    
-    .task-actions a {
-      color: #007bff;
-      text-decoration: none;
-    }
-    
-    .task-actions a:hover {
-      text-decoration: underline;
-    }
-    
-    
-    .complete-form {
-      display: flex;
-      align-items: center;
-    }
-    
-    .complete-box {
-      width: 10px;
-      height: 10px;
-      border: 2px solid #333;
-      background: white;
-      cursor: pointer;
-      border-radius: 3px;
-    }
-    
-    .task-details {
-      flex-grow: 1;
-    }
-      
 
 
     .filter-container {
@@ -622,7 +527,7 @@ body {
       gap: 10px; /* Space between buttons */
     }
     
-    /* Button styles */
+    /* Button styles
     .edit-btn,
     .delete-btn {
       padding: 5px 12px;
@@ -634,7 +539,7 @@ body {
       cursor: pointer;
       font-size: 14px;
     
-    }
+    } */
     
     .delete-btn {
       background-color: #d33;
