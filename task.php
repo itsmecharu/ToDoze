@@ -173,7 +173,10 @@ if ($result && mysqli_num_rows($result) > 0) {
 
     echo "<div class='task-info-line'>";
     echo "<div class='task-details-left'>";
-    echo (!empty($row['taskdescription']) ? "<span class='info'>Description: " . htmlspecialchars($row['taskdescription']) . "</span>" : "");
+    
+    if (!empty($row['taskdescription'])) {
+      echo "<div class='task-description'><span class='info'>Description: " . htmlspecialchars($row['taskdescription']) . "</span></div>";
+  }
     echo (!empty($row['taskdate']) ? "<span class='info'>DueDate: " . htmlspecialchars(date('Y-m-d', strtotime($row['taskdate']))) . "</span>" : "");
     echo (!empty($row['tasktime']) ? "<span class='info'>DueTime: " . htmlspecialchars(date('H:i', strtotime($row['tasktime']))) . "</span>" : "");
     echo "<span class='info'>Reminder: " . (isset($row['reminder_percentage']) && $row['reminder_percentage'] !== null ? htmlspecialchars($row['reminder_percentage']) . "%" : "Not set") . "</span>";

@@ -213,7 +213,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit">Update Task</button>
       </form>
       <br>
-      <a href="dash.php" class="back-link">← Back to Task List</a>
+      <a href="task.php" class="back-link">← Back to Task List</a>
     </div>
   </div>
   </script>
