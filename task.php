@@ -121,6 +121,10 @@ if ($stmt) {
   </div>
 
   <div class="filter-container">
+  <div style="display: flex; justify-content: center;">
+  <button id="AddTaskBtn" class="create-btn"> + Add task</button>
+</div>
+
   <a href="task.php" class="task-filter <?= $filter == 'all' ? 'active' : '' ?>">🕒 Pending</a>
   <a href="task.php?filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed</a>
   <a href="task.php?filter=overdue" class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue</a>
@@ -141,6 +145,9 @@ if ($stmt) {
     <a href="logout.php" class="nav__link logout"><ion-icon name="log-out-outline" class="nav__icon"></ion-icon><span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span></a>
   </nav>
 </div>
+
+
+
 
 <?php
 if ($result && mysqli_num_rows($result) > 0) {
@@ -210,9 +217,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 ?>
 
     <div class="container">
-             <!-- Button -->
-    <button id="AddTaskBtn" class="create-btn"> + Add task</button>
-
+ 
 <!-- Modal -->
 <div id="TaskModal" class="modal-overlay" style="display: none;">
   <div class="modal-content">
