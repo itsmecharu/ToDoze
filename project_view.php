@@ -177,37 +177,68 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
     </nav>
   </div>
 
-<div class="container">
-    <div class="box">
-        <h2><?php echo htmlspecialchars($project['projectname']); ?></h2>
-        <p><strong>Description:</strong> <?php echo htmlspecialchars($project['projectdescription']); ?></p>
-        <p><strong>Due Date:</strong> <?php echo htmlspecialchars($project['projectduedate']); ?></p>
-
-        <div class="icons">
-        <div class="icons" style="display: flex; gap: 20px; margin-top: 15px;">
-  <div class="project-actions">
-    <?php if ($user_role === 'Admin'): ?>
-      <a href="project_task.php?projectid=<?php echo $projectId; ?>" class="edit-btn" title="Edit">
-        <ion-icon name="add-circle-outline"></ion-icon> Task
-      </a>
-      <a href="member.php?projectid=<?php echo $projectId; ?>" class="edit-btn" title="Edit">
-        <ion-icon name="people-outline"></ion-icon> Member
-      </a>
-    <?php else: ?>
-      <span class="view-only-msg">🔒 View Only</span>
-    <?php endif; ?>
+  <div class="project-box">
+  <div class="project-header">
+    <h2 class="project-name"><?php echo htmlspecialchars($project['projectname']); ?></h2>
   </div>
-</div>
+  <p style="font-size: small;"><strong>Description:</strong> <?php echo htmlspecialchars($project['projectdescription']); ?></p>
+  <p><strong>Due Date:</strong> <?php echo htmlspecialchars($project['projectduedate']); ?></p>
 
-</div>
-
-<div class="filter-container">
+  <div class="icons" style="display: flex; gap: 20px; margin-top: 15px;">
+    <div class="project-actions">
+      <?php if ($user_role === 'Admin'): ?>
+        <a href="project_task.php?projectid=<?php echo $projectId; ?>" class="edit-btn" title="Edit">
+          <ion-icon name="add-circle-outline"></ion-icon> Task
+        </a>
+        <a href="member.php?projectid=<?php echo $projectId; ?>" class="edit-btn" title="Edit">
+          <ion-icon name="people-outline"></ion-icon> Member
+        </a>
+      <?php else: ?>
+        <span class="view-only-msg">🔒 View Only</span>
+      <?php endif; ?>
+    </div>
+  </div>
+  <div class="filter-container">
   <div style="display: flex; justify-content: center;">
 </div>
-<a href="project_view.php?projectid=<?= $projectId ?>&filter=pending" class="task-filter <?= $filter == 'pending' ? 'active' : '' ?>">🕒 Pending</a>
-<a href="project_view.php?projectid=<?= $projectId ?>&filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed</a>
-<a href="project_view.php?projectid=<?= $projectId ?>&filter=overdue" class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue</a>
+<a href="project_view.php?projectid=<?= $projectId ?>&filter=pending" class="task-filter <?= $filter == 'pending' ? 'active' : '' ?>">🕒 Pending Tasks</a>
+<a href="project_view.php?projectid=<?= $projectId ?>&filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed Tasks</a>
+<a href="project_view.php?projectid=<?= $projectId ?>&filter=overdue" class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue Tasks</a>
 </div>
+</div>
+<style>
+  .project-box {
+  border: 1px solid #ccc;
+  /* border-radius: 10px; */
+  padding: 10px;
+  background: #fff;
+  margin-bottom: 10px;
+  margin-left: 50px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.project-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 20px;
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.view-only-msg {
+  color: #888;
+  font-style: italic;
+}
+
+</style>
+
 
 
 <!-- Displaying the tasks -->
