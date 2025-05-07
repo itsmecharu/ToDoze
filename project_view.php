@@ -65,7 +65,7 @@ mysqli_close($conn);
       
          <!-- Profile Icon -->
          <div class="profile-info">
-  <a href="profile.php" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+  <a href="#" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
     <ion-icon name="person-outline"></ion-icon>
   </a>
   <span class="username-text"><?= htmlspecialchars($username) ?></span>
