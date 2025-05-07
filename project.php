@@ -11,6 +11,8 @@ if (!isset($_SESSION['userid'])) {
 }
 
 $userid = $_SESSION['userid'];
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+
 
 // Handle project creation
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -43,9 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     mysqli_stmt_close($stmt);
   }
 }
-
-// Fetch projects based on membership
-$sql = $sql = "SELECT DISTINCT p.* 
+// fetching 
+$baseQuery = "
+SELECT DISTINCT p.*, pm.role 
 FROM projects p
 JOIN project_members pm ON p.projectid = pm.projectid
 WHERE 
@@ -53,75 +55,19 @@ WHERE
         pm.userid = ? AND 
         (pm.role = 'Admin' OR pm.status = 'Accepted')
     )
-    AND p.is_projectdeleted = 0";
+    AND p.is_projectdeleted = 0
+";
 
-$stmt = mysqli_prepare($conn, $sql);
+if ($filter === 'completed') {
+    $baseQuery .= " AND p.projectstatus = 'Completed'";
+} elseif ($filter === 'pending' || $filter === 'all') {
+    $baseQuery .= " AND (p.projectstatus IS NULL OR p.projectstatus = 'Pending')";
+}
+
+$stmt = mysqli_prepare($conn, $baseQuery);
 mysqli_stmt_bind_param($stmt, "i", $userid);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
-
-
-// Initialize variables with default values
-$totalTasks = 0;
-$pendingTasks = 0;
-$completedTasks = 0;
-$overdueTasks = 0;
-
-try {
-  // Fetch task statistics for the logged-in user
-  $sqlTotalTasks = "SELECT COUNT(*) as total FROM tasks WHERE userid = ?";
-  $sqlPendingTasks = "SELECT COUNT(*) as pending FROM tasks WHERE userid = ? AND taskstatus = 'Pending'";
-  $sqlCompletedTasks = "SELECT COUNT(*) as completed FROM tasks WHERE userid = ? AND taskstatus = 'Completed'";
-  $sqlOverdueTasks = "SELECT COUNT(*) as overdue FROM tasks WHERE userid = ? AND is_overdue = 1";
-
-  // Total Tasks
-  $stmtTotal = $conn->prepare($sqlTotalTasks);
-  $stmtTotal->bind_param("i", $userid);
-  $stmtTotal->execute();
-  $resultTotal = $stmtTotal->get_result();
-  if ($row = $resultTotal->fetch_assoc()) {
-    $totalTasks = $row['total'];
-  }
-  $stmtTotal->close();
-
-  // Pending Tasks
-  $stmtPending = $conn->prepare($sqlPendingTasks);
-  $stmtPending->bind_param("i", $userid);
-  $stmtPending->execute();
-  $resultPending = $stmtPending->get_result();
-  if ($row = $resultPending->fetch_assoc()) {
-    $pendingTasks = $row['pending'];
-  }
-  $stmtPending->close();
-
-  // Completed Tasks
-  $stmtCompleted = $conn->prepare($sqlCompletedTasks);
-  $stmtCompleted->bind_param("i", $userid);
-  $stmtCompleted->execute();
-  $resultCompleted = $stmtCompleted->get_result();
-  if ($row = $resultCompleted->fetch_assoc()) {
-    $completedTasks = $row['completed'];
-  }
-  $stmtCompleted->close();
-  $stmtOverdue = $conn->prepare($sqlOverdueTasks);
-  $stmtOverdue->bind_param("i", $userid);
-  $stmtOverdue->execute();
-  $resultOverdue = $stmtOverdue->get_result();
-  if ($row = $resultOverdue->fetch_assoc()) {
-    $overdueTasks = $row['overdue'];
-  }
-  $stmtOverdue->close();
-
-
-
-
-
-} catch (Exception $e) {
-  // Log error but don't show to user
-  error_log("Database error: " . $e->getMessage());
-  // You might want to set default values here if the queries fail
-}
-
 
 ?>
 
@@ -133,8 +79,6 @@ try {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Project</title>
   <link rel="stylesheet" href="css/dash.css">
-  <link rel="stylesheet" href="css/extra.css">
-
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -150,7 +94,7 @@ try {
 
       <!-- Profile Icon -->
       <div class="profile-info">
-        <a href="#" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+        <a href="profile.php" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
           <ion-icon name="person-outline"></ion-icon>
         </a>
         <span class="username-text"><?= htmlspecialchars($username) ?></span>
@@ -158,10 +102,27 @@ try {
     </div>
   </div>
 
+<!-- filters -->
+  <div class="filter-container">
+  <div style="display: flex; justify-content: center;">
+   <!-- Button -->
+   <button id="createProjectBtn" class="create-btn"> + Create New Project</button>
+</div>
+
+<a href="project.php?filter=pending" class="task-filter <?= $filter == 'pending' || $filter == 'all' ? 'active' : '' ?>">🕒 Pending</a>
+<a href="project.php?filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed</a>
+
+</div>
+
+
   <!-- Logo Above Sidebar -->
   <div class="logo-container">
     <img src="img/logo.png" alt="Logo" class="logo">
   </div>
+
+
+
+  
 
   <!-- Sidebar Navigation -->
   <div class="l-navbar" id="navbar">
@@ -190,35 +151,8 @@ try {
       </a>
     </nav>
   </div>
-   <!-- Task Summary Section -->
-   <div class="bottom-container-wrapper">
-      <!-- Task Statistics at the top -->
-      <div class="bottom-container">
-        <h2>Task Statistics</h2>
-        <div class="stats-grid">
-          <div class="stat-item"style="background-color: lightblue">
-            <div class="stat-label">Total</div>
-            <div class="stat-value" ><?php echo $totalTasks; ?></div>
-          </div>
-          <div class="stat-item" style="background-color: #2ecc71;">
-            <div class="stat-label">Completed</div>
-            <div class="stat-value" ><?php echo $completedTasks; ?></div>
-          </div>
-          <div class="stat-item"style="background-color: #f39c12;">
-            <div class="stat-label">Pending</div>
-            <div class="stat-value" ><?php echo $pendingTasks; ?></div>
-          </div>
-          <div class="stat-item"style="background-color:rgb(216, 39, 57);">
-            <div class="stat-label">Overdue</div>
-            <div class="stat-value" ><?php echo $overdueTasks; ?></div>
-          </div>
-        </div> 
 
-</div>
-  <div class="project-container">
-    <!-- Button -->
-    <button id="createProjectBtn" class="create-btn"> + Create New Project</button>
-
+  <div class="container">
     <!-- Modal -->
     <div id="projectModal" class="modal-overlay" style="display: none;">
       <div class="modal-content">
@@ -242,11 +176,13 @@ try {
   </div>
   </div>
 
-  <div class="project-box">
+  <div class="box">
     <h2>Your Projects</h2>
     <?php if (mysqli_num_rows($result) > 0): ?>
       <div class="project-list">
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
+          <?php $role = $row['role']; ?>
+
           <div class="project-box">
             <!-- Project Name on its own line -->
             <div class="project-title">
@@ -269,22 +205,27 @@ try {
                 </div>
               <?php endif; ?>
 
-              
+
 
               <div class="project-actions">
-              <a href="project_task.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
-                  <ion-icon name="add-circle-outline"></ion-icon> Edit
-                </a>
-              <a href="member.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
-                  <ion-icon name="people-outline"></ion-icon>Member
-                </a>
-                <a href="edit_project.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
-                  <ion-icon name="create-outline"></ion-icon> Edit
-                </a>
-                <a href="#" class="delete-btn" title="Delete" onclick="confirmDelete(<?php echo $row['projectid']; ?>)">
-                  <ion-icon name="trash-outline"></ion-icon> Delete
-                </a>
+                <?php if ($role === 'Admin'): ?>
+                  <a href="project_task.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
+                    <ion-icon name="add-circle-outline"></ion-icon>Task
+                  </a>
+                  <a href="member.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
+                    <ion-icon name="people-outline"></ion-icon> Member
+                  </a>
+                  <a href="edit_project.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
+                    <ion-icon name="create-outline"></ion-icon> Edit
+                  </a>
+                  <a href="#" class="delete-btn" title="Delete" onclick="confirmDelete(<?php echo $row['projectid']; ?>)">
+                    <ion-icon name="trash-outline"></ion-icon> Delete
+                  </a>
+                <?php else: ?>
+                  <span class="view-only-msg">🔒 View Only</span>
+                <?php endif; ?>
               </div>
+
             </div>
 
           </div>
@@ -295,7 +236,7 @@ try {
         <div class="content-wrapper">
           <img src="img/noproject.svg" alt="No tasks yet" />
           <h3>
-            <p>No project yet. Add your first one! 🚀</p>
+            <p>Nothing yet! 🚀</p>
           </h3>
         </div>
       </div>
@@ -351,29 +292,7 @@ try {
     }
   </script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const descriptions = document.querySelectorAll('.task-details-left .info');
 
-  descriptions.forEach(desc => {
-    if (desc.textContent.startsWith("Description:")) {
-      const fullText = desc.textContent.trim().replace("Description:", "").trim();
-      if (fullText.length > 8) {
-        const shortText = fullText.substring(0, 8) + "..........";
-
-        let toggled = false;
-        desc.textContent = "Description: " + shortText;
-        desc.classList.add("truncated");
-
-        desc.addEventListener("click", function () {
-          toggled = !toggled;
-          desc.textContent = "Description: " + (toggled ? fullText : shortText);
-        });
-      }
-    }
-  });
-});
-</script>
 
   <!-- IONICONS -->
   <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>

@@ -138,10 +138,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h2>Edit Project</h2>
             <form method="POST" action="">
                 <label for="projectname">Project Name:</label>
-                <input type="text" name="projectname" id="projectname" value="<?php echo htmlspecialchars($projectname); ?>" required><br>
+                <input type="text" name="projectname" id="projectname" value="<?php echo htmlspecialchars($projectname); ?>" required maxlength="50"><br>
 
                 <label for="projectdescription">Project Description:</label>
-                <input type="text" name="projectdescription" id="projectdescription" value="<?php echo htmlspecialchars($projectdescription); ?>"><br>
+                <input type="text" name="projectdescription" id="projectdescription" value="<?php echo htmlspecialchars($projectdescription); ?>"  maxlength="140"><br>
 
                 <label for="projectduedate">Due Date:</label>
                 <input type="datetime-local" id="projectduedate" name="projectduedate" 

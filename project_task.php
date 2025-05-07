@@ -11,7 +11,14 @@ if (!isset($_SESSION['userid'])) {
 
 $userid = $_SESSION['userid'];
 $taskname = $taskdescription = $taskdate = $tasktime = $reminder_percentage = "";
-$projectid = isset($_GET['projectid']) ? $_GET['projectid'] : null; // Get project ID from URL
+// $projectid = isset($_GET['projectid']) ? $_GET['projectid'] : null; // Get project ID from URL
+$projectid = $_GET['projectid'] ?? $_POST['projectid'] ?? null;
+
+if (!$projectid || !is_numeric($projectid)) {
+    echo "Project ID is missing or invalid.";
+    exit();
+}
+
 
 // Handle Task Submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -20,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taskdate = !empty($_POST['taskdate']) ? $_POST['taskdate'] : null;
     $tasktime = !empty($_POST['tasktime']) ? $_POST['tasktime'] : null;
     $reminder_percentage = isset($_POST['reminder_percentage']) ? trim($_POST['reminder_percentage']) : null;
-    $projectid = isset($_POST['projectid']) ? $_POST['projectid'] : null; // Get project ID from form submission
+    // $projectid = isset($_POST['projectid']) ? $_POST['projectid'] : null; // Get project ID from form submission
 
     // Insert Task
     $sql = "INSERT INTO tasks (userid, projectid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, taskstatus) 
@@ -87,11 +94,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <ion-icon name="home-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Home</span>
         </a>
-        <a href="task.php" class="nav__link active">
+        <a href="task.php" class="nav__link ">
           <ion-icon name="add-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Task</span>
         </a>
-        <a href="project.php" class="nav__link">
+        <a href="project.php" class="nav__link active">
           <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Project</span>
         </a>
@@ -106,19 +113,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </a>
     </nav>
   </div>
-    <h1>ToDoze - Project Tasks</h1>
     <div class="container">
         <div class="box">
-            <h2>Add Task to Project</h2>
+        
             <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?projectid=' . $projectid; ?>"
                 method="POST">
                 <input type="hidden" name="projectid" value="<?php echo $projectid; ?>">
 
                 <!-- <label for="taskname">Task Name:</label> -->
-                <input type="text" id="taskname" name="taskname" placeholder="Add task here" required>
+                <input type="text" id="taskname" name="taskname" placeholder="Add task here"  maxlength="50" required>
 
                 <!-- <label for="taskDescription">Task Description:</label> -->
-                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description"
+                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description" maxlength="140"
                     style="height: 80px;">
                 <div>
                     <!-- Date Section -->
@@ -163,34 +169,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     });
 </script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const taskDate = document.getElementById('taskdate');
-            const taskTime = document.getElementById('tasktime');
-            const reminderSelect = document.getElementById('reminder');
-            const form = document.querySelector('.add-task-form');
+      document.addEventListener("DOMContentLoaded", function () {
+    const taskDate = document.getElementById('taskdate');
+    const taskTime = document.getElementById('tasktime');
+    const reminderSelect = document.getElementById('reminder');
+    const form = document.querySelector('.add-task-form');
 
-            function checkDateAndTime() {
-                reminderSelect.disabled = !(taskDate.value && taskTime.value);
-                if (reminderSelect.disabled) reminderSelect.value = "";
-            }
+    // Disable reminder initially
+    reminderSelect.disabled = true;
 
-            taskDate.addEventListener('input', checkDateAndTime);
-            taskTime.addEventListener('input', checkDateAndTime);
+    function checkDateAndTime() {
+        // Enable reminder only if both date and time are set
+        reminderSelect.disabled = !(taskDate.value && taskTime.value);
+        if (reminderSelect.disabled) reminderSelect.value = ""; // Reset reminder if disabled
+    }
 
-            reminderSelect.addEventListener('change', function () {
-                if (!taskDate.value || !taskTime.value) {
-                    alert("Set both date and time before selecting a reminder.");
-                    this.value = "";
-                }
-            });
+    // Event listeners for date and time changes
+    taskDate.addEventListener('input', checkDateAndTime);
+    taskTime.addEventListener('input', checkDateAndTime);
 
-            form.addEventListener('submit', function (event) {
-                if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
-                    alert("Set both date and time before setting a reminder.");
-                    event.preventDefault();
-                }
-            });
-        });
+    // Ensure user selects both date and time before setting a reminder
+    reminderSelect.addEventListener('change', function () {
+        if (!taskDate.value || !taskTime.value) {
+            alert("Set both date and time before selecting a reminder.");
+            this.value = "";  // Clear the reminder selection
+        }
+    });
+
+    // Prevent form submission if reminder is selected without date/time
+    form.addEventListener('submit', function (event) {
+        if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
+            alert("Set both date and time before setting a reminder.");
+            event.preventDefault();  // Prevent form submission
+        }
+    });
+});
+
     </script>
      <!-- IONICONS -->
  <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>

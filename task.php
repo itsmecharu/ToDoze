@@ -227,7 +227,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                 <input type="text" id="taskname" name="taskname" placeholder="Add task here" maxlength="50" required>
 
                 <!-- <label for="taskDescription">Task Description:</label> -->
-                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description" maxlength="150"
+                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description" maxlength="140"
                     style="height: 80px;">
                 <div>
                     <!-- Date Section -->

@@ -15,6 +15,21 @@ if (!$projectId) {
     die("Project not found!");
 }
 
+// // Get user's role in this project
+// $sql = "SELECT role FROM project_members WHERE userid = ? AND projectid = ?";
+// $stmt = mysqli_prepare($conn, $sql);
+// mysqli_stmt_bind_param($stmt, "ii", $userid, $projectid);
+// mysqli_stmt_execute($stmt);
+// $result = mysqli_stmt_get_result($stmt);
+// $row = mysqli_fetch_assoc($result);
+
+// if (!$row || $row['role'] !== 'Admin') {
+//   // Not allowed
+//   header("Location: unauthorized.php");
+//   exit();
+// }
+
+
 // Get admin (creator) of the project
 $sql = "SELECT userid FROM project_members WHERE projectid = ? AND role = 'admin' LIMIT 1";
 $stmt = mysqli_prepare($conn, $sql);
