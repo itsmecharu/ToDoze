@@ -236,7 +236,7 @@ $conn->close();
   </div>
   <style>
   /* Bottom Row Layout */
-  .bottom-row {
+  .bottom-row , .top-row{
     display: flex;
     gap: 20px;
     width: 100%;
@@ -244,7 +244,7 @@ $conn->close();
   }
 
   /* Task Card Section */
-  .task-card {
+  .task-card , .chart-card {
     background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -254,7 +254,7 @@ $conn->close();
   }
 
   /* Project Section */
-  .project-section {
+  .project-section , .member{
     background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
