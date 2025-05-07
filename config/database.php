@@ -41,7 +41,8 @@ $sql = "CREATE TABLE IF NOT EXISTS projects(
     projectcompleted_at TIMESTAMP NULL DEFAULT NULL,
     projectdeleted_at TIMESTAMP NULL DEFAULT Null,
     is_projectdeleted TINYINT(1) DEFAULT 0,
-    is_overdue TINYINT(1) DEFAULT 0
+    is_overdue TINYINT(1) DEFAULT 0,
+    p_priority ENUM('High','Medium','Low','none') DEFAULT 'none'    
 )";
 
 if (mysqli_query($conn, $sql)) {
@@ -169,3 +170,11 @@ if (mysqli_query($conn, $sql)) {
 } else {
     echo "Error creating 'reviews' table: " . mysqli_error($conn) . "<br>";
 }
+
+// $sql="DROP DATABASE todoze";
+// if (mysqli_query($conn, $sql)) {
+//     // echo "'reviews' table created successfully.<br>";
+// } else {
+//     echo "Error creating 'reviews' table: " . mysqli_error($conn)."<br>";
+
+// }

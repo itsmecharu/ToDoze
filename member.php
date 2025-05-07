@@ -40,24 +40,21 @@ $result = mysqli_stmt_get_result($stmt);
 $accepted_members = mysqli_fetch_all($result, MYSQLI_ASSOC);
 mysqli_stmt_close($stmt);
 
-// Fetch pending (request sent) members
-// Fetch pending (request sent) members, excluding the admin
+// Fetch pending members
 $sql = "SELECT users.userid, users.useremail 
         FROM project_members 
         JOIN users ON project_members.userid = users.userid 
         WHERE project_members.projectid = ? 
         AND project_members.status = 'pending'
         AND users.userid != ?";
-
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "ii", $projectId, $admin_userid);
-
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $pending_members = mysqli_fetch_all($result, MYSQLI_ASSOC);
 mysqli_stmt_close($stmt);
 
-// Fetch users who are eligible to be invited
+// Fetch available users for invitation
 $sql = "SELECT userid, useremail 
         FROM users 
         WHERE userid != ? 
@@ -75,137 +72,169 @@ mysqli_stmt_close($stmt);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Members</title>
-    <link rel="stylesheet" href="css/dash.css">
-    <style>
-        .members-list ul, .pending-list ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        .members-list li, .pending-list li {
-            margin-bottom: 10px;
-        }
-        .remove-btn {
-            margin-left: 10px;
-            color: red;
-            text-decoration: none;
-        }
-        .admin-label {
-            color: green;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .message.success {
-            color: green;
-            margin: 10px 0;
-        }
-        .message.error {
-            color: red;
-            margin: 10px 0;
-        }
-        .section {
-            margin-bottom: 30px;
-        }
-        .profile-circle {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #ccc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: #fff;
-    }
-
-    .username {
-      font-weight: 600;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project Members</title>
+  <link rel="stylesheet" href="css/dash.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
       color: #333;
     }
 
-    .top-right-icons {
-      position: fixed;
-      top: 20px;
-      right: 20px;
+    .container {
+      max-width: 900px;
+      margin: 100px auto 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2, h3 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background-color: #f1f1f1;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 10px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      z-index: 1000; /* Ensure it is above other content */
     }
 
-    /* Notification Icon Styling */
-    .top-icon {
-      margin-right: 20px; /* Space between notification and profile icon */
+    .role {
+      font-size: 0.9rem;
+      color: #555;
     }
 
-    .top-icon ion-icon {
-      font-size: 28px; /* Size of the notification icon */
-      color: #333; /* Icon color */
-      cursor: pointer; /* Change cursor to pointer on hover */
+    .admin-label {
+      color: #28a745;
+      font-weight: bold;
     }
 
-    /* Optional: Add a hover effect */
-    .top-icon ion-icon:hover {
-      color: #007bff; /* Change color on hover */
+    .remove-btn {
+      background-color: transparent;
+      color: #dc3545;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 0.9rem;
     }
 
-    /* Optional: Adding a notification badge */
-    .top-icon {
-      position: relative;
+    .remove-btn:hover {
+      color: #a71d2a;
     }
-    .logo-container {
-  position: fixed;
-  top: 5px;  /* Adjust the position from the top */
-  left: 35px;  /* Adjust the position from the left */
-  z-index: 1000;  /* Ensure it's above the sidebar */
-}
 
-.logo {
-  width: 120px;  /* Adjust the width of the logo */
-  height: auto;
-}
-.back-link {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 18px;
-    font-size: 14px;
-    color: white;
-    background-color: #007BFF;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
+    .message {
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
 
-.back-link:hover {
-    background-color: #0056b3;
-}
-.box {
-    width: 550px; /* adjust size as you like */
-    margin: 50px 0 0 200px; /* top, right, bottom, left */
-    transition: all 0.3s ease-in-out;
-}
-    </style>
+    .message.success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    select, button {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    select:focus, button:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+
+    button[type="submit"] {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button[type="submit"]:hover {
+      background-color:rgb(0, 179, 30);
+    }
+
+    .back-link {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.3s;
+      cursor: pointer;
+    }
+
+    .back-link:hover {
+      background-color: #5a6268;
+    }
+
+    .task-filter {
+      padding: 10px 15px;
+      margin-right: 10px;
+      background-color: white;
+      color: black;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.3s;
+    }
+
+    .task-filter.active {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
 </head>
-<body>
-<div class="top-bar">
-    <div class="top-left">
-      <!-- Removed profile from here -->
-    </div>
-
+<body id="body-pd">
+  <div class="top-bar">
     <div class="top-right-icons">
       <!-- Notification Icon -->
       <a href="invitation.php" class="top-icon">
         <ion-icon name="notifications-outline"></ion-icon>
       </a>
-      
-        <!-- Profile Icon -->
-        <div class="profile-info">
-  <a href="profile.php" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
-    <ion-icon name="person-outline"></ion-icon>
-  </a>
-  <span class="username-text"><?= htmlspecialchars($username) ?></span>
-</div>
+
+      <!-- Profile Icon -->
+      <div class="profile-info">
+        <a href="profile.php" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+          <ion-icon name="person-outline"></ion-icon>
+        </a>
+        <span class="username-text"><?= htmlspecialchars($username) ?></span>
+      </div>
     </div>
   </div>
 
@@ -222,11 +251,11 @@ mysqli_stmt_close($stmt);
           <ion-icon name="home-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Home</span>
         </a>
-        <a href="task.php" class="nav__link active">
+        <a href="task.php" class="nav__link">
           <ion-icon name="add-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Task</span>
         </a>
-        <a href="project.php" class="nav__link">
+        <a href="project.php" class="nav__link active">
           <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Project</span>
         </a>
@@ -242,89 +271,98 @@ mysqli_stmt_close($stmt);
     </nav>
   </div>
 
+
 <div class="container">
-    <h2>Project Members</h2>
+  <div class="filter-container">
+    <button class="task-filter active" onclick="showSection('accepted', this)">Accepted Members</button>
+    <button class="task-filter" onclick="showSection('pending', this)">Pending Invitations</button>
+    <button class="task-filter" onclick="showSection('invite', this)">Send Invitation</button>
+  </div>
 
-    <?php if (isset($_GET['status'])): ?>
-        <div class="message <?php echo $_GET['status'] === 'success' ? 'success' : 'error'; ?>">
-            <?php
-            if ($_GET['status'] === 'success') {
-                echo "Invitation sent successfully.";
-            } else {
-                echo htmlspecialchars($_GET['message'] ?? "An error occurred.");
-            }
-            ?>
-        </div>
-    <?php endif; ?>
+  <?php if (isset($_GET['status'])): ?>
+    <div class="message <?php echo $_GET['status'] === 'success' ? 'success' : 'error'; ?>">
+      <?= $_GET['status'] === 'success' ? 'Invitation sent successfully.' : htmlspecialchars($_GET['message'] ?? "An error occurred."); ?>
+    </div>
+  <?php endif; ?>
 
-    <!-- Accepted Members -->
-    <div class="members-list section">
-        <h3>Accepted Members</h3>
-        <?php if (!empty($accepted_members)) { ?>
-            <ul>
-                <?php foreach ($accepted_members as $member) { ?>
-                    <li>
-                        <?php echo htmlspecialchars($member['useremail']); ?>
-                        <span class="role">(<?php echo htmlspecialchars($member['role']); ?>)</span>
-                        <?php if ($member['userid'] != $admin_userid) { ?>
-                            <a href="remove_member.php?userid=<?php echo $member['userid']; ?>&projectid=<?php echo $projectId; ?>" 
-                               class="remove-btn" 
-                               onclick="return confirm('Are you sure you want to remove this member?');">
-                               Remove
-                            </a>
-                        <?php } else { ?>
-                            <span class="admin-label">[Admin]</span>
-                        <?php } ?>
-                    </li>
-                <?php } ?>
-            </ul>
-        <?php } else { ?>
-            <p>No accepted members yet.</p>
+  <!-- Accepted Members -->
+  <div id="accepted" class="members-list section" style="display: block;">
+    <h3>Accepted Members</h3>
+    <?php if (!empty($accepted_members)) { ?>
+      <ul>
+        <?php foreach ($accepted_members as $member) { ?>
+          <li>
+            <?= htmlspecialchars($member['useremail']) ?>
+            <span class="role">(<?= htmlspecialchars($member['role']) ?>)</span>
+            <?php if ($member['userid'] != $admin_userid) { ?>
+              <a href="remove_member.php?userid=<?= $member['userid'] ?>&projectid=<?= $projectId ?>" class="remove-btn" onclick="return confirm('Are you sure you want to remove this member?');">Remove</a>
+            <?php } else { ?>
+              <span class="admin-label">[Admin]</span>
+            <?php } ?>
+          </li>
         <?php } ?>
-    </div>
+      </ul>
+    <?php } else { ?>
+      <p>No accepted members yet.</p>
+    <?php } ?>
+  </div>
 
-    <!-- Pending Invitations -->
-    <div class="pending-list section">
-        <h3>Pending Invitations (Request Sent)</h3>
-        <?php if (!empty($pending_members)) { ?>
-            <ul>
-                <?php foreach ($pending_members as $pending) { ?>
-                    <li>
-                        <?php echo htmlspecialchars($pending['useremail']); ?> (Pending)
-                    </li>
-                <?php } ?>
-            </ul>
-        <?php } else { ?>
-            <p>No pending invitations.</p>
+  <!-- Pending Invitations -->
+  <div id="pending" class="pending-list section" style="display: none;">
+    <h3>Pending Invitations (Request Sent)</h3>
+    <?php if (!empty($pending_members)) { ?>
+      <ul>
+        <?php foreach ($pending_members as $pending) { ?>
+          <li><?= htmlspecialchars($pending['useremail']) ?> (Pending)</li>
         <?php } ?>
-    </div>
+      </ul>
+    <?php } else { ?>
+      <p>No pending invitations.</p>
+    <?php } ?>
+  </div>
 
-    <!-- Add Member Form -->
-    <div class="add-member-form section">
-        <h3>Send Invitation</h3>
-        <form action="send_invitation.php" method="POST">
-            <input type="hidden" name="projectid" value="<?php echo $projectId; ?>">
-            <label for="email">Member Email:</label>
-            <select name="useremail" id="useremail" required>
-                <option value="" disabled selected>Select User</option>
-                <?php if (!empty($available_users)) { ?>
-                    <?php foreach ($available_users as $user) { ?>
-                        <option value="<?php echo htmlspecialchars($user['useremail']); ?>">
-                            <?php echo htmlspecialchars($user['useremail']); ?>
-                        </option>
-                    <?php } ?>
-                <?php } else { ?>
-                    <option value="" disabled>No users available to invite</option>
-                <?php } ?>
-            </select>
-            <button type="submit">Send Invite</button>
-        </form>
-        <button onclick="window.history.back();" class="back-link">Go Back</button>
-    </div>
-
- 
-
+  <!-- Send Invitation -->
+  <div id="invite" class="add-task-form section" style="display: none;">
+    <h3>Send Invitation</h3>
+    <form action="send_invitation.php" method="POST">
+      <input type="hidden" name="projectid" value="<?= $projectId ?>">
+      <label for="email">Member Email:</label>
+      <select name="useremail" id="useremail" required>
+        <option value="" disabled selected>Select User</option>
+        <?php if (!empty($available_users)) {
+          foreach ($available_users as $user) { ?>
+            <option value="<?= htmlspecialchars($user['useremail']) ?>"><?= htmlspecialchars($user['useremail']) ?></option>
+        <?php }} else { ?>
+          <option value="" disabled>No users available to invite</option>
+        <?php } ?>
+      </select>
+      <button type="submit" style="margin-top: 20px; border-radius: 20px;">Send Invite</button>
+    </form>
+    <button onclick="window.history.back();" class="back-link">Go Back</button>
+  </div>
 </div>
 
+<!-- JavaScript -->
+<script>
+  function showSection(id, btn) {
+    const sections = ['accepted', 'pending', 'invite'];
+    sections.forEach(sec => {
+      document.getElementById(sec).style.display = (sec === id) ? 'block' : 'none';
+    });
+
+    document.querySelectorAll('.task-filter').forEach(button => {
+      button.classList.remove('active');
+    });
+
+    btn.classList.add('active');
+  }
+</script>
+
+<!-- Icons and Charts -->
+<script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+<script src="js/dash.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>
 </html>

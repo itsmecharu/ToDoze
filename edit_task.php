@@ -183,9 +183,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="box">
       <h2 style="text-align: center; ">Edit Task</h2>
       <form method="POST" action="" class="add-task-form">
-        <input type="text" name="taskname" id="taskname" placeholder="Add task here" value="<?php echo htmlspecialchars($taskname); ?>" required>
+        <input type="text" name="taskname" id="taskname" placeholder="Add task here" value="<?php echo htmlspecialchars($taskname); ?>" maxlength="50" required>
 
-        <input type="text" name="taskdescription" id="taskdescription" placeholder="Task Description" style="height: 80px;" value="<?php echo htmlspecialchars($taskdescription); ?>">
+        <input type="text" name="taskdescription" id="taskdescription" placeholder="Task Description" style="height: 80px;" value="<?php echo htmlspecialchars($taskdescription); ?>"  maxlength="150">
 
         <div>
             <div style="display: inline-block; vertical-align: top; margin-right: 20px;">

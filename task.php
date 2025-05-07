@@ -224,10 +224,10 @@ if ($result && mysqli_num_rows($result) > 0) {
         <h2 style="text-align: center;">Add Task Here </h2>
             <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
                 <!-- <label for="taskname">Task Name:</label> -->
-                <input type="text" id="taskname" name="taskname" placeholder="Add task here" required>
+                <input type="text" id="taskname" name="taskname" placeholder="Add task here" maxlength="50" required>
 
                 <!-- <label for="taskDescription">Task Description:</label> -->
-                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description"
+                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description" maxlength="150"
                     style="height: 80px;">
                 <div>
                     <!-- Date Section -->
