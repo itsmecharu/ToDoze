@@ -59,6 +59,70 @@ $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $userid);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
+
+
+// Initialize variables with default values
+$totalTasks = 0;
+$pendingTasks = 0;
+$completedTasks = 0;
+$overdueTasks = 0;
+
+try {
+  // Fetch task statistics for the logged-in user
+  $sqlTotalTasks = "SELECT COUNT(*) as total FROM tasks WHERE userid = ?";
+  $sqlPendingTasks = "SELECT COUNT(*) as pending FROM tasks WHERE userid = ? AND taskstatus = 'Pending'";
+  $sqlCompletedTasks = "SELECT COUNT(*) as completed FROM tasks WHERE userid = ? AND taskstatus = 'Completed'";
+  $sqlOverdueTasks = "SELECT COUNT(*) as overdue FROM tasks WHERE userid = ? AND is_overdue = 1";
+
+  // Total Tasks
+  $stmtTotal = $conn->prepare($sqlTotalTasks);
+  $stmtTotal->bind_param("i", $userid);
+  $stmtTotal->execute();
+  $resultTotal = $stmtTotal->get_result();
+  if ($row = $resultTotal->fetch_assoc()) {
+    $totalTasks = $row['total'];
+  }
+  $stmtTotal->close();
+
+  // Pending Tasks
+  $stmtPending = $conn->prepare($sqlPendingTasks);
+  $stmtPending->bind_param("i", $userid);
+  $stmtPending->execute();
+  $resultPending = $stmtPending->get_result();
+  if ($row = $resultPending->fetch_assoc()) {
+    $pendingTasks = $row['pending'];
+  }
+  $stmtPending->close();
+
+  // Completed Tasks
+  $stmtCompleted = $conn->prepare($sqlCompletedTasks);
+  $stmtCompleted->bind_param("i", $userid);
+  $stmtCompleted->execute();
+  $resultCompleted = $stmtCompleted->get_result();
+  if ($row = $resultCompleted->fetch_assoc()) {
+    $completedTasks = $row['completed'];
+  }
+  $stmtCompleted->close();
+  $stmtOverdue = $conn->prepare($sqlOverdueTasks);
+  $stmtOverdue->bind_param("i", $userid);
+  $stmtOverdue->execute();
+  $resultOverdue = $stmtOverdue->get_result();
+  if ($row = $resultOverdue->fetch_assoc()) {
+    $overdueTasks = $row['overdue'];
+  }
+  $stmtOverdue->close();
+
+
+
+
+
+} catch (Exception $e) {
+  // Log error but don't show to user
+  error_log("Database error: " . $e->getMessage());
+  // You might want to set default values here if the queries fail
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -69,6 +133,8 @@ $result = mysqli_stmt_get_result($stmt);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Project</title>
   <link rel="stylesheet" href="css/dash.css">
+  <link rel="stylesheet" href="css/extra.css">
+
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -124,8 +190,32 @@ $result = mysqli_stmt_get_result($stmt);
       </a>
     </nav>
   </div>
+   <!-- Task Summary Section -->
+   <div class="bottom-container-wrapper">
+      <!-- Task Statistics at the top -->
+      <div class="bottom-container">
+        <h2>Task Statistics</h2>
+        <div class="stats-grid">
+          <div class="stat-item"style="background-color: lightblue">
+            <div class="stat-label">Total</div>
+            <div class="stat-value" ><?php echo $totalTasks; ?></div>
+          </div>
+          <div class="stat-item" style="background-color: #2ecc71;">
+            <div class="stat-label">Completed</div>
+            <div class="stat-value" ><?php echo $completedTasks; ?></div>
+          </div>
+          <div class="stat-item"style="background-color: #f39c12;">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value" ><?php echo $pendingTasks; ?></div>
+          </div>
+          <div class="stat-item"style="background-color:rgb(216, 39, 57);">
+            <div class="stat-label">Overdue</div>
+            <div class="stat-value" ><?php echo $overdueTasks; ?></div>
+          </div>
+        </div> 
 
-  <div class="container">
+</div>
+  <div class="project-container">
     <!-- Button -->
     <button id="createProjectBtn" class="create-btn"> + Create New Project</button>
 
@@ -152,7 +242,7 @@ $result = mysqli_stmt_get_result($stmt);
   </div>
   </div>
 
-  <div class="box">
+  <div class="project-box">
     <h2>Your Projects</h2>
     <?php if (mysqli_num_rows($result) > 0): ?>
       <div class="project-list">
@@ -261,7 +351,29 @@ $result = mysqli_stmt_get_result($stmt);
     }
   </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const descriptions = document.querySelectorAll('.task-details-left .info');
 
+  descriptions.forEach(desc => {
+    if (desc.textContent.startsWith("Description:")) {
+      const fullText = desc.textContent.trim().replace("Description:", "").trim();
+      if (fullText.length > 8) {
+        const shortText = fullText.substring(0, 8) + "..........";
+
+        let toggled = false;
+        desc.textContent = "Description: " + shortText;
+        desc.classList.add("truncated");
+
+        desc.addEventListener("click", function () {
+          toggled = !toggled;
+          desc.textContent = "Description: " + (toggled ? fullText : shortText);
+        });
+      }
+    }
+  });
+});
+</script>
 
   <!-- IONICONS -->
   <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>

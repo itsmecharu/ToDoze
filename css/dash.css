@@ -356,6 +356,7 @@ body {
       cursor: pointer;
       border-radius: 10px;
       font-weight: bold;
+      width: 200px;
     }
     
     button:hover {
@@ -446,27 +447,7 @@ body {
       font-weight: bold;
       color: #0d8ce0;
     }
-    
-    .progress-bar {
-      width: 100%;
-      height: 10px;
-      background: #e0e0e0;
-      border-radius: 5px;
-      margin-top: 10px;
-      overflow: hidden;
-    }
-    
-    .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(135deg, #2ecc71, #27ae60);
-      transition: width 0.3s ease;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
+        
     .task, .box {
       animation: fadeIn 0.5s ease;
     }
@@ -677,7 +658,7 @@ body {
   color: red;
 }
 
-    
+    /*.........invitation.................  */
     .i-container {
       max-width: 800px;
       margin: 20px auto;
@@ -811,11 +792,6 @@ color: red !important;
 .delete-task:hover {
 text-decoration: underline;
 }
-
-
-
-
-
 
 /* for floating the project form */
 .modal-overlay {
