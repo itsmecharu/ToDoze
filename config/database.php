@@ -169,16 +169,3 @@ if (mysqli_query($conn, $sql)) {
 } else {
     echo "Error creating 'reviews' table: " . mysqli_error($conn) . "<br>";
 }
-
-
-
-
-
-
-// $sql="DROP DATABASE todoze";
-// if (mysqli_query($conn, $sql)) {
-//     // echo "'reviews' table created successfully.<br>";
-// } else {
-//     echo "Error creating 'reviews' table: " . mysqli_error($conn)."<br>";
-
-// }

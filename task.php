@@ -78,7 +78,6 @@ if ($stmt) {
 } else {
     echo "Error preparing statement: " . mysqli_error($conn);
 }
-
 ?>
 
 
