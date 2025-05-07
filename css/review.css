@@ -1,34 +1,92 @@
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #fff;
-    margin: 0;
-    padding: 20px;
+.main-container {
+    width: 100%;
+    max-width: 1200px;
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    gap: 40px;
+    padding: 30px;
+    margin-left: 250px;
 }
 
 /* Review Form Container */
 .review-form-container {
     background-color: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    width: 200px;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 400px;
     text-align: center;
 }
 
-.review-form-container h2 {
-    margin-bottom: 5px;
-    color: #333;
+/* No Reviews Container */
+.no-reviews-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Star Rating System */
+.no-reviews-image {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1f3f5;
+}
+
+.no-reviews-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-reviews-container h3 {
+    color: #495057;
+    margin-bottom: 15px;
+    font-size: 22px;
+}
+
+.no-reviews-container p {
+    color: #868e96;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+/* Common styles for both containers */
+h2, h3 {
+    color: #343a40;
+    margin-bottom: 20px;
+}
+
 .rating-stars {
     direction: rtl;
     display: inline-block;
+    margin: 15px 0;
+}
+
+.rating-stars.error {
+    border: 2px solid #ff6b6b;
+    padding: 5px;
+    border-radius: 8px;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
 }
 
 .rating-stars input {
@@ -36,59 +94,71 @@ body {
 }
 
 .rating-stars label {
-    font-size: 60px;
-    color: #ccc;
+    font-size: 40px;
+    color: #e9ecef;
     cursor: pointer;
     transition: color 0.2s;
+    padding: 0 5px;
 }
 
-/* Highlight stars on hover and selection */
 .rating-stars label:hover,
 .rating-stars label:hover ~ label,
 .rating-stars input:checked ~ label {
-    color: #ffcc00;
+    color: #ffd43b;
 }
 
-/* Review Textarea */
-.review-form-container textarea {
+textarea {
     width: calc(100% - 20px);
-    padding: 10px;
+    padding: 12px;
     margin: 15px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    height: 80px;
-    resize: none;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    height: 120px;
+    resize: vertical;
+    font-family: Arial, sans-serif;
+    transition: all 0.3s;
 }
 
-/* Submit Button */
-.submit-btn {
-    padding: 10px 20px;
-    background-color: #3498db;
+textarea:focus {
+    border-color: #4dabf7;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.2);
+}
+
+.submit-btn, .browse-btn {
+    padding: 12px 24px;
+    background-color: #4dabf7;
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     width: 100%;
     font-size: 16px;
-    height: 50px;
+    transition: all 0.3s;
+    font-weight: 600;
+    margin-top: 10px;
 }
 
-.submit-btn:hover {
-    background-color: #2980b9;
+.submit-btn:hover, .browse-btn:hover {
+    background-color: #339af0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Style for our custom SweetAlert toast */
-.swal-toast {
-    margin: 0; 
-    white-space: nowrap; /* Prevent text wrapping */
+.submit-btn:active, .browse-btn:active {
+    transform: translateY(0);
 }
 
-p{
-    font-size: small;
-    /* padding: 30px 15px 15px 10px; */
+p {
+    font-size: 14px;
+    color: #495057;
+    margin: 10px 0;
+    line-height: 1.6;
 }
-    
 
-
-
-
+@media (max-width: 900px) {
+    .main-container {
+        flex-direction: column;
+        align-items: center;
+    }
+}

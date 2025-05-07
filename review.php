@@ -40,30 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="css/dash.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        /* Highlight the rating container when error occurs */
-        .rating-stars.error {
-            border: 2px solid red;
-            padding: 5px;
-            border-radius: 5px;
-        }
-        
-       
-        /* Initially align container to the left */
-.container {
-    margin-left: 150px; /* This matches the navbar width */
-    transition: all 0.3s ease-in-out;
-}
-
-/* When navbar is collapsed */
-body.nav-collapsed .container {
-    margin-left: 120px;
-    margin-right: 0px;
-    max-width: 800px; /* Optional: limit the width */
-    text-align: center;
-}
-   
-    </style>
 </head>
 
 <body id="body">
@@ -122,6 +98,8 @@ body.nav-collapsed .container {
     </nav>
   </div>
 
+  <div class="main-container">
+
     <div class="review-form-container">
         <h3>Share Review</h3>
         <form method="POST">
@@ -150,7 +128,17 @@ body.nav-collapsed .container {
             <button type="submit" class="submit-btn" id="submitReview">Submit Review</button>
         </form>
     </div>
-
+     <!-- No Reviews Container -->
+     <div class="no-reviews-container">
+            <div class="no-reviews-image">
+                <!-- Replace with your actual image -->
+                <img src="img/sad.svg" alt="No reviews yet">
+            </div>
+            <h3>No Recent Reviews</h3>
+            <p>There are no reviews available at the moment. Be the first to share your experience!</p>
+            <button class="browse-btn">Browse Products</button>
+        </div>
+  </div>
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
     <!-- ===== MAIN JS ===== -->
     <script src="js/dash.js"></script>
