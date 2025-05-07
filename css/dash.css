@@ -298,6 +298,7 @@ body {
       justify-content: center;
       align-items: center;
       text-align: center;
+      width:130%;
     }
 
     .content-wrapper img {
@@ -682,9 +683,6 @@ body {
       margin: 20px auto;
       margin-top:8%;
       padding: 20px 30px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
@@ -738,15 +736,6 @@ body {
     display: flex;
     gap: 10px;
   }
-
-
-
-
-
-
-
-
-  
 
   /* for the latest part profiles and all  */
   body {

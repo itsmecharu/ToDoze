@@ -101,7 +101,7 @@ mysqli_stmt_close($stmt);
 </div>
 </div>
 
-<div class="logo-container">
+<div class="logo-container" >
     <img src="img/logo.png" alt="App Logo" class="logo">
   </div>
 
