@@ -158,23 +158,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         </div>
     </div>
-<?php
-    if ($result && mysqli_num_rows($result) > 0) {
-  while ($row = mysqli_fetch_assoc($result)) {
-    $isOverdue = $row['is_overdue'] == 1;
-    $isCompleted = strtolower($row['taskstatus']) === 'completed';
-
-    echo "<div class='task' id='task-" . $row['taskid'] . "'>";
-    echo "<div class='task-content'>";
-
-    // Tick box (only if not completed)
-    if (!$isCompleted) {
-      echo "<form action='task_completion.php' method='POST' class='complete-form'>";
-      echo "<input type='hidden' name='taskid' value='" . $row['taskid'] . "'>";
-      echo "<button type='submit' name='complete-box' class='complete-box' title='Tick to complete'></button>";
-      echo "</form>";
-    }
-  ?>
 <script>
     // Get references to the button and container
     const addTaskButton = document.getElementById('addTaskButton');
