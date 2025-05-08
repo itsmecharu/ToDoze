@@ -48,24 +48,6 @@ $conn->close();
   <meta charset="UTF-8">
   <title>Edit Profile</title>
   <link rel="stylesheet" href="css/dash.css">
-  <style>
-    .back-link {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 18px;
-    font-size: 14px;
-    color: white;
-    background-color: #007BFF;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
-
-.back-link:hover {
-    background-color: #0056b3;
-}
-
-  </style>
 </head>
 <body>
 

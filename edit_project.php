@@ -150,7 +150,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <button type="submit">Update Project</button>
             </form>
             <br>
-            <a href="project.php">Back to Project List</a>
+            <!-- <a href="project.php">Back to Project List</a> -->
+  <a href="project.php" class="back-link">← Back to Project List</a>
+
         </div>
     </div>
 </body>
