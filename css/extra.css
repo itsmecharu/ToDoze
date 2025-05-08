@@ -1,4 +1,5 @@
 
+
 /* Task Statistics Section */
 .bottom-container {
   background-color: #ffffff;
@@ -149,10 +150,9 @@
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  width: 1045px;
-  align-content: center;
+  width: 600px;
   flex: 2;
-  margin-top: 25px;
+  /* Takes more space than projects */
 }
 
 /* Project Section */
@@ -204,6 +204,7 @@
   }
 }
 
+
 /* first */
 .bottom-container-wrapper {
   width: 100%;
@@ -249,15 +250,16 @@
 
 .stat-label {
   font-size: 1rem;
-  color: #7f8c8d;
-  font-weight: 500;
+  color: hsl(185, 23%, 89%);
+  font: bold;
+  font-weight: 800;
   margin-bottom: 8px;
 }
 
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: lab(4.56% -0.49 -0.77);
 }
 
 /* Responsive adjustments */
@@ -311,4 +313,3 @@
     border-radius: 6px;
   }
   
-
