@@ -114,6 +114,13 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
   $res = $stmt->get_result()->fetch_assoc();
   $dailyPending[] = $res['count'];
   $stmt->close();
+  // Pending tasks
+  $stmt = $conn->prepare("SELECT COUNT(*) as count FROM tasks WHERE userid = ? AND is_overdue = 1 AND DATE(taskcreated_at) = ?");
+  $stmt->bind_param("is", $userid, $date);
+  $stmt->execute();
+  $res = $stmt->get_result()->fetch_assoc();
+  $dailyoverdue[] = $res['count'];
+  $stmt->close();
 }
 
 ?>
@@ -417,6 +424,16 @@ function toggleTasks() {
                     backgroundColor: 'rgba(243, 156, 18, 0.1)',
                     borderWidth: 2,
                     pointBackgroundColor: '#f39c12',
+                    tension: 0.3,
+                    fill: false
+                  },
+                  {
+                    label: 'Overdue Tasks',
+                    data: <?php echo json_encode($dailyoverdue); ?>,
+                    borderColor: 'red',
+                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'red',
                     tension: 0.3,
                     fill: false
                   }

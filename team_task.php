@@ -114,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </nav>
   </div>
     <div class="container">
-    <h2>Add New Project Tasks</h2>
+    <h2>Add New Tasks</h2>
     <a href="team_view.php?teamid=<?php echo $teamid; ?>"class="back-link">View Project</a>
 
         <div class="box">
@@ -158,6 +158,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         </div>
     </div>
+
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: "Task added successfully!",
+                    text: "", // Empty text since you only want "Task added successfully"
+                    // icon: "success",
+                    timer: 1000,
+                    showConfirmButton: false,
+                    customClass: {
+                        popup: 'small-swal', // Custom class for SweetAlert popup
+                        title: 'small-swal-title', // Custom class for the title
+                        content: 'small-swal-content' // Custom class for the content
+                    }
+                });
+            });
+        </script>
+
+        <style>
+            .small-swal {
+                width: 200px;
+                /* Set the width of the card */
+                padding: 20px;
+                /* Optional: Add padding to adjust internal spacing */
+            }
+
+            .small-swal-title {
+                font-size: 16px;
+                /* Adjust font size of the title */
+                font-weight: bold;
+                /* Optional: Make title bold */
+            }
+
+            .small-swal-content {
+                font-size: 14px;
+                /* Adjust font size of the text content */
+            }
+        </style>
+
+
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
+    
 <script>
     // Get references to the button and container
     const addTaskButton = document.getElementById('addTaskButton');

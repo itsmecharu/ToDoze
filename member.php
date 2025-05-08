@@ -15,19 +15,15 @@ if (!$teamId) {
     die("Project not found!");
 }
 
-// // Get user's role in this team
-// $sql = "SELECT role FROM team_members WHERE userid = ? AND teamid = ?";
-// $stmt = mysqli_prepare($conn, $sql);
-// mysqli_stmt_bind_param($stmt, "ii", $userid, $teamid);
-// mysqli_stmt_execute($stmt);
-// $result = mysqli_stmt_get_result($stmt);
-// $row = mysqli_fetch_assoc($result);
+// fetching role 
+$role_sql = "SELECT role FROM team_members WHERE userid = ? AND teamid = ?";
+$role_stmt = mysqli_prepare($conn, $role_sql);
+mysqli_stmt_bind_param($role_stmt, "ii", $userid, $teamId);
+mysqli_stmt_execute($role_stmt);
+$role_result = mysqli_stmt_get_result($role_stmt);
+$user_role_data = mysqli_fetch_assoc($role_result);
+$user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role not found
 
-// if (!$row || $row['role'] !== 'Admin') {
-//   // Not allowed
-//   header("Location: unauthorized.php");
-//   exit();
-// }
 
 
 // Get admin (creator) of the team
@@ -89,8 +85,9 @@ mysqli_stmt_close($stmt);
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Project Members</title>
+  <title> Members</title>
   <link rel="stylesheet" href="css/dash.css" />
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
   
 </head>
 <body id="body-pd">
@@ -143,11 +140,15 @@ mysqli_stmt_close($stmt);
       </a>
     </nav>
   </div>
+
   <div class="container">
   <div class="filter-container">
-    <button class="task-filter active" onclick="showSection('accepted', this)">Accepted Members</button>
+    <button class="task-filter active" onclick="showSection('accepted', this)">Members</button>
+
+    <?php if ($user_role === 'Admin'): ?>
     <button class="task-filter" onclick="showSection('pending', this)">Pending Invitations</button>
     <button class="task-filter" onclick="showSection('invite', this)">Send Invitation</button>
+    <?php endif; ?>
   </div>
 
   <?php if (isset($_GET['status'])): ?>
@@ -167,6 +168,9 @@ mysqli_stmt_close($stmt);
               <span class="member-email"><?= htmlspecialchars($member['useremail']) ?></span>
               <span class="role-badge"><?= htmlspecialchars($member['role']) ?></span>
             </div>
+      
+
+            <?php if ($user_role === 'Admin'): ?>
             <?php if ($member['userid'] != $admin_userid) { ?>
               <a href="remove_member.php?userid=<?= $member['userid'] ?>&teamid=<?= $teamId ?>" class="remove-btn" onclick="return confirm('Are you sure you want to remove this member?');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -175,7 +179,8 @@ mysqli_stmt_close($stmt);
                 </svg>
                 Remove
               </a>
-            <?php } else { ?>
+              
+            <?php }  else { ?>
               <span class="admin-badge">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                   <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
@@ -183,6 +188,8 @@ mysqli_stmt_close($stmt);
                 Admin
               </span>
             <?php } ?>
+
+            <?php endif; ?>
           </li>
         <?php } ?>
       </ul>
@@ -198,7 +205,8 @@ mysqli_stmt_close($stmt);
       </div>
     <?php } ?>
   </div>
-
+  <!-- only admin can see this -->
+  <?php if ($user_role === 'Admin'): ?>
   <!-- Pending Invitations -->
   <div id="pending" class="pending-list section" style="display: none;">
     <h3>Pending Invitations</h3>
@@ -263,7 +271,9 @@ mysqli_stmt_close($stmt);
       </div>
     </form>
   </div>
+
 </div>
+<?php endif; ?>
 
 <style>
  

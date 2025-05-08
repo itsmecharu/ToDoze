@@ -182,7 +182,7 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
     <h2 class="team-name"><?php echo htmlspecialchars($team['teamname']); ?></h2>
   </div>
   <p style="font-size: small;"><strong>Description:</strong> <?php echo htmlspecialchars($team['teamdescription']); ?></p>
-  <p><strong>Due Date:</strong> <?php echo htmlspecialchars($team['teamduedate']); ?></p>
+
 
   <div class="icons" style="display: flex; gap: 20px; margin-top: 15px;">
     <div class="team-actions">
@@ -190,16 +190,16 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
         <a href="team_task.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Edit">
           <ion-icon name="add-circle-outline"></ion-icon> Task
         </a>
-        <a href="member.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Edit">
-          <ion-icon name="people-outline"></ion-icon> Member
-        </a>
+       
       <?php else: ?>
         <span class="view-only-msg">🔒 View Only</span>
       <?php endif; ?>
+      <a href="member.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Edit">
+      <ion-icon name="people-outline"></ion-icon> Member  </a>
     </div>
   </div>
   <div class="filter-container">
-  <div style="display: flex; justify-content: center;">
+  <div style="display: flex; justify-content: center; margin-bottom: 10px;">
 </div>
 <a href="team_view.php?teamid=<?= $teamId ?>&filter=pending" class="task-filter <?= $filter == 'pending' ? 'active' : '' ?>">🕒 Pending Tasks</a>
 <a href="team_view.php?teamid=<?= $teamId ?>&filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed Tasks</a>
@@ -309,6 +309,9 @@ if ($result && mysqli_num_rows($result) > 0) {
 </div>';
 }
 ?>
+
+
+
 
 <!-- for filters -->
 <script>

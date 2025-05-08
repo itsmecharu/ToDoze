@@ -45,29 +45,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     mysqli_stmt_close($stmt);
   }
 }
-// fetching 
+
+// fettching for filters
 $baseQuery = "
-SELECT DISTINCT p.*, pm.role 
-FROM teams p
-JOIN team_members pm ON p.teamid = pm.teamid
-WHERE 
-    (
-        pm.userid = ? AND 
-        (pm.role = 'Admin' OR pm.status = 'Accepted')
-    )
-    AND p.is_teamdeleted = 0
+SELECT t.*, tm.role 
+FROM teams t
+JOIN team_members tm ON t.teamid = tm.teamid
+WHERE tm.userid = ? AND t.is_teamdeleted = 0
 ";
 
-if ($filter === 'completed') {
-    $baseQuery .= " AND p.teamstatus = 'Completed'";
-} elseif ($filter === 'pending' || $filter === 'all') {
-    $baseQuery .= " AND (p.teamstatus IS NULL OR p.teamstatus = 'Pending')";
+// Apply filter
+if ($filter === 'admin') {
+  $baseQuery .= " AND tm.role = 'Admin'";
+} elseif ($filter === 'member') {
+  $baseQuery .= " AND tm.role != 'Admin' AND tm.status = 'Accepted'";
 }
 
 $stmt = mysqli_prepare($conn, $baseQuery);
 mysqli_stmt_bind_param($stmt, "i", $userid);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
+
 
 ?>
 
@@ -102,17 +100,17 @@ $result = mysqli_stmt_get_result($stmt);
     </div>
   </div>
 
-<!-- filters -->
+  <!-- filters -->
   <div class="filter-container">
-  <div style="display: flex; justify-content: center;">
-   <!-- Button -->
-   <button id="createProjectBtn" class="create-btn"> + Create New Team</button>
-</div>
+    <div style="display: flex; justify-content: center;">
 
-<a href="team.php?filter=pending" class="task-filter <?= $filter == 'pending' || $filter == 'all' ? 'active' : '' ?>">🕒 Pending</a>
-<a href="team.php?filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed</a>
+      <button id="createProjectBtn" class="create-btn"> + Create New Team</button>
+      </div>
 
-</div>
+      <a href="team.php?filter=admin"class="task-filter <?= $filter == 'admin' || $filter == 'all' ? 'active' : '' ?>">You are Admin of</a>
+      <a href="team.php?filter=member" class="task-filter <?= $filter == 'member' ? 'active' : '' ?>">You are Member of</a>
+  
+  </div>
 
 
   <!-- Logo Above Sidebar -->
@@ -122,7 +120,7 @@ $result = mysqli_stmt_get_result($stmt);
 
 
 
-  
+
 
   <!-- Sidebar Navigation -->
   <div class="l-navbar" id="navbar">
@@ -162,11 +160,11 @@ $result = mysqli_stmt_get_result($stmt);
           <label for="teamname">Team Name:</label>
           <input type="text" id="teamname" name="teamname" required>
 
-          <label for="teamdescription">Team  Description:</label>
+          <label for="teamdescription">Team Description:</label>
           <input type="text" id="teamdescription" name="teamdescription" style="height: 80px;">
 
-          <label for="teamduedate">Select Due Date 📅:</label>
-          <input type="datetime-local" id="teamduedate" name="teamduedate" style="width:35%">
+          <!-- <label for="teamduedate">Select Due Date 📅:</label>
+          <input type="datetime-local" id="teamduedate" name="teamduedate" style="width:35%"> -->
 
           <button type="submit">Create Team </button>
 
@@ -177,7 +175,7 @@ $result = mysqli_stmt_get_result($stmt);
   </div>
 
   <div class="box">
-    <h2>Your Projects</h2>
+    <!-- <h2>Your Teams</h2> -->
     <?php if (mysqli_num_rows($result) > 0): ?>
       <div class="team-list">
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
@@ -196,12 +194,6 @@ $result = mysqli_stmt_get_result($stmt);
               <?php if (!empty($row['teamdescription'])): ?>
                 <div class="team-description">
                   <strong>Description:</strong> <?php echo htmlspecialchars($row['teamdescription']); ?>
-                </div>
-              <?php endif; ?>
-
-              <?php if (!empty($row['teamduedate'])): ?>
-                <div class="team-duedate">
-                  <strong>Due:</strong> <?php echo htmlspecialchars($row['teamduedate']); ?>
                 </div>
               <?php endif; ?>
 

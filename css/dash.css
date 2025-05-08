@@ -969,7 +969,7 @@ text-decoration: underline;
       .filter-container {
         display: flex;
         gap: 10px;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
         border-bottom: 1px solid #e1e4e8;
         padding-bottom: 10px;
       }

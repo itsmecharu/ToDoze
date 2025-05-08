@@ -43,19 +43,16 @@ if (mysqli_num_rows($result) == 0) {
 $team = mysqli_fetch_assoc($result);
 $teamname = $team['teamname'];
 $teamdescription = isset($team['teamdescription']) ? $team['teamdescription'] : '';
-$teamduedate = isset($team['teamduedate']) ? $team['teamduedate'] : '';
+
 
 // Handle team update submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $teamname = trim($_POST['teamname']);
     $teamdescription = isset($_POST['teamdescription']) ? trim($_POST['teamdescription']) : null;
 
-    // Handle empty due date as null
-    $teamduedate = trim($_POST['teamduedate']);
-    $teamduedate = $teamduedate === '' ? null : $teamduedate;
 
     $sql = "UPDATE teams 
-            SET teamname = ?, teamdescription = ?, teamduedate = ? 
+            SET teamname = ?, teamdescription = ?
             WHERE teamid = ? 
             AND teamid IN (SELECT teamid FROM team_members WHERE userid = ?)";
 
@@ -64,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die('Error preparing update query: ' . mysqli_error($conn));
     }
 
-    mysqli_stmt_bind_param($stmt, "sssii", $teamname, $teamdescription, $teamduedate, $teamid, $userid);
+    mysqli_stmt_bind_param($stmt, "ssii", $teamname, $teamdescription, $teamid, $userid);
 
     if (mysqli_stmt_execute($stmt)) {
         header("Location: team.php?teamid=$teamid");
@@ -143,15 +140,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="teamdescription">Project Description:</label>
                 <input type="text" name="teamdescription" id="teamdescription" value="<?php echo htmlspecialchars($teamdescription); ?>"  maxlength="140"><br>
 
-                <label for="teamduedate">Due Date:</label>
-                <input type="datetime-local" id="teamduedate" name="teamduedate" 
-                    value="<?php echo $teamduedate ? date('Y-m-d\TH:i', strtotime($teamduedate)) : ''; ?>"><br>
 
                 <button type="submit">Update Project</button>
             </form>
             <br>
             <!-- <a href="team.php">Back to Project List</a> -->
-  <a href="team.php" class="back-link">← Back to Project List</a>
+  <a href="team.php" class="back-link">← Back</a>
 
         </div>
     </div>
