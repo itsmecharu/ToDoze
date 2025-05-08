@@ -116,15 +116,8 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
   $stmt->close();
 }
 
-
-
-
-
-
 ?>
 <!DOCTYPE html>
-<lang="en">
-
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -135,9 +128,33 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
     <title>Dashboard</title>
+    <style>
+      /* Makes cards sit side-by-side properly */
+.top-row {
+  display: flex;
+  gap: 20px;
+}
 
+/* Contains both cards equally */
+.chart-card,
+.task-card {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Fixes the chart height */
+.chart-wrapper {
+  height: 300px; /* Set fixed height */
+  position: relative;
+}
+
+/* Contains the task list */
+#task-details {
+  max-height: 250px;
+  overflow-y: auto;
+}
+    </style>
   </head>
-  <div>
 
     <div class="top-right-icons">
       <a href="invitation.php" class="top-icon">
@@ -196,7 +213,7 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
             <div class="stat-value" ><?php echo $overdueTasks; ?></div>
           </div>
         </div> 
-
+      </div>
 
         <!-- Bottom row with Task Distribution and Member sections -->
         <div class="top-row">
@@ -209,9 +226,9 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
               <canvas id="combinedTasksChart"></canvas>
             </div>
           </div>
-
-
-          <div class="task-card">
+          <!-- task monthly start -->
+</div>
+<div class="task-card">
   <div class="task-header">
     <div class="task-catchup">
       <?php
@@ -243,15 +260,55 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
       $stmt->fetch();
       $stmt->close();
 
-      echo "<p>Hi! You have <strong>{$taskCount}</strong> task(s) to do today";
-      if ($overdueCount > 0) echo " and <strong>{$overdueCount}</strong> overdue task(s)";
-      echo ". Wanna see?</p>";
+      if ($taskCount > 0 || $overdueCount > 0) {
+          echo '<div class="task-status">';
+          echo '<img src="img/tasklist.png" alt="Tasks" class="task-icon">';
+          echo '<div class="task-counts">';
+          echo '<p><strong>'.$taskCount.'</strong> task(s) due today</p>';
+          if ($overdueCount > 0) {
+              echo '<p class="overdue"><strong>'.$overdueCount.'</strong> overdue task(s)</p>';
+          }
+          echo '</div>';
+          echo '</div>';
+          echo '<button onclick="toggleTasks()" class="view-tasks-btn">View tasks</button>';
+      } else {
+          echo '<div class="no-tasks">';
+          echo '<img src="img/notask.svg" alt="No tasks" class="no-task-icon">';
+          echo '<p>No tasks due today!</p>';
+          echo '</div>';
+      }
       ?>
-
-      <button onclick="toggleTasks()" style="margin-top: 10px; padding: 6px 12px;">Show me</button>
     </div>
   </div>
+<style>
+  /* Center align task status container */
+.task-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
 
+/* Center align task counts */
+.task-counts {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Center align the button */
+.view-tasks-btn {
+    display: block;
+    margin: 0 auto;
+    width: 80%; /* Adjust width as needed */
+    max-width: 200px; /* Optional: prevents button from getting too wide */
+}
+</style>
   <!-- Hidden task list initially -->
   <div id="task-details" style="display:none; padding: 10px;">
     <?php
@@ -292,7 +349,7 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
 
     echo "<h4>Overdue Tasks:</h4>";
     if ($stmt->num_rows > 0) {
-        echo "<ul style='color: red;'>";
+        echo "<ul class='overdue-list'>";
         while ($stmt->fetch()) {
             echo "<li><strong>$taskname</strong></li>";
         }
@@ -305,6 +362,16 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
   </div>
 </div>
 
+<script>
+function toggleTasks() {
+    const taskDetails = document.getElementById('task-details');
+    if (taskDetails.style.display === 'none') {
+        taskDetails.style.display = 'block';
+    } else {
+        taskDetails.style.display = 'none';
+    }
+}
+</script>
 <!-- JavaScript to toggle task visibility -->
 <script>
 function toggleTasks() {
@@ -398,9 +465,12 @@ function toggleTasks() {
               }
             });
           </script>
-
-
-
+          <script>
+            function toggleTasks() {
+  const taskDetails = document.getElementById('task-details');
+  taskDetails.style.display = taskDetails.style.display === 'none' ? 'block' : 'none';
+}
+          </script>
           <!-- ===== MAIN JS ===== -->
           <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
           <script src="js/dash.js"></script>
