@@ -10,27 +10,27 @@ if (!isset($_SESSION['userid'])) {
 
 $userid = $_SESSION['userid'];
 
-// Ensure project ID and user email are provided
-$projectid = $_POST['projectid'] ?? $_GET['projectid'] ?? null;
+// Ensure team ID and user email are provided
+$teamid = $_POST['teamid'] ?? $_GET['teamid'] ?? null;
 $user_email = $_POST['useremail'] ?? null;
 $message = "";  // To hold feedback message
 
 // Validate inputs
-if (!$projectid || !$user_email) {
-    $message = "Missing project ID or user email.";
+if (!$teamid || !$user_email) {
+    $message = "Missing team ID or user email.";
 } else {
-    // Check if the user is the admin of the project
+    // Check if the user is the admin of the team
     $sql = "SELECT pm.userid
-            FROM project_members pm
-            WHERE pm.projectid = ? AND pm.userid = ? AND pm.role = 'Admin'";
+            FROM team_members pm
+            WHERE pm.teamid = ? AND pm.userid = ? AND pm.role = 'Admin'";
     $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "ii", $projectid, $userid);
+    mysqli_stmt_bind_param($stmt, "ii", $teamid, $userid);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
     // If the user is not the admin
     if (mysqli_num_rows($result) == 0) {
-        $message = "You must be the admin of the project to send invitations.";
+        $message = "You must be the admin of the team to send invitations.";
     } else {
         // Fetch the user ID for the provided email
         $sql = "SELECT userid FROM users WHERE useremail = ?";
@@ -47,12 +47,12 @@ if (!$projectid || !$user_email) {
 
             // Prevent self-invitation
             if ($userid == $invitee_id) {
-                $message = "You cannot invite yourself to the project.";
+                $message = "You cannot invite yourself to the team.";
             } else {
-                // Check if the user is already invited or a member of the project
-                $sql = "SELECT * FROM project_members WHERE projectid = ? AND userid = ?";
+                // Check if the user is already invited or a member of the team
+                $sql = "SELECT * FROM team_members WHERE teamid = ? AND userid = ?";
                 $stmt = mysqli_prepare($conn, $sql);
-                mysqli_stmt_bind_param($stmt, "ii", $projectid, $invitee_id);
+                mysqli_stmt_bind_param($stmt, "ii", $teamid, $invitee_id);
                 mysqli_stmt_execute($stmt);
                 $result = mysqli_stmt_get_result($stmt);
                 $existing = mysqli_fetch_assoc($result);
@@ -60,10 +60,10 @@ if (!$projectid || !$user_email) {
                 if ($existing) {
                     $message = "This user is already a member or has a pending invitation.";
                 } else {
-                    // Send the invitation (insert into project_members with 'Pending' status)
-                    $sql = "INSERT INTO project_members (projectid, userid, role, status) VALUES (?, ?, 'Member', 'Pending')";
+                    // Send the invitation (insert into team_members with 'Pending' status)
+                    $sql = "INSERT INTO team_members (teamid, userid, role, status) VALUES (?, ?, 'Member', 'Pending')";
                     $stmt = mysqli_prepare($conn, $sql);
-                    mysqli_stmt_bind_param($stmt, "ii", $projectid, $invitee_id);
+                    mysqli_stmt_bind_param($stmt, "ii", $teamid, $invitee_id);
 
                     if (mysqli_stmt_execute($stmt)) {
                         $message = "Invitation sent successfully.";
@@ -103,7 +103,7 @@ mysqli_close($conn);
                     timer: 1500,
                     showConfirmButton: false
                 }).then(function () {
-                    window.location.href = "member.php?projectid=<?php echo $projectid; ?>"; // Redirect to members page after showing the message
+                    window.location.href = "member.php?teamid=<?php echo $teamid; ?>"; // Redirect to members page after showing the message
                 });
             <?php endif; ?>
         });

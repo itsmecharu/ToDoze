@@ -299,7 +299,7 @@ $conn->close();
     <script>
         // Sample initial tasks
         let tasks = [
-            { id: 1, name: 'Complete project proposal', dueDate: '2023-06-15', priority: 'high', completed: true },
+            { id: 1, name: 'Complete team proposal', dueDate: '2023-06-15', priority: 'high', completed: true },
             { id: 2, name: 'Review team reports', dueDate: '2023-06-20', priority: 'medium', completed: false },
             { id: 3, name: 'Schedule meeting', dueDate: '2023-06-10', priority: 'low', completed: false },
             { id: 4, name: 'Update documentation', dueDate: '2023-06-05', priority: 'medium', completed: false }

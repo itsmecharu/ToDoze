@@ -16,7 +16,7 @@ body {
 }
 
 /* Project Box */
-.project-box {
+.team-box {
     padding: 15px;
     border-bottom: 2px solid #ddd;
     background: #fff;
@@ -24,13 +24,13 @@ body {
     border-radius: 5px;
 }
 
-.project-header {
+.team-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.project-header h2 {
+.team-header h2 {
     margin: 0;
     font-size: 20px;
     color: #333;

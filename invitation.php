@@ -11,16 +11,16 @@ $userid = $_SESSION['userid'];
 
 // Fetch all invitations (Pending/Accepted/Rejected)
 $sql = "SELECT 
-    p.projectid,
-    p.projectname,
+    p.teamid,
+    p.teamname,
     u_admin.username AS adminname,
     pm_user.status
 FROM 
-    project_members pm_user
+    team_members pm_user
 JOIN 
-    projects p ON pm_user.projectid = p.projectid
+    teams p ON pm_user.teamid = p.teamid
 JOIN 
-    project_members pm_admin ON pm_admin.projectid = p.projectid AND pm_admin.role = 'Admin'
+    team_members pm_admin ON pm_admin.teamid = p.teamid AND pm_admin.role = 'Admin'
 JOIN 
     users u_admin ON pm_admin.userid = u_admin.userid
 WHERE 
@@ -110,7 +110,7 @@ mysqli_stmt_close($stmt);
     <div class="nav__list">
       <a href="dash.php" class="nav__link active"><ion-icon name="home-outline" class="nav__icon"></ion-icon><span class="nav__name">Home</span></a>
       <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span class="nav__name">Task</span></a>
-      <a href="project.php" class="nav__link"><ion-icon name="folder-outline" class="nav__icon"></ion-icon><span class="nav__name">Project</span></a>
+      <a href="team.php" class="nav__link"><ion-icon name="folder-outline" class="nav__icon"></ion-icon><span class="nav__name">Team </span></a>
       <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
     </div>
     <a href="logout.php" class="nav__link logout"><ion-icon name="log-out-outline" class="nav__icon"></ion-icon><span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span></a>
@@ -121,18 +121,18 @@ mysqli_stmt_close($stmt);
 
     <div class="i-container">
         <div class="i-box">
-            <h2>Project Invitations</h2>
+            <h2>Invitations</h2>
 
             <?php if (!empty($invitations)) { ?>
                 <ul>
                     <?php foreach ($invitations as $invitation) { ?>
                         <li style="margin-bottom: 10px;">
-                            Project: <strong><?php echo htmlspecialchars($invitation['projectname']); ?></strong><br>
+                            Project: <strong><?php echo htmlspecialchars($invitation['teamname']); ?></strong><br>
                             Created by: <?php echo htmlspecialchars($invitation['adminname']); ?><br>
 
                             <?php if ($invitation['status'] === 'Pending') { ?>
-                                <a href="accept.php?projectid=<?php echo $invitation['projectid']; ?>" class="action-btn accept-btn">Accept</a>
-                                <a href="reject.php?projectid=<?php echo $invitation['projectid']; ?>" class="action-btn reject-btn">Reject</a>
+                                <a href="accept.php?teamid=<?php echo $invitation['teamid']; ?>" class="action-btn accept-btn">Accept</a>
+                                <a href="reject.php?teamid=<?php echo $invitation['teamid']; ?>" class="action-btn reject-btn">Reject</a>
                             <?php } elseif ($invitation['status'] === 'Accepted') { ?>
                                 <button class="accepted-btn" disabled>Accepted</button>
                             <?php } elseif ($invitation['status'] === 'Rejected') { ?>
@@ -145,7 +145,7 @@ mysqli_stmt_close($stmt);
               <div class="centered-content">
               <div class="content-wrapper">
               <img src="img/notify.svg" alt="No tasks yet" />
-              <h3><p>No nofication yet 🚀</p></h3>
+              <h3><p>No invitation yet 🚀</p></h3>
               </div>
               </div>
 

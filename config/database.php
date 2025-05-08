@@ -29,26 +29,26 @@ if ($conn === false) {
     die("ERROR: Could not connect to the database. " . mysqli_connect_error());
 }
 
-// Create the 'projects' table first
-$sql = "CREATE TABLE IF NOT EXISTS projects(
-    projectid INT PRIMARY KEY AUTO_INCREMENT,
-    projectname VARCHAR(30) NOT NULL,
-    projectdescription VARCHAR(255),
-    projectduedate DATETIME NULL,
-    projectstatus ENUM('Pending', 'Completed') DEFAULT 'Pending',
-    projectcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    projectstarted_at TIMESTAMP NULL DEFAULT NULL,
-    projectcompleted_at TIMESTAMP NULL DEFAULT NULL,
-    projectdeleted_at TIMESTAMP NULL DEFAULT Null,
-    is_projectdeleted TINYINT(1) DEFAULT 0,
+// Create the 'teams' table first
+$sql = "CREATE TABLE IF NOT EXISTS teams(
+    teamid INT PRIMARY KEY AUTO_INCREMENT,
+    teamname VARCHAR(30) NOT NULL,
+    teamdescription VARCHAR(255),
+    teamduedate DATETIME NULL,
+    teamstatus ENUM('Pending', 'Completed') DEFAULT 'Pending',
+    teamcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    teamstarted_at TIMESTAMP NULL DEFAULT NULL,
+    teamcompleted_at TIMESTAMP NULL DEFAULT NULL,
+    teamdeleted_at TIMESTAMP NULL DEFAULT Null,
+    is_teamdeleted TINYINT(1) DEFAULT 0,
     is_overdue TINYINT(1) DEFAULT 0,
     p_priority ENUM('High','Medium','Low','none') DEFAULT 'none'    
 )";
 
 if (mysqli_query($conn, $sql)) {
-    // echo "Table 'projects' created successfully.<br>";
+    // echo "Table 'teams' created successfully.<br>";
 } else {
-    echo "Error creating 'projects' table: " . mysqli_error($conn) . "<br>";
+    echo "Error creating 'teams' table: " . mysqli_error($conn) . "<br>";
 }
 
 // this is users table
@@ -72,16 +72,16 @@ if (mysqli_query($conn, $sql)) {
 
 
 
-//  Create 'project_members' table (Many-to-Many Relationship + Invitations)
-$sql = "CREATE TABLE IF NOT EXISTS project_members (
+//  Create 'team_members' table (Many-to-Many Relationship + Invitations)
+$sql = "CREATE TABLE IF NOT EXISTS team_members (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    projectid INT NOT NULL,
+    teamid INT NOT NULL,
     userid INT NOT NULL,
     role ENUM('Admin', 'Member') DEFAULT 'Member',
     status ENUM('Pending', 'Accepted', 'Rejected') DEFAULT 'Pending',
     invited_at TIMESTAMP NULL DEFAULT NULL,
-    joinedproject_at TIMESTAMP NULL DEFAULT NULL,
-    FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE CASCADE,
+    joinedteam_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (teamid) REFERENCES teams(teamid) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE
 )";
 if (mysqli_query($conn, $sql)) {
@@ -117,10 +117,10 @@ if (mysqli_stmt_execute($stmt)) {
 
 mysqli_stmt_close($stmt);
 
-// Create 'tasks' table after 'users' and 'projects'
+// Create 'tasks' table after 'users' and 'teams'
 $sql = "CREATE TABLE IF NOT EXISTS tasks(
     taskid INT PRIMARY KEY AUTO_INCREMENT,
-    projectid INT NULL,
+    teamid INT NULL,
     userid INT NOT NULL,
     assigned_to INT NULL,
     taskname VARCHAR(255) NOT NULL,
@@ -138,7 +138,7 @@ $sql = "CREATE TABLE IF NOT EXISTS tasks(
     is_overdue TINYINT(1) DEFAULT 0,
     completed_at DATETIME NULL,
    taskpriority ENUM('High','Medium','Low','none') DEFAULT 'none',
-    FOREIGN KEY (projectid) REFERENCES projects(projectid) ON DELETE CASCADE,
+    FOREIGN KEY (teamid) REFERENCES teams(teamid) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
     FOREIGN KEY (assigned_to) REFERENCES users(userid) ON DELETE SET NULL
 )";

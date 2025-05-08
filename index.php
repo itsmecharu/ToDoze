@@ -692,7 +692,7 @@ background: rgba(0,0,0,0.5);
 <h2>About ToDoze</h2>
 <p>Todoze was created to solve a simple problem: most task management tools are either too complex or too limited. We built a solution that's just right - powerful enough for teams but simple enough for personal use.</p>
 <p>Our focus is on clean design and intuitive functionality. We've stripped away unnecessary features to give you a tool that helps you get things done without getting in your way.</p>
-<p>Whether you're managing your daily to-dos or coordinating a team project, Todoze keeps things straightforward and effective.</p>
+<p>Whether you're managing your daily to-dos or coordinating a team team, Todoze keeps things straightforward and effective.</p>
 </div>
 </div>
 </section>

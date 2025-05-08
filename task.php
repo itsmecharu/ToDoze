@@ -53,7 +53,7 @@ $update_sql = "UPDATE tasks
             THEN 1 
             ELSE 0 
         END 
-    WHERE userid = ? AND taskstatus != 'Completed' AND is_deleted = 0 AND projectid IS NULL
+    WHERE userid = ? AND taskstatus != 'Completed' AND is_deleted = 0 AND teamid IS NULL
 ";
 $update_stmt = mysqli_prepare($conn, $update_sql);
 if ($update_stmt) {
@@ -63,11 +63,11 @@ if ($update_stmt) {
 
 // --- Task query based on filter ---
 if ($filter === 'completed') {
-  $sql = "SELECT * FROM tasks WHERE userid = ? AND taskstatus = 'completed' AND is_deleted = 0 AND projectid IS NULL ORDER BY completed_at DESC";
+  $sql = "SELECT * FROM tasks WHERE userid = ? AND taskstatus = 'completed' AND is_deleted = 0 AND teamid IS NULL ORDER BY completed_at DESC";
 }elseif ($filter === 'overdue') {
-    $sql = "SELECT * FROM tasks WHERE userid = ? AND is_overdue = 1 AND is_deleted = 0 AND taskstatus != 'completed' AND projectid IS NULL";
+    $sql = "SELECT * FROM tasks WHERE userid = ? AND is_overdue = 1 AND is_deleted = 0 AND taskstatus != 'completed' AND teamid IS NULL";
 } else {
-    $sql = "SELECT * FROM tasks WHERE userid = ? AND taskstatus != 'completed' AND is_deleted = 0 AND projectid IS NULL";
+    $sql = "SELECT * FROM tasks WHERE userid = ? AND taskstatus != 'completed' AND is_deleted = 0 AND teamid IS NULL";
 }
 
 $stmt = mysqli_prepare($conn, $sql);
@@ -138,7 +138,7 @@ if ($stmt) {
     <div class="nav__list">
       <a href="dash.php" class="nav__link "><ion-icon name="home-outline" class="nav__icon"></ion-icon><span class="nav__name">Home</span></a>
       <a href="task.php" class="nav__link active"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span class="nav__name">Task</span></a>
-      <a href="project.php" class="nav__link"><ion-icon name="folder-outline" class="nav__icon"></ion-icon><span class="nav__name">Project</span></a>
+      <a href="team.php" class="nav__link"><ion-icon name="folder-outline" class="nav__icon"></ion-icon><span class="nav__name">Team</span></a>
       <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
     </div>
     <a href="logout.php" class="nav__link logout"><ion-icon name="log-out-outline" class="nav__icon"></ion-icon><span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span></a>

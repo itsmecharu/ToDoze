@@ -17,8 +17,8 @@ if (!isset($_GET['taskid'])) {
 
 $taskid = $_GET['taskid'];
 
-// Fetch task details to check if it belongs to a project
-$sql = "SELECT projectid FROM tasks WHERE taskid = ? AND userid = ?";
+// Fetch task details to check if it belongs to a team
+$sql = "SELECT teamid FROM tasks WHERE taskid = ? AND userid = ?";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "ii", $taskid, $userid);
 mysqli_stmt_execute($stmt);
@@ -35,13 +35,13 @@ $sql = "UPDATE tasks SET is_deleted = 1, deleted_at = NOW() WHERE taskid = ? AND
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "ii", $taskid, $userid);
 if (mysqli_stmt_execute($stmt)) {
-    // If task belongs to a project, redirect to project view page
-    if ($task['projectid'] !== null) {
-        header("Location: project_view.php?projectid=" . $task['projectid']);
+    // If task belongs to a team, redirect to team view page
+    if ($task['teamid'] !== null) {
+        header("Location: team_view.php?teamid=" . $task['teamid']);
         exit();
     } else {
         // Otherwise, redirect to dashboard
-        header("Location: dash.php");
+        header("Location: task.php");
         exit();
     }
 } else {

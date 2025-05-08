@@ -14,32 +14,32 @@ $userid = $_SESSION['userid'];
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 
 
-// Handle project creation
+// Handle team creation
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $projectName = trim($_POST['projectname']);
-  $projectDescription = trim($_POST['projectdescription']);
-  $projectDueDate = trim($_POST['projectduedate']);
-  $projectDueDate = $projectDueDate === '' ? null : $projectDueDate;
+  $teamName = trim($_POST['teamname']);
+  $teamDescription = trim($_POST['teamdescription']);
+  $teamDueDate = trim($_POST['teamduedate']);
+  $teamDueDate = $teamDueDate === '' ? null : $teamDueDate;
 
-  // Insert into 'projects' table
-  $sql = "INSERT INTO projects (projectname, projectdescription, projectduedate) VALUES (?, ?, ?)";
+  // Insert into 'teams' table
+  $sql = "INSERT INTO teams (teamname, teamdescription, teamduedate) VALUES (?, ?, ?)";
   $stmt = mysqli_prepare($conn, $sql);
   if ($stmt) {
-    mysqli_stmt_bind_param($stmt, "sss", $projectName, $projectDescription, $projectDueDate);
+    mysqli_stmt_bind_param($stmt, "sss", $teamName, $teamDescription, $teamDueDate);
     if (mysqli_stmt_execute($stmt)) {
-      $projectId = mysqli_insert_id($conn);
+      $teamId = mysqli_insert_id($conn);
 
-      // Assign the creator as "Admin" in project_members
-      $sql = "INSERT INTO project_members (userid, projectid, role) VALUES (?, ?, 'Admin')";
+      // Assign the creator as "Admin" in team_members
+      $sql = "INSERT INTO team_members (userid, teamid, role) VALUES (?, ?, 'Admin')";
       $stmt2 = mysqli_prepare($conn, $sql);
       if ($stmt2) {
-        mysqli_stmt_bind_param($stmt2, "ii", $userid, $projectId);
+        mysqli_stmt_bind_param($stmt2, "ii", $userid, $teamId);
         mysqli_stmt_execute($stmt2);
         mysqli_stmt_close($stmt2);
       }
 
       $_SESSION['success_message'] = "Project created successfully!";
-      header("Location: project.php");
+      header("Location: team.php");
       exit();
     }
     mysqli_stmt_close($stmt);
@@ -48,20 +48,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // fetching 
 $baseQuery = "
 SELECT DISTINCT p.*, pm.role 
-FROM projects p
-JOIN project_members pm ON p.projectid = pm.projectid
+FROM teams p
+JOIN team_members pm ON p.teamid = pm.teamid
 WHERE 
     (
         pm.userid = ? AND 
         (pm.role = 'Admin' OR pm.status = 'Accepted')
     )
-    AND p.is_projectdeleted = 0
+    AND p.is_teamdeleted = 0
 ";
 
 if ($filter === 'completed') {
-    $baseQuery .= " AND p.projectstatus = 'Completed'";
+    $baseQuery .= " AND p.teamstatus = 'Completed'";
 } elseif ($filter === 'pending' || $filter === 'all') {
-    $baseQuery .= " AND (p.projectstatus IS NULL OR p.projectstatus = 'Pending')";
+    $baseQuery .= " AND (p.teamstatus IS NULL OR p.teamstatus = 'Pending')";
 }
 
 $stmt = mysqli_prepare($conn, $baseQuery);
@@ -106,11 +106,11 @@ $result = mysqli_stmt_get_result($stmt);
   <div class="filter-container">
   <div style="display: flex; justify-content: center;">
    <!-- Button -->
-   <button id="createProjectBtn" class="create-btn"> + Create New Project</button>
+   <button id="createProjectBtn" class="create-btn"> + Create New Team</button>
 </div>
 
-<a href="project.php?filter=pending" class="task-filter <?= $filter == 'pending' || $filter == 'all' ? 'active' : '' ?>">🕒 Pending</a>
-<a href="project.php?filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed</a>
+<a href="team.php?filter=pending" class="task-filter <?= $filter == 'pending' || $filter == 'all' ? 'active' : '' ?>">🕒 Pending</a>
+<a href="team.php?filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed</a>
 
 </div>
 
@@ -136,9 +136,9 @@ $result = mysqli_stmt_get_result($stmt);
           <ion-icon name="add-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Task</span>
         </a>
-        <a href="project.php" class="nav__link active">
+        <a href="team.php" class="nav__link active">
           <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Project</span>
+          <span class="nav__name">Team</span>
         </a>
         <a href="review.php" class="nav__link">
           <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
@@ -154,21 +154,21 @@ $result = mysqli_stmt_get_result($stmt);
 
   <div class="container">
     <!-- Modal -->
-    <div id="projectModal" class="modal-overlay" style="display: none;">
+    <div id="teamModal" class="modal-overlay" style="display: none;">
       <div class="modal-content">
         <span class="close-modal" id="closeModalBtn">&times;</span>
-        <h2>Create New Project</h2>
+        <h2>Create New Team</h2>
         <form method="POST">
-          <label for="projectname">Project Name:</label>
-          <input type="text" id="projectname" name="projectname" required>
+          <label for="teamname">Team Name:</label>
+          <input type="text" id="teamname" name="teamname" required>
 
-          <label for="projectdescription">Project Description:</label>
-          <input type="text" id="projectdescription" name="projectdescription" style="height: 80px;">
+          <label for="teamdescription">Team  Description:</label>
+          <input type="text" id="teamdescription" name="teamdescription" style="height: 80px;">
 
-          <label for="projectduedate">Select Due Date 📅:</label>
-          <input type="datetime-local" id="projectduedate" name="projectduedate" style="width:35%">
+          <label for="teamduedate">Select Due Date 📅:</label>
+          <input type="datetime-local" id="teamduedate" name="teamduedate" style="width:35%">
 
-          <button type="submit">Create Project</button>
+          <button type="submit">Create Team </button>
 
         </form>
       </div>
@@ -179,46 +179,46 @@ $result = mysqli_stmt_get_result($stmt);
   <div class="box">
     <h2>Your Projects</h2>
     <?php if (mysqli_num_rows($result) > 0): ?>
-      <div class="project-list">
+      <div class="team-list">
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
           <?php $role = $row['role']; ?>
 
-          <div class="project-box">
+          <div class="team-box">
             <!-- Project Name on its own line -->
-            <div class="project-title">
-              <a href="project_view.php?projectid=<?php echo $row['projectid']; ?>">
-                <h3><?php echo htmlspecialchars($row['projectname']); ?></h3>
+            <div class="team-title">
+              <a href="team_view.php?teamid=<?php echo $row['teamid']; ?>">
+                <h3><?php echo htmlspecialchars($row['teamname']); ?></h3>
               </a>
             </div>
 
             <!-- All other info in a single line -->
-            <div class="project-info-line">
-              <?php if (!empty($row['projectdescription'])): ?>
-                <div class="project-description">
-                  <strong>Description:</strong> <?php echo htmlspecialchars($row['projectdescription']); ?>
+            <div class="team-info-line">
+              <?php if (!empty($row['teamdescription'])): ?>
+                <div class="team-description">
+                  <strong>Description:</strong> <?php echo htmlspecialchars($row['teamdescription']); ?>
                 </div>
               <?php endif; ?>
 
-              <?php if (!empty($row['projectduedate'])): ?>
-                <div class="project-duedate">
-                  <strong>Due:</strong> <?php echo htmlspecialchars($row['projectduedate']); ?>
+              <?php if (!empty($row['teamduedate'])): ?>
+                <div class="team-duedate">
+                  <strong>Due:</strong> <?php echo htmlspecialchars($row['teamduedate']); ?>
                 </div>
               <?php endif; ?>
 
 
 
-              <div class="project-actions">
+              <div class="team-actions">
                 <?php if ($role === 'Admin'): ?>
-                  <a href="project_task.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
+                  <a href="team_task.php?teamid=<?php echo $row['teamid']; ?>" class="edit-btn" title="Edit">
                     <ion-icon name="add-circle-outline"></ion-icon>Task
                   </a>
-                  <a href="member.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
+                  <a href="member.php?teamid=<?php echo $row['teamid']; ?>" class="edit-btn" title="Edit">
                     <ion-icon name="people-outline"></ion-icon> Member
                   </a>
-                  <a href="edit_project.php?projectid=<?php echo $row['projectid']; ?>" class="edit-btn" title="Edit">
+                  <a href="edit_team.php?teamid=<?php echo $row['teamid']; ?>" class="edit-btn" title="Edit">
                     <ion-icon name="create-outline"></ion-icon> Edit
                   </a>
-                  <a href="#" class="delete-btn" title="Delete" onclick="confirmDelete(<?php echo $row['projectid']; ?>)">
+                  <a href="#" class="delete-btn" title="Delete" onclick="confirmDelete(<?php echo $row['teamid']; ?>)">
                     <ion-icon name="trash-outline"></ion-icon> Delete
                   </a>
                 <?php else: ?>
@@ -234,7 +234,7 @@ $result = mysqli_stmt_get_result($stmt);
     <?php else: ?>
       <div class="centered-content">
         <div class="content-wrapper">
-          <img src="img/noproject.svg" alt="No tasks yet" />
+          <img src="img/notask.svg" alt="No tasks yet" />
           <h3>
             <p>Nothing yet! 🚀</p>
           </h3>
@@ -246,7 +246,7 @@ $result = mysqli_stmt_get_result($stmt);
 
   <!-- for delete msg -->
   <script>
-    function confirmDelete(projectId) {
+    function confirmDelete(teamId) {
       Swal.fire({
         title: "Are you sure?",
         text: "This action cannot be undone!",
@@ -257,7 +257,7 @@ $result = mysqli_stmt_get_result($stmt);
         confirmButtonText: "Yes, delete it!"
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.href = "delete_project.php?projectid=" + projectId;
+          window.location.href = "delete_team.php?teamid=" + teamId;
         }
       });
     }
@@ -266,7 +266,7 @@ $result = mysqli_stmt_get_result($stmt);
 
 
   <script>
-    const modal = document.getElementById("projectModal");
+    const modal = document.getElementById("teamModal");
     const openBtn = document.getElementById("createProjectBtn");
     const closeBtn = document.getElementById("closeModalBtn");
 

@@ -179,8 +179,8 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
               class="nav__name">Home</span></a>
           <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
               class="nav__name">Task</span></a>
-          <a href="project.php" class="nav__link"><ion-icon name="folder-outline" class="nav__icon"></ion-icon><span
-              class="nav__name">Project</span></a>
+          <a href="team.php" class="nav__link"><ion-icon name="folder-outline" class="nav__icon"></ion-icon><span
+              class="nav__name">Team </span></a>
           <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline"
               class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
         </div>
@@ -351,7 +351,7 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
     if ($stmt->num_rows > 0) {
         echo "<ul class='overdue-list'>";
         while ($stmt->fetch()) {
-            echo "<li><strong>$taskname</strong></li>";
+            echo "<li ><strong style='color: red;'>$taskname</strong></li>";
         }
         echo "</ul>";
     } else {

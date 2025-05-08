@@ -9,16 +9,16 @@ if (!isset($_SESSION['userid'])) {
 }
 
 $userid = $_SESSION['userid'];
-$projectId = $_GET['projectid'] ?? null;
+$teamId = $_GET['teamid'] ?? null;
 
-if (!$projectId) {
+if (!$teamId) {
     die("Project not found!");
 }
 
-// // Get user's role in this project
-// $sql = "SELECT role FROM project_members WHERE userid = ? AND projectid = ?";
+// // Get user's role in this team
+// $sql = "SELECT role FROM team_members WHERE userid = ? AND teamid = ?";
 // $stmt = mysqli_prepare($conn, $sql);
-// mysqli_stmt_bind_param($stmt, "ii", $userid, $projectid);
+// mysqli_stmt_bind_param($stmt, "ii", $userid, $teamid);
 // mysqli_stmt_execute($stmt);
 // $result = mysqli_stmt_get_result($stmt);
 // $row = mysqli_fetch_assoc($result);
@@ -30,13 +30,13 @@ if (!$projectId) {
 // }
 
 
-// Get admin (creator) of the project
-$sql = "SELECT userid FROM project_members WHERE projectid = ? AND role = 'admin' LIMIT 1";
+// Get admin (creator) of the team
+$sql = "SELECT userid FROM team_members WHERE teamid = ? AND role = 'admin' LIMIT 1";
 $stmt = mysqli_prepare($conn, $sql);
 if (!$stmt) {
     die("Query preparation failed: " . mysqli_error($conn));
 }
-mysqli_stmt_bind_param($stmt, "i", $projectId);
+mysqli_stmt_bind_param($stmt, "i", $teamId);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $admin = mysqli_fetch_assoc($result);
@@ -44,12 +44,12 @@ $admin_userid = $admin['userid'];
 mysqli_stmt_close($stmt);
 
 // Fetch accepted members
-$sql = "SELECT users.userid, users.useremail, project_members.role 
-        FROM project_members 
-        JOIN users ON project_members.userid = users.userid 
-        WHERE project_members.projectid = ? AND project_members.status = 'accepted'";
+$sql = "SELECT users.userid, users.useremail, team_members.role 
+        FROM team_members 
+        JOIN users ON team_members.userid = users.userid 
+        WHERE team_members.teamid = ? AND team_members.status = 'accepted'";
 $stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "i", $projectId);
+mysqli_stmt_bind_param($stmt, "i", $teamId);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $accepted_members = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -57,13 +57,13 @@ mysqli_stmt_close($stmt);
 
 // Fetch pending members
 $sql = "SELECT users.userid, users.useremail 
-        FROM project_members 
-        JOIN users ON project_members.userid = users.userid 
-        WHERE project_members.projectid = ? 
-        AND project_members.status = 'pending'
+        FROM team_members 
+        JOIN users ON team_members.userid = users.userid 
+        WHERE team_members.teamid = ? 
+        AND team_members.status = 'pending'
         AND users.userid != ?";
 $stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "ii", $projectId, $admin_userid);
+mysqli_stmt_bind_param($stmt, "ii", $teamId, $admin_userid);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $pending_members = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -74,10 +74,10 @@ $sql = "SELECT userid, useremail
         FROM users 
         WHERE userid != ? 
         AND userid NOT IN (
-            SELECT userid FROM project_members WHERE projectid = ?
+            SELECT userid FROM team_members WHERE teamid = ?
         )";
 $stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "ii", $userid, $projectId);
+mysqli_stmt_bind_param($stmt, "ii", $userid, $teamId);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $available_users = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -128,9 +128,9 @@ mysqli_stmt_close($stmt);
           <ion-icon name="add-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Task</span>
         </a>
-        <a href="project.php" class="nav__link active">
+        <a href="team.php" class="nav__link active">
           <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Project</span>
+          <span class="nav__name">Team </span>
         </a>
         <a href="review.php" class="nav__link">
           <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
@@ -168,7 +168,7 @@ mysqli_stmt_close($stmt);
               <span class="role-badge"><?= htmlspecialchars($member['role']) ?></span>
             </div>
             <?php if ($member['userid'] != $admin_userid) { ?>
-              <a href="remove_member.php?userid=<?= $member['userid'] ?>&projectid=<?= $projectId ?>" class="remove-btn" onclick="return confirm('Are you sure you want to remove this member?');">
+              <a href="remove_member.php?userid=<?= $member['userid'] ?>&teamid=<?= $teamId ?>" class="remove-btn" onclick="return confirm('Are you sure you want to remove this member?');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                   <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                   <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
@@ -234,7 +234,7 @@ mysqli_stmt_close($stmt);
   <div id="invite" class="add-task-form section" style="display: none;">
     <h3>Send Invitation</h3>
     <form action="send_invitation.php" method="POST" class="invite-form">
-      <input type="hidden" name="projectid" value="<?= $projectId ?>">
+      <input type="hidden" name="teamid" value="<?= $teamId ?>">
       <div class="form-group">
         <label for="useremail">Member Email:</label>
         <select name="useremail" id="useremail" required class="form-select">

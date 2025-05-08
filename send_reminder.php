@@ -27,7 +27,7 @@ while ($task = mysqli_fetch_assoc($result)) {
     if (strtotime($current_time) >= strtotime($reminder_time)) {
         error_log("Sending reminder for Task ID: {$task['taskid']}");
 
-        sendReminderEmail($task['userid'], $task['taskname'], $task['taskdate'], $task['tasktime'], $task['reminder_percentage'], $task['projectid']);
+        sendReminderEmail($task['userid'], $task['taskname'], $task['taskdate'], $task['tasktime'], $task['reminder_percentage'], $task['teamid']);
 
         // Mark the reminder as sent
         $update_sql = "UPDATE tasks SET reminder_sent = 1 WHERE taskid = ?";
@@ -55,7 +55,7 @@ function calculateReminderTime($taskdate, $tasktime, $taskcreated_at, $reminder_
 }
 
 // Function to send email reminder
-function sendReminderEmail($userid, $taskname, $taskdate, $tasktime, $reminder_percentage, $projectid) {
+function sendReminderEmail($userid, $taskname, $taskdate, $tasktime, $reminder_percentage, $teamid) {
     global $conn;
 
     // Get user email
@@ -72,16 +72,16 @@ function sendReminderEmail($userid, $taskname, $taskdate, $tasktime, $reminder_p
         return;
     }
 
-    // Get project name if the task belongs to a project
-    $projectname = null;
-    if ($projectid != null) {
-        $project_sql = "SELECT projectname FROM projects WHERE projectid = ?";
-        $stmt_project = mysqli_prepare($conn, $project_sql);
-        mysqli_stmt_bind_param($stmt_project, "i", $projectid);
-        mysqli_stmt_execute($stmt_project);
-        $result_project = mysqli_stmt_get_result($stmt_project);
-        $project = mysqli_fetch_assoc($result_project);
-        $projectname = $project['projectname'];
+    // Get team name if the task belongs to a team
+    $teamname = null;
+    if ($teamid != null) {
+        $team_sql = "SELECT teamname FROM teams WHERE teamid = ?";
+        $stmt_team = mysqli_prepare($conn, $team_sql);
+        mysqli_stmt_bind_param($stmt_team, "i", $teamid);
+        mysqli_stmt_execute($stmt_team);
+        $result_team = mysqli_stmt_get_result($stmt_team);
+        $team = mysqli_fetch_assoc($result_team);
+        $teamname = $team['teamname'];
     }
 
     // Send email using PHPMailer
@@ -102,9 +102,9 @@ function sendReminderEmail($userid, $taskname, $taskdate, $tasktime, $reminder_p
         $mail->Subject = "Reminder for Task: $taskname";
 
         // Construct email body
-        if ($projectname) {
+        if ($teamname) {
             $mail->Body = "<h3>Reminder for your task: $taskname</h3>
-                            <p>Project: $projectname</p>
+                            <p>Project: $teamname</p>
                             <p>Due date: $taskdate $tasktime.</p>
                             <p>Reminder sent at $reminder_percentage% of the way to the due date.</p>";
         } else {

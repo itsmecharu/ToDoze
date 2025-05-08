@@ -25,21 +25,21 @@ if (!$stmt) {
 }
 mysqli_stmt_bind_param($stmt, "ii", $taskid, $userid);
 if (mysqli_stmt_execute($stmt)) {
-    // Check if the task has a projectid (not null)
-    $sql = "SELECT projectid FROM tasks WHERE taskid = ?";
+    // Check if the task has a teamid (not null)
+    $sql = "SELECT teamid FROM tasks WHERE taskid = ?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "i", $taskid);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $task = mysqli_fetch_assoc($result);
     
-    if ($task && $task['projectid'] !== null) {
-        // Redirect to the project view page if projectid is not null
+    if ($task && $task['teamid'] !== null) {
+        // Redirect to the team view page if teamid is not null
         
-        header("Location: project_view.php?projectid=" . $task['projectid']);
+        header("Location: team_view.php?teamid=" . $task['teamid']);
     } else {
         // Otherwise, redirect to the dashboard
-        header("Location: dash.php");
+        header("Location: task.php");
     }
     exit();
 } else {

@@ -238,14 +238,14 @@ body {
 }
 
 
-.project-toggle {
+.team-toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
 }
 
-.project-toggle ion-icon:last-child {
+.team-toggle ion-icon:last-child {
   margin-right: 25px;
 }
 
@@ -602,15 +602,15 @@ body {
       border-color: #4CAF50;
     }
     
-    /* project css */
+    /* team css */
     
-    /* Prevent project name from shrinking */
-    .project-title {
+    /* Prevent team name from shrinking */
+    .team-title {
       flex-grow: 1; 
     }
     
     /* Make sure buttons stay on the right */
-    .project-actions {
+    .team-actions {
       display: flex;
       gap: 10px; /* Space between buttons */
     }
@@ -676,13 +676,13 @@ body {
     
   }
 
-  .project-list {
+  .team-list {
     display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
   }
 
-  .project-box {
+  .team-box {
     background-color: #f9f9f9;
     padding: 15px;
     margin-bottom: 15px;
@@ -692,12 +692,12 @@ body {
     border-radius: 8px;
   }
   
-  .project-title h3 {
+  .team-title h3 {
     margin: 0 0 10px 0;
     color: #2d3748;
   }
   
-  .project-info-line {
+  .team-info-line {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -707,15 +707,15 @@ body {
     color: #444;
   }
   
-  .project-description,
-  .project-duedate {
+  .team-description,
+  .team-duedate {
 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   
-  .project-actions {
+  .team-actions {
     display: flex;
     gap: 10px;
   }
@@ -795,7 +795,7 @@ color: red !important;
 text-decoration: underline;
 }
 
-/* for floating the project form */
+/* for floating the team form */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;

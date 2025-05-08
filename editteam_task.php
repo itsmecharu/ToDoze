@@ -11,10 +11,10 @@ if (!isset($_SESSION['userid'])) {
 }
 
 $userid = $_SESSION['userid'];
-$projectId = $_POST['projectid'] ?? $_GET['projectid'] ?? null;
+$teamId = $_POST['teamid'] ?? $_GET['teamid'] ?? null;
 $taskid = $_GET['taskid'] ?? null;
 
-if (!$projectId || !is_numeric($projectId)) {
+if (!$teamId || !is_numeric($teamId)) {
     die("Project ID is missing or invalid.");
 }
 if (!$taskid || !is_numeric($taskid)) {
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taskdate = isset($_POST['taskdate']) ? trim($_POST['taskdate']) : null;
     $tasktime = isset($_POST['tasktime']) ? trim($_POST['tasktime']) : null;
     $reminder_percentage = (!empty($_POST['reminder_percentage'])) ? $_POST['reminder_percentage'] : null;
-    // $projectid = isset($_POST['projectid']) ? $_POST['projectid'] : null; // Get project ID from form submission
+    // $teamid = isset($_POST['teamid']) ? $_POST['teamid'] : null; // Get team ID from form submission
 
 
 
@@ -117,14 +117,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = mysqli_prepare($conn, $sql);
         mysqli_stmt_bind_param($stmt, $types, ...$params);
         if (mysqli_stmt_execute($stmt)) {
-            header("Location: project_view.php?projectid=" . $projectId);
+            header("Location: team_view.php?teamid=" . $teamId);
             exit();
         } else {
             echo "Error updating task: " . mysqli_error($conn);
         }
     } else {
         // No fields to update
-        header("Location: project_view.php?projectid=" . $projectId);
+        header("Location: team_view.php?teamid=" . $teamId);
         exit();
     }
 }
@@ -180,9 +180,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <ion-icon name="add-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Task</span>
         </a>
-        <a href="project.php" class="nav__link active">
+        <a href="team.php" class="nav__link active">
           <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Project</span>
+          <span class="nav__name">Team </span>
         </a>
         <a href="review.php" class="nav__link">
           <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
@@ -198,10 +198,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="box">
       <h2 style="text-align: center; ">Edit Task</h2>
-      <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?projectid=' . urlencode($projectId) . '&taskid=' . urlencode($taskid); ?>" class="add-task-form">
+      <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?teamid=' . urlencode($teamId) . '&taskid=' . urlencode($taskid); ?>" class="add-task-form">
 
 
-      <input type="hidden" name="projectid" value="<?php echo htmlspecialchars($projectId); ?>">
+      <input type="hidden" name="teamid" value="<?php echo htmlspecialchars($teamId); ?>">
 
         <input type="text" name="taskname" id="taskname" placeholder="Add task here" value="<?php echo htmlspecialchars($taskname); ?>" maxlength="50" required>
 
@@ -233,7 +233,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit">Update Task</button>
       </form>
       <br>
-      <a href="project_view.php?projectid=<?php echo $projectId; ?>">Back</a>
+      <a href="team_view.php?teamid=<?php echo $teamId; ?>">Back</a>
     </div>
   </div>
   </script>

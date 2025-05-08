@@ -9,7 +9,7 @@
     <meta property="og:title" content="Terms and Conditions - ToDoze">
     <meta property="og:description" content="Understand the rules for using ToDoze services">
     <meta property="og:type" content="website">
-    <title>Terms and Conditions - ToDoze | Beautiful Task Management</title>
+    <title>Terms and Conditions - ToDoze | Todo List</title>
     <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <style>
         body {

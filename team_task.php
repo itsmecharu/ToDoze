@@ -11,10 +11,10 @@ if (!isset($_SESSION['userid'])) {
 
 $userid = $_SESSION['userid'];
 $taskname = $taskdescription = $taskdate = $tasktime = $reminder_percentage = "";
-// $projectid = isset($_GET['projectid']) ? $_GET['projectid'] : null; // Get project ID from URL
-$projectid = $_GET['projectid'] ?? $_POST['projectid'] ?? null;
+// $teamid = isset($_GET['teamid']) ? $_GET['teamid'] : null; // Get team ID from URL
+$teamid = $_GET['teamid'] ?? $_POST['teamid'] ?? null;
 
-if (!$projectid || !is_numeric($projectid)) {
+if (!$teamid || !is_numeric($teamid)) {
     echo "Project ID is missing or invalid.";
     exit();
 }
@@ -27,20 +27,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taskdate = !empty($_POST['taskdate']) ? $_POST['taskdate'] : null;
     $tasktime = !empty($_POST['tasktime']) ? $_POST['tasktime'] : null;
     $reminder_percentage = isset($_POST['reminder_percentage']) ? trim($_POST['reminder_percentage']) : null;
-    // $projectid = isset($_POST['projectid']) ? $_POST['projectid'] : null; // Get project ID from form submission
+    // $teamid = isset($_POST['teamid']) ? $_POST['teamid'] : null; // Get team ID from form submission
 
     // Insert Task
-    $sql = "INSERT INTO tasks (userid, projectid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, taskstatus) 
+    $sql = "INSERT INTO tasks (userid, teamid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, taskstatus) 
             VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')";
 
     $stmt = mysqli_prepare($conn, $sql);
 
     if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "iisssss", $userid, $projectid, $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage);
+        mysqli_stmt_bind_param($stmt, "iisssss", $userid, $teamid, $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage);
         if (mysqli_stmt_execute($stmt)) {
             $_SESSION['success_message'] = "Task added successfully!";
             mysqli_stmt_close($stmt);
-            header("Location: project_task.php?projectid=" . $projectid);
+            header("Location: team_task.php?teamid=" . $teamid);
             exit();
         } else {
             echo "Error executing query: " . mysqli_error($conn);
@@ -98,9 +98,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <ion-icon name="add-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Task</span>
         </a>
-        <a href="project.php" class="nav__link active">
+        <a href="team.php" class="nav__link active">
           <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Project</span>
+          <span class="nav__name">Team </span>
         </a>
         <a href="review.php" class="nav__link">
           <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
@@ -115,13 +115,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
     <div class="container">
     <h2>Add New Project Tasks</h2>
-    <a href="project_view.php?projectid=<?php echo $projectid; ?>"class="back-link">View Project</a>
+    <a href="team_view.php?teamid=<?php echo $teamid; ?>"class="back-link">View Project</a>
 
         <div class="box">
         
-            <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?projectid=' . $projectid; ?>"
+            <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?teamid=' . $teamid; ?>"
                 method="POST">
-                <input type="hidden" name="projectid" value="<?php echo $projectid; ?>">
+                <input type="hidden" name="teamid" value="<?php echo $teamid; ?>">
 
                 <!-- <label for="taskname">Task Name:</label> -->
                 <input type="text" id="taskname" name="taskname" placeholder="Add task here"  maxlength="50" required>

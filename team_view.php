@@ -9,31 +9,31 @@ if (!isset($_SESSION['userid'])) {
 }
 
 $userid = $_SESSION['userid'];
-$projectId = isset($_GET['projectid']) ? (int) $_GET['projectid'] : null;
+$teamId = isset($_GET['teamid']) ? (int) $_GET['teamid'] : null;
 
-if (!$projectId) {
+if (!$teamId) {
     echo "Project not found!";
     exit();
 }
 
-// Fetch project details
-$sql = "SELECT * FROM projects WHERE projectid = ?";
+// Fetch team details
+$sql = "SELECT * FROM teams WHERE teamid = ?";
 $stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "i", $projectId);
+mysqli_stmt_bind_param($stmt, "i", $teamId);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
-$project = mysqli_fetch_assoc($result);
+$team = mysqli_fetch_assoc($result);
 mysqli_stmt_close($stmt);
 
-if (!$project) {
+if (!$team) {
     echo "Project not found!";
     exit();
 }
 
 // Fetch tasks
-$sql = "SELECT * FROM tasks WHERE projectid = ? AND is_deleted = 0 AND taskstatus='pending' ORDER BY taskid DESC";
+$sql = "SELECT * FROM tasks WHERE teamid = ? AND is_deleted = 0 AND taskstatus='pending' ORDER BY taskid DESC";
 $stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "i", $projectId);
+mysqli_stmt_bind_param($stmt, "i", $teamId);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $tasks = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -49,11 +49,11 @@ $update_sql = "UPDATE tasks
             THEN 1 
             ELSE 0 
         END 
-    WHERE userid = ? AND taskstatus != 'Completed' AND is_deleted = 0 AND projectid = ?
+    WHERE userid = ? AND taskstatus != 'Completed' AND is_deleted = 0 AND teamid = ?
 ";
 $update_stmt = mysqli_prepare($conn, $update_sql);
 if ($update_stmt) {
-    mysqli_stmt_bind_param($update_stmt, "sii", $now, $userid, $projectid);
+    mysqli_stmt_bind_param($update_stmt, "sii", $now, $userid, $teamid);
     mysqli_stmt_execute($update_stmt);
 }
 
@@ -65,14 +65,14 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'pending';
 switch ($filter) {
     case 'completed':
         $sql = "SELECT * FROM tasks 
-                WHERE projectid = ? 
+                WHERE teamid = ? 
                 AND taskstatus = 'completed' AND is_deleted = 0 
                 ORDER BY completed_at DESC";
         break;
     
     case 'overdue':
         $sql = "SELECT * FROM tasks 
-                WHERE projectid = ? 
+                WHERE teamid = ? 
                 AND is_overdue = 1 AND is_deleted = 0 AND taskstatus != 'completed' 
                 ORDER BY taskid DESC";
         break;
@@ -80,7 +80,7 @@ switch ($filter) {
     case 'pending':
     default:
         $sql = "SELECT * FROM tasks 
-                WHERE projectid = ? 
+                WHERE teamid = ? 
                 AND taskstatus != 'completed' AND is_deleted = 0 
                 ORDER BY taskid DESC";
         break;
@@ -88,8 +88,8 @@ switch ($filter) {
 
 $stmt = mysqli_prepare($conn, $sql);
 if ($stmt) {
-    // Adjusted to bind only the projectId, not the userId
-    mysqli_stmt_bind_param($stmt, "i", $projectId);  // Bind only the projectId
+    // Adjusted to bind only the teamId, not the userId
+    mysqli_stmt_bind_param($stmt, "i", $teamId);  // Bind only the teamId
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 } else {
@@ -99,9 +99,9 @@ if ($stmt) {
 
 
 // fetching role 
-$role_sql = "SELECT role FROM project_members WHERE userid = ? AND projectid = ?";
+$role_sql = "SELECT role FROM team_members WHERE userid = ? AND teamid = ?";
 $role_stmt = mysqli_prepare($conn, $role_sql);
-mysqli_stmt_bind_param($role_stmt, "ii", $userid, $projectId);
+mysqli_stmt_bind_param($role_stmt, "ii", $userid, $teamId);
 mysqli_stmt_execute($role_stmt);
 $role_result = mysqli_stmt_get_result($role_stmt);
 $user_role_data = mysqli_fetch_assoc($role_result);
@@ -118,7 +118,7 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($project['projectname']); ?></title>
+    <title><?php echo htmlspecialchars($team['teamname']); ?></title>
     <link rel="stylesheet" href="css/dash.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -161,9 +161,9 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
           <ion-icon name="add-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Task</span>
         </a>
-        <a href="project.php" class="nav__link active">
+        <a href="team.php" class="nav__link active">
           <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Project</span>
+          <span class="nav__name">Team </span>
         </a>
         <a href="review.php" class="nav__link">
           <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
@@ -177,20 +177,20 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
     </nav>
   </div>
 
-  <div class="project-box">
-  <div class="project-header">
-    <h2 class="project-name"><?php echo htmlspecialchars($project['projectname']); ?></h2>
+  <div class="team-box">
+  <div class="team-header">
+    <h2 class="team-name"><?php echo htmlspecialchars($team['teamname']); ?></h2>
   </div>
-  <p style="font-size: small;"><strong>Description:</strong> <?php echo htmlspecialchars($project['projectdescription']); ?></p>
-  <p><strong>Due Date:</strong> <?php echo htmlspecialchars($project['projectduedate']); ?></p>
+  <p style="font-size: small;"><strong>Description:</strong> <?php echo htmlspecialchars($team['teamdescription']); ?></p>
+  <p><strong>Due Date:</strong> <?php echo htmlspecialchars($team['teamduedate']); ?></p>
 
   <div class="icons" style="display: flex; gap: 20px; margin-top: 15px;">
-    <div class="project-actions">
+    <div class="team-actions">
       <?php if ($user_role === 'Admin'): ?>
-        <a href="project_task.php?projectid=<?php echo $projectId; ?>" class="edit-btn" title="Edit">
+        <a href="team_task.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Edit">
           <ion-icon name="add-circle-outline"></ion-icon> Task
         </a>
-        <a href="member.php?projectid=<?php echo $projectId; ?>" class="edit-btn" title="Edit">
+        <a href="member.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Edit">
           <ion-icon name="people-outline"></ion-icon> Member
         </a>
       <?php else: ?>
@@ -201,13 +201,13 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
   <div class="filter-container">
   <div style="display: flex; justify-content: center;">
 </div>
-<a href="project_view.php?projectid=<?= $projectId ?>&filter=pending" class="task-filter <?= $filter == 'pending' ? 'active' : '' ?>">🕒 Pending Tasks</a>
-<a href="project_view.php?projectid=<?= $projectId ?>&filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed Tasks</a>
-<a href="project_view.php?projectid=<?= $projectId ?>&filter=overdue" class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue Tasks</a>
+<a href="team_view.php?teamid=<?= $teamId ?>&filter=pending" class="task-filter <?= $filter == 'pending' ? 'active' : '' ?>">🕒 Pending Tasks</a>
+<a href="team_view.php?teamid=<?= $teamId ?>&filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed Tasks</a>
+<a href="team_view.php?teamid=<?= $teamId ?>&filter=overdue" class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue Tasks</a>
 </div>
 </div>
 <style>
-  .project-box {
+  .team-box {
   border: 1px solid #ccc;
   /* border-radius: 10px; */
   padding: 10px;
@@ -217,13 +217,13 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.project-header {
+.team-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.project-name {
+.team-name {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -285,7 +285,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         if ($user_role === 'Admin') {
             // Admin can edit and delete
             if (!$isCompleted) {
-                echo "<a href='editproject_task.php?projectid=" . $projectId . "&taskid=" . $row['taskid'] . "' class='edit-btn'><ion-icon name='create-outline'></ion-icon> Edit</a>";
+                echo "<a href='editteam_task.php?teamid=" . $teamId . "&taskid=" . $row['taskid'] . "' class='edit-btn'><ion-icon name='create-outline'></ion-icon> Edit</a>";
             }
             echo "<a href='#' class='delete-btn' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon> Delete</a>";
         } elseif ($isCompleted && $assignedTo == $currentUserId) {
