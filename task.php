@@ -306,7 +306,7 @@ if ($result && mysqli_num_rows($result) > 0) {
    
     <script>
         // Get references to the button and container
-        const addTaskButton = document.getElementById('addTaskButton');
+        const addTaskButton = document.getElementById('AddTaskButton');
         const container = document.querySelector('.container');
 
         // Add click event listener to the button

@@ -401,7 +401,7 @@ function toggleTasks() {
                     label: 'Total Tasks',
                     data: <?php echo json_encode($dailyTotal); ?>,
                     borderColor: '#2980b9',
-                    backgroundColor: 'rgba(41, 128, 185, 0.1)',
+                    backgroundColor: 'rgba(7, 48, 76, 0.1)',
                     borderWidth: 2,
                     pointBackgroundColor: '#2980b9',
                     tension: 0.3,
