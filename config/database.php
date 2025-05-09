@@ -78,12 +78,18 @@ $sql = "CREATE TABLE IF NOT EXISTS team_members (
     teamid INT NOT NULL,
     userid INT NOT NULL,
     role ENUM('Admin', 'Member') DEFAULT 'Member',
-    status ENUM('Pending', 'Accepted', 'Rejected') DEFAULT 'Pending',
+    status ENUM('Pending', 'Accepted', 'Rejected', 'Removed') DEFAULT 'Pending',
     invited_at TIMESTAMP NULL DEFAULT NULL,
     joinedteam_at TIMESTAMP NULL DEFAULT NULL,
     FOREIGN KEY (teamid) REFERENCES teams(teamid) ON DELETE CASCADE,
-    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE
+    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
+    removed_at TIMESTAMP NULL DEFAULT NULL
 )";
+
+// $sql = "ALTER TABLE team_members ADD COLUMN ";
+
+
+
 if (mysqli_query($conn, $sql)) {
     // echo "Table 'users' created successfully.";
 } else {

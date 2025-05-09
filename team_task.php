@@ -61,6 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Project Tasks</title>
     <link rel="stylesheet" href="css/dash.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -201,7 +202,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <?php unset($_SESSION['success_message']); ?>
     <?php endif; ?>
-    
+
 <script>
     // Get references to the button and container
     const addTaskButton = document.getElementById('addTaskButton');

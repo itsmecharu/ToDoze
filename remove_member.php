@@ -32,8 +32,10 @@ if ($stmt) {
     }}
 }
 
-// Remove member from the team
-$sql = "DELETE FROM team_members WHERE userid = ? AND teamid = ?";
+// Soft-remove member by updating their status and setting removed_at timestamp
+$sql = "UPDATE team_members 
+        SET status = 'Removed', removed_at = NOW() 
+        WHERE userid = ? AND teamid = ?";
 $stmt = mysqli_prepare($conn, $sql);
 if ($stmt) {
     mysqli_stmt_bind_param($stmt, "ii", $userid, $teamId);
@@ -44,4 +46,3 @@ if ($stmt) {
 mysqli_close($conn);
 header("Location: member.php?teamid=$teamId");
 exit();
-?>

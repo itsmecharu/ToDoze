@@ -11,7 +11,7 @@ if (!isset($_SESSION['userid'])) {
 }
 
 $userid = $_SESSION['userid'];
-$filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'admin';
 
 
 // Handle team creation
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $teamId = mysqli_insert_id($conn);
 
       // Assign the creator as "Admin" in team_members
-      $sql = "INSERT INTO team_members (userid, teamid, role) VALUES (?, ?, 'Admin')";
+      $sql = "INSERT INTO team_members (userid, teamid, status ,role) VALUES (?, ?, 'Accepted','Admin')";
       $stmt2 = mysqli_prepare($conn, $sql);
       if ($stmt2) {
         mysqli_stmt_bind_param($stmt2, "ii", $userid, $teamId);
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         mysqli_stmt_close($stmt2);
       }
 
-      $_SESSION['success_message'] = "Project created successfully!";
+      $_SESSION['success_message'] = "Team created successfully!";
       header("Location: team.php");
       exit();
     }
@@ -75,7 +75,7 @@ $result = mysqli_stmt_get_result($stmt);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create Project</title>
+  <title>Create Team</title>
   <link rel="stylesheet" href="css/dash.css">
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -106,8 +106,7 @@ $result = mysqli_stmt_get_result($stmt);
 
       <button id="createProjectBtn" class="create-btn"> + Create New Team</button>
       </div>
-
-      <a href="team.php?filter=admin"class="task-filter <?= $filter == 'admin' || $filter == 'all' ? 'active' : '' ?>">You are Admin of</a>
+      <a href="team.php?filter=admin"class="task-filter <?= $filter == 'admin' ? 'active' : '' ?>">You are Admin of</a>
       <a href="team.php?filter=member" class="task-filter <?= $filter == 'member' ? 'active' : '' ?>">You are Member of</a>
   
   </div>
