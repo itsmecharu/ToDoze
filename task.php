@@ -241,7 +241,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                         <label for="tasktime" style="display: block;">Select Time 🕰️</label>
                         <input type="time" id="tasktime" name="tasktime" style="width: 170px;">
                     </div>
-
+                    </div>
                     <!-- <label for="reminder">Set Reminder:</label> -->
                     <select id="reminder" name="reminder_percentage">
                         <option value="" disabled selected>Set Reminder Here 🔔</option>
