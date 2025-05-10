@@ -136,7 +136,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <h3>No Recent Reviews</h3>
             <p>There are no reviews available at the moment. Be the first to share your experience!</p>
-            <button class="browse-btn">Browse Products</button>
         </div>
   </div>
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>

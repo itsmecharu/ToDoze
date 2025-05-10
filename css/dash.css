@@ -102,7 +102,8 @@ body {
 
 .nav__link.logout {
   padding: 12px 20px; /* Increased from 10px */
-  margin-bottom: 25px; /* Increased from 20px */
+  margin-bottom: 80px; 
+  margin-left:25px;/* Increased from 20px */
   font-size: 1.1rem; /* Added font size */
 }
 
@@ -975,8 +976,7 @@ text-decoration: underline;
         border-bottom: 1px solid #e1e4e8;
         padding-bottom: 10px;
       }
-    
-      .task-filter {
+        .task-filter {
         padding: 8px 16px;
         border: none;
         border-radius: 6px;
@@ -985,6 +985,22 @@ text-decoration: underline;
         cursor: pointer;
         font-weight: 500;
         transition: all 0.2s ease;
+        height:20px;
+        margin-top: 10px;
+      }
+    
+      .member-task-filter {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        background-color: #f6f8fa;
+        color: #24292e;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        height:50px;
+        margin-top: 10px;
+        color: #fff;
       }
     
       .task-filter:hover {
@@ -992,6 +1008,14 @@ text-decoration: underline;
       }
     
       .task-filter.active {
+        background-color: #2774cc;
+        color: white;
+      }
+    .member-task-filter:hover {
+        background-color: #e1e4e8;
+      }
+    
+      .member-task-filter.active {
         background-color: #2774cc;
         color: white;
       }

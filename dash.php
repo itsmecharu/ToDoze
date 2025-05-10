@@ -280,11 +280,11 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
           echo '</div>';
           echo '<button onclick="toggleTasks()" class="view-tasks-btn">View tasks</button>';
       } else {
-          echo '<div class="no-tasks">';
-          echo '<img src="img/notask.svg" alt="No tasks" class="no-task-icon">';
-          echo '<p>No tasks due today!</p>';
-          echo '</div>';
-      }
+    echo '<div style="text-align: center; width: 100%;">';
+    echo '<img src="img/notask.svg" width="450px" alt="No tasks" style="display: block; margin: 0 auto;">';
+    echo '<p style="margin: 10px 0; font-size: 18px;">No tasks due today!</p>';
+    echo '</div>';
+}
       ?>
     </div>
   </div>

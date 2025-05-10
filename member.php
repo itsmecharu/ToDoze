@@ -143,11 +143,11 @@ mysqli_stmt_close($stmt);
 
   <div class="container">
   <div class="filter-container">
-    <button class="task-filter active" onclick="showSection('accepted', this)">Members</button>
+    <button class="member-task-filter active" onclick="showSection('accepted', this)">Members</button>
 
     <?php if ($user_role === 'Admin'): ?>
-    <button class="task-filter" onclick="showSection('pending', this)">Pending Invitations</button>
-    <button class="task-filter" onclick="showSection('invite', this)">Send Invitation</button>
+    <button class="member-task-filter" onclick="showSection('pending', this)">Pending Invitations</button>
+    <button class="member-task-filter" onclick="showSection('invite', this)">Send Invitation</button>
     <?php endif; ?>
   </div>
 
