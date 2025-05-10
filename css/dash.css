@@ -619,11 +619,12 @@ body {
 .task-actions {
   margin-top: 12px;
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
+
 .edit-btn,
-.delete-btn {
+.delete-btn{
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -634,6 +635,7 @@ body {
   border: none;
   cursor: pointer;
 }
+
 
 .edit-btn {
  
@@ -649,12 +651,12 @@ body {
 }
 
 .edit-btn:hover {
-  background-color: whitesmoke;
+  background-color: rgb(233, 221, 221);
   color: #10B981;
 }
 
 .delete-btn:hover {
-  background-color: whitesmoke;
+  background-color: rgb(244, 231, 231);
   color: red;
 }
 
@@ -779,14 +781,14 @@ body {
 }
 
 .task-actions a {
-    margin-right: 10px;
+    margin-right: 8px;
     font-size: 14px;
     color: #4CAF50;;
     text-decoration: none;
 }
 
 .task-actions a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 .delete-task {
 color: red !important;
@@ -1216,5 +1218,12 @@ text-decoration: underline;
         border: 1px solid #f5c6cb;
       }
 
+/* priority */
+    .priority-dropdown select {
+  padding: 3px;
+  font-size: 14px;
+}
+.priority-toggle:hover {
+  opacity: 0.8;
+}
 
-    

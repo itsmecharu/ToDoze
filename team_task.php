@@ -65,71 +65,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-<div class="top-bar">
- <div class="top-right-icons">
-      <!-- Notification Icon -->
-      <a href="invitation.php" class="top-icon">
-        <ion-icon name="notifications-outline"></ion-icon>
-      </a>
-      
-        <!-- Profile Icon -->
-        <div class="profile-info">
-  <a href="#" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
-    <ion-icon name="person-outline"></ion-icon>
-  </a>
-  <span class="username-text"><?= htmlspecialchars($username) ?></span>
-</div>
+    <div class="top-bar">
+        <div class="top-right-icons">
+            <!-- Notification Icon -->
+            <a href="invitation.php" class="top-icon">
+                <ion-icon name="notifications-outline"></ion-icon>
+            </a>
+
+            <!-- Profile Icon -->
+            <div class="profile-info">
+                <a href="#" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+                    <ion-icon name="person-outline"></ion-icon>
+                </a>
+                <span class="username-text"><?= htmlspecialchars($username) ?></span>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Logo Above Sidebar -->
-  <div class="logo-container">
-    <img src="img/logo.png" alt="Logo" class="logo">
-  </div>
+    <!-- Logo Above Sidebar -->
+    <div class="logo-container">
+        <img src="img/logo.png" alt="Logo" class="logo">
+    </div>
 
-  <!-- Sidebar Navigation -->
-  <div class="l-navbar" id="navbar">
-    <nav class="nav">
-      <div class="nav__list">
-        <a href="dash.php" class="nav__link ">
-          <ion-icon name="home-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Home</span>
-        </a>
-        <a href="task.php" class="nav__link ">
-          <ion-icon name="add-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Task</span>
-        </a>
-        <a href="team.php" class="nav__link active">
-          <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Team </span>
-        </a>
-        <a href="review.php" class="nav__link">
-          <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Review</span>
-        </a>
-      </div>
-      <a href="logout.php" class="nav__link logout">
-        <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-        <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
-      </a>
-    </nav>
-  </div>
+    <!-- Sidebar Navigation -->
+    <div class="l-navbar" id="navbar">
+        <nav class="nav">
+            <div class="nav__list">
+                <a href="dash.php" class="nav__link ">
+                    <ion-icon name="home-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Home</span>
+                </a>
+                <a href="task.php" class="nav__link ">
+                    <ion-icon name="add-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Task</span>
+                </a>
+                <a href="team.php" class="nav__link active">
+                    <ion-icon name="people-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Team </span>
+                </a>
+                <a href="review.php" class="nav__link">
+                    <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
+                    <span class="nav__name">Review</span>
+                </a>
+            </div>
+            <a href="logout.php" class="nav__link logout">
+                <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+                <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
+            </a>
+        </nav>
+    </div>
     <div class="container">
-    <h2>Add New Tasks</h2>
-    <a href="team_view.php?teamid=<?php echo $teamid; ?>"class="back-link">View Project</a>
+        <h2>Add New Tasks</h2>
+        <a href="team_view.php?teamid=<?php echo $teamid; ?>" class="back-link">View Project</a>
 
         <div class="box">
-        
-            <form class="add-task-form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?teamid=' . $teamid; ?>"
-                method="POST">
+
+            <form class="add-task-form"
+                action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?teamid=' . $teamid; ?>" method="POST">
                 <input type="hidden" name="teamid" value="<?php echo $teamid; ?>">
 
                 <!-- <label for="taskname">Task Name:</label> -->
-                <input type="text" id="taskname" name="taskname" placeholder="Add task here"  maxlength="50" required>
+                <input type="text" id="taskname" name="taskname" placeholder="Add task here" maxlength="50" required>
 
                 <!-- <label for="taskDescription">Task Description:</label> -->
-                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description" maxlength="140"
-                    style="height: 80px;">
+                <input type="text" id="taskDescription" name="taskdescription" placeholder="Task Description"
+                    maxlength="140" style="height: 80px;">
                 <div>
                     <!-- Date Section -->
                     <div style="display: inline-block; vertical-align: top; margin-right: 20px;">
@@ -152,10 +152,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <option value="100">100% (On Time)</option>
                     </select>
                     <button type="submit" style="margin-top: 20px;">Done</button>
-            
-           
+
+
             </form>
-</br>
+            </br>
 
         </div>
     </div>
@@ -203,64 +203,74 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php unset($_SESSION['success_message']); ?>
     <?php endif; ?>
 
-<script>
-    // Get references to the button and container
-    const addTaskButton = document.getElementById('addTaskButton');
-    const container = document.querySelector('.container');
-
-    // Add click event listener to the button
-    addTaskButton.addEventListener('click', function () {
-        // Toggle the 'active' class on the container
-        container.classList.toggle('actives');
-    });
-</script>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-    const taskDate = document.getElementById('taskdate');
-    const taskTime = document.getElementById('tasktime');
-    const reminderSelect = document.getElementById('reminder');
-    const form = document.querySelector('.add-task-form');
+        // Get references to the button and container
+        const addTaskButton = document.getElementById('addTaskButton');
+        const container = document.querySelector('.container');
 
-    // Disable reminder initially
-    reminderSelect.disabled = true;
+        // Add click event listener to the button
+        addTaskButton.addEventListener('click', function () {
+            // Toggle the 'active' class on the container
+            container.classList.toggle('actives');
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const taskDate = document.getElementById('taskdate');
+            const taskTime = document.getElementById('tasktime');
+            const reminderSelect = document.getElementById('reminder');
+            const form = document.querySelector('.add-task-form');
 
-    function checkDateAndTime() {
-        // Enable reminder only if both date and time are set
-        reminderSelect.disabled = !(taskDate.value && taskTime.value);
-        if (reminderSelect.disabled) reminderSelect.value = ""; // Reset reminder if disabled
-    }
+            // Disable reminder initially
+            reminderSelect.disabled = true;
 
-    // Event listeners for date and time changes
-    taskDate.addEventListener('input', checkDateAndTime);
-    taskTime.addEventListener('input', checkDateAndTime);
+            function checkDateAndTime() {
+                // Enable reminder only if both date and time are set
+                reminderSelect.disabled = !(taskDate.value && taskTime.value);
+                if (reminderSelect.disabled) reminderSelect.value = ""; // Reset reminder if disabled
+            }
 
-    // Ensure user selects both date and time before setting a reminder
-    reminderSelect.addEventListener('change', function () {
-        if (!taskDate.value || !taskTime.value) {
-            alert("Set both date and time before selecting a reminder.");
-            this.value = "";  // Clear the reminder selection
-        }
-    });
+            // Event listeners for date and time changes
+            taskDate.addEventListener('input', checkDateAndTime);
+            taskTime.addEventListener('input', checkDateAndTime);
 
-    // Prevent form submission if reminder is selected without date/time
-    form.addEventListener('submit', function (event) {
-        if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
-            alert("Set both date and time before setting a reminder.");
-            event.preventDefault();  // Prevent form submission
-        }
-    });
-});
+            // Ensure user selects both date and time before setting a reminder
+            reminderSelect.addEventListener('change', function () {
+                if (!taskDate.value || !taskTime.value) {
+                    alert("Set both date and time before selecting a reminder.");
+                    this.value = "";  // Clear the reminder selection
+                }
+            });
+
+            // Prevent form submission if reminder is selected without date/time
+            form.addEventListener('submit', function (event) {
+                if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
+                    alert("Set both date and time before setting a reminder.");
+                    event.preventDefault();  // Prevent form submission
+                }
+            });
+        });
 
     </script>
-     <!-- IONICONS -->
- <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
 
-<!-- MAIN JS -->
-<script src="js/dash.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const allDropdowns = document.querySelectorAll('.priority-dropdown');
+            allDropdowns.forEach(el => {
+                if (el.id !== id) el.style.display = 'none';
+            });
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+    <!-- IONICONS -->
+    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+
+    <!-- MAIN JS -->
+    <script src="js/dash.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 
 </html>
-
-    

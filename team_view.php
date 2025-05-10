@@ -162,7 +162,7 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
           <span class="nav__name">Task</span>
         </a>
         <a href="team.php" class="nav__link active">
-          <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
+          <ion-icon name="people-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Team </span>
         </a>
         <a href="review.php" class="nav__link">
@@ -285,14 +285,49 @@ if ($result && mysqli_num_rows($result) > 0) {
         if ($user_role === 'Admin') {
             // Admin can edit and delete
             if (!$isCompleted) {
-                echo "<a href='editteam_task.php?teamid=" . $teamId . "&taskid=" . $row['taskid'] . "' class='edit-btn'><ion-icon name='create-outline'></ion-icon> Edit</a>";
+                    // priority section 
+        $currentPriority = $row['taskpriority'] ?? 'none';
+        $taskId = $row['taskid'];
+
+        // Map priorities to circle icons
+        $priorityIcons = [
+          'High' => '🔴',
+          'Medium' => '🟡',
+          'Low' => '🟢',
+          'none' => '⚫'
+        ];
+
+         echo "<div class='priority-wrapper' style='display: inline-block; position: relative;'>";
+
+        // Toggle icon
+        echo "<button type='button' class='priority-toggle' onclick=\"toggleDropdown('dropdown-$taskId')\" title='Change Priority' style=' background: none; border: none; font-size: 12px; cursor: pointer;'>";
+        echo $priorityIcons[$currentPriority];
+        echo "</button>";
+
+        // Hidden dropdown form
+        echo "<form method='POST' action='update_priority.php' class='priority-dropdown' id='dropdown-$taskId' style='display: none; position: absolute; top: 25px; left: 0; background: #fff; border: 1px solid #ccc; padding: 5px; border-radius: 6px; z-index: 10;'>";
+        echo "<input type='hidden' name='taskid' value='" . $taskId . "'>";
+        echo "<select name='taskpriority' onchange='this.form.submit();'>";
+        foreach ($priorityIcons as $key => $icon) {
+          $selected = ($currentPriority === $key) ? 'selected' : '';
+          echo "<option value='$key' $selected>$icon $key</option>";
+        }
+        echo "</select>";
+        echo "</form>";
+
+        echo "</div>";
+        // priority section ends
+
+                echo "<a href='editteam_task.php?teamid=" . $teamId . "&taskid=" . $row['taskid'] . "' class='edit-btn' title='Edit'><ion-icon name='create-outline'></ion-icon>Edit</a>";
             }
-            echo "<a href='#' class='delete-btn' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon> Delete</a>";
+            echo "<a href='#' class='delete-btn' title='Delete' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon>Delete</a>";
         } elseif ($isCompleted && $assignedTo == $currentUserId) {
             // Assigned user sees completed date
             if (!empty($row['completed_at'])) {
                 echo "<span class='info' style='color: green;'><ion-icon name='checkmark-done-outline'></ion-icon> Completed on: " . date('Y-m-d H:i', strtotime($row['completed_at'])) . "</span>";
-            }
+                echo "<a href='#' class='delete-btn' title='Delete' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon>Dlete</a>";
+              }
+            
         }
         echo "</div>"; // task-actions
     

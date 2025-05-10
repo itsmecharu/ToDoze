@@ -21,10 +21,10 @@ $overdueTasks = 0;
 
 try {
   // Fetch task statistics for the logged-in user
-  $sqlTotalTasks = "SELECT COUNT(*) as total FROM tasks WHERE userid = ?";
-  $sqlPendingTasks = "SELECT COUNT(*) as pending FROM tasks WHERE userid = ? AND taskstatus = 'Pending'";
-  $sqlCompletedTasks = "SELECT COUNT(*) as completed FROM tasks WHERE userid = ? AND taskstatus = 'Completed'";
-  $sqlOverdueTasks = "SELECT COUNT(*) as overdue FROM tasks WHERE userid = ? AND is_overdue = 1";
+  $sqlTotalTasks = "SELECT COUNT(*) as total FROM tasks WHERE userid = ? AND is_deleted = 0";
+  $sqlPendingTasks = "SELECT COUNT(*) as pending FROM tasks WHERE userid = ? AND taskstatus = 'Pending'AND is_deleted = 0";
+  $sqlCompletedTasks = "SELECT COUNT(*) as completed FROM tasks WHERE userid = ? AND taskstatus = 'Completed' AND is_deleted = 0";
+  $sqlOverdueTasks = "SELECT COUNT(*) as overdue FROM tasks WHERE userid = ? AND is_overdue = 1 AND is_deleted = 0";
 
   // Total Tasks
   $stmtTotal = $conn->prepare($sqlTotalTasks);
@@ -92,7 +92,7 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
   $dailyLabels[] = date('M j', strtotime($date)); // e.g., "May 7"
 
   // Total tasks
-  $stmt = $conn->prepare("SELECT COUNT(*) as count FROM tasks WHERE userid = ? AND DATE(taskcreated_at) = ?");
+  $stmt = $conn->prepare("SELECT COUNT(*) as count FROM tasks WHERE  is_deleted = 0 AND userid = ?  AND DATE(taskcreated_at) = ?");
   $stmt->bind_param("is", $userid, $date);
   $stmt->execute();
   $res = $stmt->get_result()->fetch_assoc();
@@ -100,7 +100,7 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
   $stmt->close();
 
   // Completed tasks
-  $stmt = $conn->prepare("SELECT COUNT(*) as count FROM tasks WHERE userid = ? AND taskstatus = 'Completed' AND DATE(taskcreated_at) = ?");
+  $stmt = $conn->prepare("SELECT COUNT(*) as count FROM tasks WHERE userid = ? AND taskstatus = 'Completed'AND is_deleted = 0 AND DATE(taskcreated_at) = ?");
   $stmt->bind_param("is", $userid, $date);
   $stmt->execute();
   $res = $stmt->get_result()->fetch_assoc();
@@ -108,14 +108,14 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
   $stmt->close();
 
   // Pending tasks
-  $stmt = $conn->prepare("SELECT COUNT(*) as count FROM tasks WHERE userid = ? AND taskstatus = 'Pending' AND DATE(taskcreated_at) = ?");
+  $stmt = $conn->prepare("SELECT COUNT(*) as count FROM tasks WHERE userid = ? AND taskstatus = 'Pending'AND is_deleted = 0 AND DATE(taskcreated_at) = ?");
   $stmt->bind_param("is", $userid, $date);
   $stmt->execute();
   $res = $stmt->get_result()->fetch_assoc();
   $dailyPending[] = $res['count'];
   $stmt->close();
-  // Pending tasks
-  $stmt = $conn->prepare("SELECT COUNT(*) as count FROM tasks WHERE userid = ? AND is_overdue = 1 AND DATE(taskcreated_at) = ?");
+  //  tasks
+  $stmt = $conn->prepare("SELECT COUNT(*) as count FROM tasks WHERE userid = ? AND is_overdue = 1 AND is_deleted = 0 AND DATE(taskcreated_at) = ?");
   $stmt->bind_param("is", $userid, $date);
   $stmt->execute();
   $res = $stmt->get_result()->fetch_assoc();
@@ -186,7 +186,7 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
               class="nav__name">Home</span></a>
           <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
               class="nav__name">Task</span></a>
-          <a href="team.php" class="nav__link"><ion-icon name="folder-outline" class="nav__icon"></ion-icon><span
+          <a href="team.php" class="nav__link"><ion-icon name="people-outline" class="nav__icon"></ion-icon><span
               class="nav__name">Team </span></a>
           <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline"
               class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
@@ -244,12 +244,12 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
 
       // Count today's tasks
       $sql = "SELECT COUNT(*) FROM tasks 
-              WHERE taskdate = ? 
+              WHERE userid=? AND taskdate = ? 
               AND (tasktime <= ? OR tasktime IS NULL) 
               AND taskstatus != 'Completed' 
               AND is_deleted = 0";
       $stmt = $conn->prepare($sql);
-      $stmt->bind_param("ss", $todayDate, $currentTime);
+      $stmt->bind_param("iss", $userid,$todayDate, $currentTime);
       $stmt->execute();
       $stmt->bind_result($taskCount);
       $stmt->fetch();
@@ -257,11 +257,12 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
 
       // Count overdue tasks
       $sql = "SELECT COUNT(*) FROM tasks 
-              WHERE taskdate < ? 
+              WHERE userid =? AND taskdate < ? 
               AND taskstatus != 'Completed' 
-              AND is_deleted = 0";
+              AND is_deleted = 0
+              And is_overdue=1";
       $stmt = $conn->prepare($sql);
-      $stmt->bind_param("s", $todayDate);
+      $stmt->bind_param("is", $userid,$todayDate);
       $stmt->execute();
       $stmt->bind_result($overdueCount);
       $stmt->fetch();
@@ -321,15 +322,15 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
     <?php
     // Fetch today's tasks
     $sql = "SELECT taskid, taskname, taskdate, tasktime FROM tasks 
-            WHERE taskdate = ? 
+            WHERE userid=? AND taskdate = ? 
             AND (tasktime <= ? OR tasktime IS NULL) 
             AND taskstatus != 'Completed' 
             AND is_deleted = 0";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $todayDate, $currentTime);
+    $stmt->bind_param("iss", $userid,$todayDate, $currentTime);
     $stmt->execute();
     $stmt->store_result();
-    $stmt->bind_result($taskid, $taskname, $taskdate, $tasktime);
+    $stmt->bind_result($userid, $taskname, $taskdate, $tasktime);
 
     echo "<h4>Tasks Due Today:</h4>";
     if ($stmt->num_rows > 0) {
@@ -345,14 +346,14 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
 
     // Fetch overdue tasks
     $sql = "SELECT taskid, taskname, taskdate, tasktime FROM tasks 
-            WHERE taskdate < ? 
+            WHERE userid=? AND taskdate < ? 
             AND taskstatus != 'Completed' 
-            AND is_deleted = 0";
+            AND is_deleted = 0 ";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $todayDate);
+    $stmt->bind_param("is", $userid,$todayDate);
     $stmt->execute();
     $stmt->store_result();
-    $stmt->bind_result($taskid, $taskname, $taskdate, $tasktime);
+    $stmt->bind_result($userid, $taskname, $taskdate, $tasktime);
 
     echo "<h4>Overdue Tasks:</h4>";
     if ($stmt->num_rows > 0) {

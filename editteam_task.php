@@ -181,7 +181,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <span class="nav__name">Task</span>
         </a>
         <a href="team.php" class="nav__link active">
-          <ion-icon name="folder-outline" class="nav__icon"></ion-icon>
+          <ion-icon name="people-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Team </span>
         </a>
         <a href="review.php" class="nav__link">

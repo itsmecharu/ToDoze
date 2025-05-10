@@ -119,7 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         class="nav__name">Home</span></a>
                 <a href="task.php" class="nav__link "><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
                         class="nav__name">Task</span></a>
-                <a href="team.php" class="nav__link active"><ion-icon name="folder-outline"
+                <a href="team.php" class="nav__link active"><ion-icon name="people-outline"
                         class="nav__icon"></ion-icon><span class="nav__name">Team</span></a>
                 <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline"
                         class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
