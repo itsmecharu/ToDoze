@@ -422,7 +422,7 @@ if ($stmt) {
             confirmButtonText: "Yes, delete it!"
           }).then((result) => {
             if (result.isConfirmed) {
-              window.location.href = 'delete_task.php?taskid=' + taskid;
+              window.location.href = 'delete_task.php?taskid=' + taskId;
             }
           });
         });
