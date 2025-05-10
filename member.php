@@ -43,12 +43,25 @@ mysqli_stmt_close($stmt);
 $sql = "SELECT users.userid, users.useremail, team_members.role 
         FROM team_members 
         JOIN users ON team_members.userid = users.userid 
-        WHERE team_members.teamid = ? AND team_members.status = 'accepted'";
+        WHERE team_members.teamid = ? AND team_members.status = 'accepted'AND team_members.has_exited = 0";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $teamId);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $accepted_members = mysqli_fetch_all($result, MYSQLI_ASSOC);
+mysqli_stmt_close($stmt);
+
+
+// Fetch ex  members
+$sql = "SELECT users.userid, users.useremail, team_members.role 
+        FROM team_members 
+        JOIN users ON team_members.userid = users.userid 
+        WHERE team_members.teamid = ? AND team_members.has_exited = 1";
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "i", $teamId);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$ex_members = mysqli_fetch_all($result, MYSQLI_ASSOC);
 mysqli_stmt_close($stmt);
 
 // Fetch pending members
@@ -65,19 +78,24 @@ $result = mysqli_stmt_get_result($stmt);
 $pending_members = mysqli_fetch_all($result, MYSQLI_ASSOC);
 mysqli_stmt_close($stmt);
 
-// Fetch available users for invitation
-$sql = "SELECT userid, useremail 
-        FROM users 
-        WHERE userid != ? 
-        AND userid NOT IN (
-            SELECT userid FROM team_members WHERE teamid = ?
-        )";
+$sql = "
+SELECT userid, useremail 
+FROM users 
+WHERE userid != ? 
+AND userid NOT IN (
+    SELECT userid 
+    FROM team_members 
+    WHERE teamid = ? 
+      AND status IN ('Accepted', 'Pending') 
+      AND has_exited = 0
+)";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "ii", $userid, $teamId);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $available_users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 mysqli_stmt_close($stmt);
+
 ?>
 
 <!DOCTYPE html>
@@ -144,10 +162,12 @@ mysqli_stmt_close($stmt);
   <div class="container">
   <div class="filter-container">
     <button class="member-task-filter active" onclick="showSection('accepted', this)">Members</button>
+    <button class="member-task-filter" onclick="showSection('ex', this)">Ex Members</button>
 
     <?php if ($user_role === 'Admin'): ?>
     <button class="member-task-filter" onclick="showSection('pending', this)">Pending Invitations</button>
     <button class="member-task-filter" onclick="showSection('invite', this)">Send Invitation</button>
+    <!-- <button class="member-task-filter" onclick="showSection('ex', this)">Ex Members</button> -->
     <?php endif; ?>
   </div>
 
@@ -271,6 +291,47 @@ mysqli_stmt_close($stmt);
       </div>
     </form>
   </div>
+  <!-- ex section -->
+<div id="ex" class="ex_members-list section" style="display: none;">
+    <h3>Ex Members</h3>
+    <?php if (!empty($ex_members)) { ?>
+      <ul class="member-cards">
+        <?php foreach ($ex_members as $member) { ?>
+          <li class="member-card">
+            <div class="member-info">
+              <span class="member-email"><?= htmlspecialchars($member['useremail']) ?></span>
+            </div>
+      
+
+            <?php if ($user_role === 'Admin'): ?>
+            <?php if ($member['userid'] != $admin_userid) { ?>
+              
+              
+            <?php }  else { ?>
+              <span class="admin-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                </svg>
+                Admin
+              </span>
+            <?php } ?>
+
+            <?php endif; ?>
+          </li>
+        <?php } ?>
+      </ul>
+    <?php } else { ?>
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <p>No Ex members yet.</p>
+      </div>
+    <?php } ?>
+  </div>
 
 </div>
 <?php endif; ?>
@@ -281,7 +342,7 @@ mysqli_stmt_close($stmt);
 
 <script>
   function showSection(id, btn) {
-    const sections = ['accepted', 'pending', 'invite'];
+    const sections = ['accepted', 'pending', 'invite','ex'];
     sections.forEach(sec => {
       document.getElementById(sec).style.display = (sec === id) ? 'block' : 'none';
     });

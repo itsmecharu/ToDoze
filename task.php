@@ -211,6 +211,7 @@ if ($stmt) {
          echo "<div class='priority-wrapper' style='display: inline-block; position: relative;'>";
 
         // Toggle icon
+        echo "<span style='margin-right: 5px;'>Priority:</span>";
         echo "<button type='button' class='priority-toggle' onclick=\"toggleDropdown('dropdown-$taskId')\" title='Change Priority' style=' background: none; border: none; font-size: 12px; cursor: pointer;'>";
         echo $priorityIcons[$currentPriority];
         echo "</button>";

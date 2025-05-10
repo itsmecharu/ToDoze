@@ -51,14 +51,14 @@ $baseQuery = "
 SELECT t.*, tm.role 
 FROM teams t
 JOIN team_members tm ON t.teamid = tm.teamid
-WHERE tm.userid = ? AND t.is_teamdeleted = 0
+WHERE tm.userid = ? AND t.is_teamdeleted = 0 
 ";
 
 // Apply filter
 if ($filter === 'admin') {
   $baseQuery .= " AND tm.role = 'Admin'";
 } elseif ($filter === 'member') {
-  $baseQuery .= " AND tm.role != 'Admin' AND tm.status = 'Accepted'";
+  $baseQuery .= " AND tm.role != 'Admin' AND tm.status = 'Accepted' AND tm.has_exited = 0";
 }
 
 $stmt = mysqli_prepare($conn, $baseQuery);
@@ -105,10 +105,13 @@ $result = mysqli_stmt_get_result($stmt);
     <div style="display: flex; justify-content: center;">
 
       <button id="createProjectBtn" class="create-btn"> + Create New Team</button>
-      </div>
-      <a href="team.php?filter=admin"class="task-filter <?= $filter == 'admin' ? 'active' : '' ?>">You are Admin of</a>
-      <a href="team.php?filter=member" class="task-filter <?= $filter == 'member' ? 'active' : '' ?>">You are Member of</a>
-  
+    </div>
+    <a href="team.php?filter=admin" class="task-filter <?= $filter == 'admin' ? 'active' : '' ?>"
+      title="Teams where you are the administrator">👑 Managed Teams</a>
+    <a href="team.php?filter=member" class="task-filter <?= $filter == 'member' ? 'active' : '' ?>"
+      title="Teams you have joined as a member">👥 Joined Teams</a>
+
+
   </div>
 
 
@@ -149,31 +152,8 @@ $result = mysqli_stmt_get_result($stmt);
     </nav>
   </div>
 
-  <div class="container">
-    <!-- Modal -->
-    <div id="teamModal" class="modal-overlay" style="display: none;">
-      <div class="modal-content">
-        <span class="close-modal" id="closeModalBtn">&times;</span>
-        <h2>Create New Team</h2>
-        <form method="POST">
-          <label for="teamname">Team Name:</label>
-          <input type="text" id="teamname" name="teamname" required>
 
-          <label for="teamdescription">Team Description:</label>
-          <input type="text" id="teamdescription" name="teamdescription" style="height: 80px;">
-
-          <!-- <label for="teamduedate">Select Due Date 📅:</label>
-          <input type="datetime-local" id="teamduedate" name="teamduedate" style="width:35%"> -->
-
-          <button type="submit">Create Team </button>
-
-        </form>
-      </div>
-    </div>
-  </div>
-  </div>
-
-  <div class="box">
+  <div class="box" style="margin-right: 300px;">
     <!-- <h2>Your Teams</h2> -->
     <?php if (mysqli_num_rows($result) > 0): ?>
       <div class="team-list">
@@ -198,7 +178,7 @@ $result = mysqli_stmt_get_result($stmt);
 
 
 
-              <div class="team-actions">
+              <div class="team-actions" style="  margin-right: 50px ;">
                 <?php if ($role === 'Admin'): ?>
                   <a href="team_task.php?teamid=<?php echo $row['teamid']; ?>" class="edit-btn" title="Edit">
                     <ion-icon name="add-circle-outline"></ion-icon>Task
@@ -215,6 +195,13 @@ $result = mysqli_stmt_get_result($stmt);
                 <?php else: ?>
                   <span class="view-only-msg">🔒 View Only</span>
                 <?php endif; ?>
+
+                <?php if ($role === 'Member'): ?>
+                  <a href="exit_team.php?teamid=<?= $row['teamid'] ?>" class="edit-btn"
+                    onclick="return confirm('Are you sure you want to leave this team?');">
+                    <ion-icon name="log-out-outline"></ion-icon> Exit Team </a>
+                <?php endif; ?>
+
               </div>
 
             </div>
@@ -234,6 +221,26 @@ $result = mysqli_stmt_get_result($stmt);
     <?php endif; ?>
   </div>
 
+
+  <div class="container">
+    <!-- Modal -->
+    <div id="teamModal" class="modal-overlay" style="display: none;">
+      <div class="modal-content">
+        <span class="close-modal" id="closeModalBtn">&times;</span>
+        <h2>Create New Team</h2>
+        <form method="POST">
+          <label for="teamname">Team Name:</label>
+          <input type="text" id="teamname" name="teamname" required>
+
+          <label for="teamdescription">Team Description:</label>
+          <input type="text" id="teamdescription" name="teamdescription" style="height: 80px;">
+
+          <button type="submit">Create Team </button>
+
+        </form>
+      </div>
+    </div>
+  </div>
 
   <!-- for delete msg -->
   <script>

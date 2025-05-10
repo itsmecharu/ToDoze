@@ -83,19 +83,21 @@ $sql = "CREATE TABLE IF NOT EXISTS team_members (
     joinedteam_at TIMESTAMP NULL DEFAULT NULL,
     FOREIGN KEY (teamid) REFERENCES teams(teamid) ON DELETE CASCADE,
     FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
-    removed_at TIMESTAMP NULL DEFAULT NULL
+    removed_at TIMESTAMP NULL DEFAULT NULL,
+    has_exited TINYINT(1) DEFAULT 0,
+    exited_at TIMESTAMP NULL DEFAULT NULL
 )";
-
-// $sql = "ALTER TABLE team_members ADD COLUMN ";
-
-
 
 if (mysqli_query($conn, $sql)) {
     // echo "Table 'users' created successfully.";
 } else {
-    echo "Error creating 'users' table: " . mysqli_error($conn);
+    echo "Error creating 'team members ' table: " . mysqli_error($conn);
 }
 
+// $sql_alter = "ALTER TABLE team_members ADD COLUMN exited_at TIMESTAMP NULL DEFAULT NULL ";
+//     if (!mysqli_query($conn, $sql_alter)) {
+//         echo "Error altering 'team_members' table: " . mysqli_error($conn);
+//     }
 // Create admin table
 $sql = "CREATE TABLE IF NOT EXISTS admin(
     admin_userid INT PRIMARY KEY NOT NULL,

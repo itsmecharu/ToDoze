@@ -184,18 +184,24 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
   <p style="font-size: small;"><strong>Description:</strong> <?php echo htmlspecialchars($team['teamdescription']); ?></p>
 
 
-  <div class="icons" style="display: flex; gap: 20px; margin-top: 15px;">
+  <div class="icons" style="display: flex; gap: 20px; margin-top: 10px;">
     <div class="team-actions">
       <?php if ($user_role === 'Admin'): ?>
-        <a href="team_task.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Edit">
+        <a href="team_task.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Add Task" >
           <ion-icon name="add-circle-outline"></ion-icon> Task
         </a>
        
       <?php else: ?>
         <span class="view-only-msg">🔒 View Only</span>
+        <a href="exit_team.php?teamid=<?= $row['teamid'] ?>" class="edit-btn" onclick="return confirm('Are you sure you want to leave this team?');">
+      <ion-icon name="log-out-outline"></ion-icon> Exit Team</a>
       <?php endif; ?>
-      <a href="member.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Edit">
+      <a href="member.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Add Member">
       <ion-icon name="people-outline"></ion-icon> Member  </a>
+
+       
+
+              
     </div>
   </div>
   <div class="filter-container">
@@ -431,6 +437,18 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 </script>
+
+
+ <script>
+    function toggleDropdown(id) {
+      const dropdown = document.getElementById(id);
+      const allDropdowns = document.querySelectorAll('.priority-dropdown');
+      allDropdowns.forEach(el => {
+        if (el.id !== id) el.style.display = 'none';
+      });
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+  </script>
  <!-- IONICONS -->
  <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
 

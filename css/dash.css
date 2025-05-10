@@ -719,7 +719,10 @@ body {
   }
   
   .team-actions {
-    display: flex;
+
+    display: absolute;
+    margin-left: 600px;
+    margin-top: 10px;
     gap: 10px;
   }
 
