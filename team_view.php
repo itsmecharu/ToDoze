@@ -31,7 +31,7 @@ if (!$team) {
 }
 
 // Fetch tasks
-$sql = "SELECT * FROM tasks WHERE teamid = ? AND is_deleted = 0 AND taskstatus='pending' ORDER BY taskid DESC";
+$sql = "SELECT * FROM tasks WHERE teamid = ? AND is_deleted = 0 AND taskstatus='Pending' ORDER BY taskid DESC";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $teamId);
 mysqli_stmt_execute($stmt);
@@ -51,9 +51,10 @@ $update_sql = "UPDATE tasks
         END 
     WHERE userid = ? AND taskstatus != 'Completed' AND is_deleted = 0 AND teamid = ?
 ";
+
 $update_stmt = mysqli_prepare($conn, $update_sql);
 if ($update_stmt) {
-    mysqli_stmt_bind_param($update_stmt, "sii", $now, $userid, $teamid);
+    mysqli_stmt_bind_param($update_stmt, "sii", $now, $userid, $teamId);
     mysqli_stmt_execute($update_stmt);
 }
 
@@ -66,14 +67,14 @@ switch ($filter) {
     case 'completed':
         $sql = "SELECT * FROM tasks 
                 WHERE teamid = ? 
-                AND taskstatus = 'completed' AND is_deleted = 0 
+                AND taskstatus = 'Completed' AND is_deleted = 0 
                 ORDER BY completed_at DESC";
         break;
     
     case 'overdue':
         $sql = "SELECT * FROM tasks 
                 WHERE teamid = ? 
-                AND is_overdue = 1 AND is_deleted = 0 AND taskstatus != 'completed' 
+                AND is_overdue = 1 AND is_deleted = 0 AND taskstatus != 'Completed' 
                 ORDER BY taskid DESC";
         break;
 
@@ -81,7 +82,7 @@ switch ($filter) {
     default:
         $sql = "SELECT * FROM tasks 
                 WHERE teamid = ? 
-                AND taskstatus != 'completed' AND is_deleted = 0 
+                AND taskstatus != 'Completed' AND is_deleted = 0 
                 ORDER BY taskid DESC";
         break;
 }
@@ -193,7 +194,8 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
        
       <?php else: ?>
         <span class="view-only-msg">🔒 View Only</span>
-      <a href="#"  class="edit-btn exit-team" data-teamid="<?= $row['teamid'] ?>">
+      <a href="#" class="edit-btn exit-team" data-teamid="<?= $teamId ?>">
+
        <ion-icon name="log-out-outline"></ion-icon>Exit
 </a>
 
@@ -217,11 +219,10 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
 <style>
   .team-box {
   border: 1px solid #ccc;
-  /* border-radius: 10px; */
-  padding: 10px;
+  padding: 5px;
   background: #fff;
-  margin-bottom: 10px;
-  margin-left: 50px;
+  margin-bottom: 8px;
+  margin-left: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -257,7 +258,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
     while ($row = mysqli_fetch_assoc($result)) {
         $isOverdue = $row['is_overdue'] == 1;
-        $isCompleted = strtolower($row['taskstatus']) === 'completed';
+        $isCompleted = strtolower($row['taskstatus']) === 'Completed';
         $assignedTo = $row['assigned_to']; // Get assigned user
     
         echo "<div class='task' id='task-" . $row['taskid'] . "'>";

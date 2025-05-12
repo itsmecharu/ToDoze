@@ -15,6 +15,8 @@ $teamid = $_POST['teamid'] ?? $_GET['teamid'] ?? null;
 $user_email = $_POST['useremail'] ?? null;
 $message = "";  // To hold feedback message
 
+$now = date('Y-m-d H:i:s');
+
 // Validate inputs
 if (!$teamid || !$user_email) {
     $message = "Missing team ID or user email.";
@@ -50,7 +52,7 @@ if (!$teamid || !$user_email) {
                 $message = "You cannot invite yourself to the team.";
             } else {
                 // Check if the user is already invited or a member of the team
-                $sql = "SELECT * FROM team_members WHERE teamid = ? AND userid = ?";
+                $sql = "SELECT * FROM team_members WHERE teamid = ? AND userid = ? And status = 'Pending'||'Accepted' ";
                 $stmt = mysqli_prepare($conn, $sql);
                 mysqli_stmt_bind_param($stmt, "ii", $teamid, $invitee_id);
                 mysqli_stmt_execute($stmt);
@@ -61,9 +63,9 @@ if (!$teamid || !$user_email) {
                     $message = "This user is already a member or has a pending invitation.";
                 } else {
                     // Send the invitation (insert into team_members with 'Pending' status)
-                    $sql = "INSERT INTO team_members (teamid, userid, role, status) VALUES (?, ?, 'Member', 'Pending')";
+                    $sql = "INSERT INTO team_members (teamid, userid, role, status ,invited_at) VALUES (?, ?, 'Member', 'Pending', ? )";
                     $stmt = mysqli_prepare($conn, $sql);
-                    mysqli_stmt_bind_param($stmt, "ii", $teamid, $invitee_id);
+                    mysqli_stmt_bind_param($stmt, "iis", $teamid, $invitee_id, $now);
 
                     if (mysqli_stmt_execute($stmt)) {
                         $message = "Invitation sent successfully.";

@@ -14,7 +14,9 @@ $sql = "SELECT
     p.teamid,
     p.teamname,
     u_admin.username AS adminname,
-    pm_user.status
+    pm_user.status,
+    pm_user.invited_at
+
 FROM 
     team_members pm_user
 JOIN 
@@ -46,108 +48,144 @@ mysqli_stmt_close($stmt);
     <link rel="stylesheet" href="css/dash.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <style>
-        .accepted-btn, .rejected-btn {
+        .invitation-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+        }
+
+        .invitation-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .invitation-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .action-btn,
+        .accepted-btn,
+        .rejected-btn {
             padding: 6px 12px;
             border: none;
             border-radius: 4px;
-            cursor: not-allowed;
-            opacity: 0.75;
             font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .action-btn.accept-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .action-btn.reject-btn {
+            background-color: #ef552a;
+            color: white;
         }
 
         .accepted-btn {
             background-color: #28a745;
             color: white;
+            cursor: not-allowed;
+            opacity: 0.8;
         }
 
         .rejected-btn {
-            background-color: #dc3545;
+            background-color:red;
             color: white;
+            cursor: not-allowed;
+            opacity: 0.8;
         }
-
-        .action-btn {
-            margin-right: 10px;
-            text-decoration: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .accept-btn {
-            background-color: #007bff;
-        }
-
-        .reject-btn {
-            background-color: #6c757d;
-        }
-
     </style>
 </head>
 
 <body>
-        
 
-<div class="top-right-icons">
-  <a href="invitation.php" class="top-icon">
-    <ion-icon name="notifications-outline"></ion-icon>
-  </a>
-    <!-- Profile Icon -->
-    <div class="profile-info">
-  <a href="#" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
-    <ion-icon name="person-outline"></ion-icon>
-  </a>
-  <span class="username-text"><?= htmlspecialchars($username) ?></span>
-</div>
-</div>
 
-<div class="logo-container" >
-    <img src="img/logo.png" alt="App Logo" class="logo">
-  </div>
-
-<div class="l-navbar" id="navbar">
-  <nav class="nav">
-    <div class="nav__list">
-      <a href="dash.php" class="nav__link active"><ion-icon name="home-outline" class="nav__icon"></ion-icon><span class="nav__name">Home</span></a>
-      <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span class="nav__name">Task</span></a>
-      <a href="team.php" class="nav__link"><ion-icon name="people-outline" class="nav__icon"></ion-icon><span class="nav__name">Team </span></a>
-      <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
+    <div class="top-right-icons">
+        <a href="invitation.php" class="top-icon">
+            <ion-icon name="notifications-outline"></ion-icon>
+        </a>
+        <!-- Profile Icon -->
+        <div class="profile-info">
+            <a href="#" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+                <ion-icon name="person-outline"></ion-icon>
+            </a>
+            <span class="username-text"><?= htmlspecialchars($username) ?></span>
+        </div>
     </div>
-    <a href="logout.php" class="nav__link logout"><ion-icon name="log-out-outline" class="nav__icon"></ion-icon><span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span></a>
-  </nav>
-</div>
+
+    <div class="logo-container">
+        <img src="img/logo.png" alt="App Logo" class="logo">
+    </div>
+
+    <div class="l-navbar" id="navbar">
+        <nav class="nav">
+            <div class="nav__list">
+                <a href="dash.php" class="nav__link active"><ion-icon name="home-outline"
+                        class="nav__icon"></ion-icon><span class="nav__name">Home</span></a>
+                <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
+                        class="nav__name">Task</span></a>
+                <a href="team.php" class="nav__link"><ion-icon name="people-outline" class="nav__icon"></ion-icon><span
+                        class="nav__name">Team </span></a>
+                <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline"
+                        class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
+            </div>
+            <a href="logout.php" class="nav__link logout"><ion-icon name="log-out-outline"
+                    class="nav__icon"></ion-icon><span class="nav__name" style="color: #d96c4f;"><b>Log
+                        Out</b></span></a>
+        </nav>
+    </div>
 
 
 
-    <div class="i-container">
-        <div class="i-box">
+    <div class="container">
+        <div class="box">
             <h2>Invitations</h2>
 
             <?php if (!empty($invitations)) { ?>
                 <ul>
                     <?php foreach ($invitations as $invitation) { ?>
-                        <li style="margin-bottom: 10px;">
-                            Project: <strong><?php echo htmlspecialchars($invitation['teamname']); ?></strong><br>
-                            Created by: <?php echo htmlspecialchars($invitation['adminname']); ?><br>
+                        <li class="invitation-item">
+                            <div class="invitation-info">
+                                <div><strong>Project:</strong> <?= htmlspecialchars($invitation['teamname']) ?></div>
+                                <div>Created by: <?= htmlspecialchars($invitation['adminname']) ?></div>
+                                <div>Date: <?= htmlspecialchars($invitation['invited_at']) ?></div>
+                            </div>
 
-                            <?php if ($invitation['status'] === 'Pending') { ?>
-                                <a href="accept.php?teamid=<?php echo $invitation['teamid']; ?>" class="action-btn accept-btn">Accept</a>
-                                <a href="reject.php?teamid=<?php echo $invitation['teamid']; ?>" class="action-btn reject-btn">Reject</a>
-                            <?php } elseif ($invitation['status'] === 'Accepted') { ?>
-                                <button class="accepted-btn" disabled>Accepted</button>
-                            <?php } elseif ($invitation['status'] === 'Rejected') { ?>
-                                <button class="rejected-btn" disabled>Rejected</button>
-                            <?php } ?>
+                            <div class="invitation-actions">
+                                <?php if ($invitation['status'] === 'Pending') { ?>
+                                    <a href="accept.php?teamid=<?= $invitation['teamid'] ?>"
+                                        class="action-btn accept-btn">Accept</a>
+                                    <a href="reject.php?teamid=<?= $invitation['teamid'] ?>"
+                                        class="action-btn reject-btn">Reject</a>
+                                <?php } elseif ($invitation['status'] === 'Removed') { ?>
+                                    <button class="rejected-btn" style="background-color : red;" disabled>Removed</button>
+                                <?php } elseif ($invitation['status'] === 'Rejected') { ?>
+                                    <button class="rejected-btn" style="background-color : red;" disabled>Rejected</button>
+                                <?php } ?>
+                            </div>
                         </li>
+
                     <?php } ?>
                 </ul>
             <?php } else { ?>
-              <div class="centered-content">
-              <div class="content-wrapper">
-              <img src="img/notify.svg" alt="No tasks yet" />
-              <h3><p>No invitation yet 🚀</p></h3>
-              </div>
-              </div>
+                <div class="centered-content">
+                    <div class="content-wrapper">
+                        <img src="img/notify.svg" alt="No tasks yet" />
+                        <h3>
+                            <p>No invitation yet 🚀</p>
+                        </h3>
+                    </div>
+                </div>
 
             <?php } ?>
         </div>
@@ -157,4 +195,5 @@ mysqli_stmt_close($stmt);
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
     <script src="js/dash.js"></script>
 </body>
+
 </html>
