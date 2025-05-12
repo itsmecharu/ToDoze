@@ -99,7 +99,7 @@ mysqli_stmt_close($stmt);
         }
 
         .rejected-btn {
-            background-color:red;
+            background-color: red;
             color: white;
             cursor: not-allowed;
             opacity: 0.8;
@@ -156,8 +156,8 @@ mysqli_stmt_close($stmt);
                     <?php foreach ($invitations as $invitation) { ?>
                         <li class="invitation-item">
                             <div class="invitation-info">
-                                <div><strong>Project:</strong> <?= htmlspecialchars($invitation['teamname']) ?></div>
-                                <div>Created by: <?= htmlspecialchars($invitation['adminname']) ?></div>
+                                <div><strong>Hi! You have a request to join:</strong> <?= htmlspecialchars($invitation['teamname']) ?></div>
+                                <div>From: <?= htmlspecialchars($invitation['adminname']) ?></div>
                                 <div>Date: <?= htmlspecialchars($invitation['invited_at']) ?></div>
                             </div>
 
@@ -167,6 +167,8 @@ mysqli_stmt_close($stmt);
                                         class="action-btn accept-btn">Accept</a>
                                     <a href="reject.php?teamid=<?= $invitation['teamid'] ?>"
                                         class="action-btn reject-btn">Reject</a>
+                                <?php } elseif ($invitation['status'] === 'Accepted') { ?>
+                                    <button class="accepted-btn" style="background-color : red;" disabled>Accepted</button>
                                 <?php } elseif ($invitation['status'] === 'Removed') { ?>
                                     <button class="rejected-btn" style="background-color : red;" disabled>Removed</button>
                                 <?php } elseif ($invitation['status'] === 'Rejected') { ?>

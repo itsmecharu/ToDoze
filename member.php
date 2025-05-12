@@ -179,7 +179,7 @@ mysqli_stmt_close($stmt);
 
   <!-- Accepted Members -->
   <div id="accepted" class="members-list section" style="display: block;">
-    <h3>Accepted Members</h3>
+    <h3>Members</h3>
     <?php if (!empty($accepted_members)) { ?>
       <ul class="member-cards">
         <?php foreach ($accepted_members as $member) { ?>

@@ -37,11 +37,8 @@ $sql = "CREATE TABLE IF NOT EXISTS teams(
     teamduedate DATETIME NULL,
     teamstatus ENUM('Pending', 'Completed') DEFAULT 'Pending',
     teamcreated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    teamstarted_at TIMESTAMP NULL DEFAULT NULL,
-    teamcompleted_at TIMESTAMP NULL DEFAULT NULL,
     teamdeleted_at TIMESTAMP NULL DEFAULT Null,
     is_teamdeleted TINYINT(1) DEFAULT 0,
-    is_overdue TINYINT(1) DEFAULT 0,
     p_priority ENUM('High','Medium','Low','none') DEFAULT 'none'    
 )";
 
@@ -81,11 +78,12 @@ $sql = "CREATE TABLE IF NOT EXISTS team_members (
     status ENUM('Pending', 'Accepted', 'Rejected', 'Removed') DEFAULT 'Pending',
     invited_at TIMESTAMP NULL DEFAULT NULL,
     joinedteam_at TIMESTAMP NULL DEFAULT NULL,
-    FOREIGN KEY (teamid) REFERENCES teams(teamid) ON DELETE CASCADE,
-    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
     removed_at TIMESTAMP NULL DEFAULT NULL,
     has_exited TINYINT(1) DEFAULT 0,
-    exited_at TIMESTAMP NULL DEFAULT NULL
+    exited_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (teamid) REFERENCES teams(teamid) ON DELETE CASCADE,
+    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE
+   
 )";
 
 if (mysqli_query($conn, $sql)) {
