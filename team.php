@@ -197,9 +197,12 @@ $result = mysqli_stmt_get_result($stmt);
                 <?php endif; ?>
 
                 <?php if ($role === 'Member'): ?>
-                  <a href="exit_team.php?teamid=<?= $row['teamid'] ?>" class="edit-btn"
-                    onclick="return confirm('Are you sure you want to leave this team?');">
-                    <ion-icon name="log-out-outline"></ion-icon> Exit Team </a>
+                  <a href="#" 
+   class="edit-btn exit-team" 
+   data-teamid="<?= $row['teamid'] ?>">
+   <ion-icon name="log-out-outline"></ion-icon>Exit
+</a>
+
                 <?php endif; ?>
 
               </div>
@@ -290,6 +293,31 @@ $result = mysqli_stmt_get_result($stmt);
     }
   </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.exit-team').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault(); // Prevent default link behavior
+      const teamId = this.getAttribute('data-teamid');
+      
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You will leave the team.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, leave it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Redirect to the PHP exit URL
+          window.location.href = `exit_team.php?teamid=${teamId}`;
+        }
+      });
+    });
+  });
+});
+</script>
 
 
   <!-- IONICONS -->

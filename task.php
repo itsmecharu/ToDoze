@@ -208,16 +208,18 @@ if ($stmt) {
           'none' => '⚫'
         ];
 
-         echo "<div class='priority-wrapper' style='display: inline-block; position: relative;'>";
+         echo "<div class='priority-wrapper' style='display: inline-block; vertical-align: middle; margin-right: 8px;'>"; 
+
 
         // Toggle icon
-        echo "<span style='margin-right: 5px;'>Priority:</span>";
-        echo "<button type='button' class='priority-toggle' onclick=\"toggleDropdown('dropdown-$taskId')\" title='Change Priority' style=' background: none; border: none; font-size: 12px; cursor: pointer;'>";
-        echo $priorityIcons[$currentPriority];
-        echo "</button>";
+        echo "<span style='margin-right: 2px;'>Priority:</span>";
+      echo "<button type='button' class='priority-toggle' onclick=\"toggleDropdown('dropdown-$taskId')\" title='Priority' style='background: none; border: none; padding: 0; margin: 0; font-size: 16px; line-height: 1; width: auto; height: auto; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;'>"; 
+echo $priorityIcons[$currentPriority];
+echo "</button>";
+
 
         // Hidden dropdown form
-        echo "<form method='POST' action='update_priority.php' class='priority-dropdown' id='dropdown-$taskId' style='display: none; position: absolute; top: 25px; left: 0; background: #fff; border: 1px solid #ccc; padding: 5px; border-radius: 6px; z-index: 10;'>";
+        echo "<form method='POST' action='update_priority.php' class='priority-dropdown' id='dropdown-$taskId' style='background: none; border: none; padding: 0; margin: 0; font-size: 16px; line-height: 1; width: auto; height: auto; cursor: pointer; display: none; align-items: center; justify-content: center;'>"; 
         echo "<input type='hidden' name='taskid' value='" . $taskId . "'>";
         echo "<select name='taskpriority' onchange='this.form.submit();'>";
         foreach ($priorityIcons as $key => $icon) {
@@ -484,8 +486,8 @@ if ($stmt) {
       descriptions.forEach(desc => {
         if (desc.textContent.startsWith("Description:")) {
           const fullText = desc.textContent.trim().replace("Description:", "").trim();
-          if (fullText.length > 8) {
-            const shortText = fullText.substring(0, 8) + "..........";
+          if (fullText.length > 20) {
+            const shortText = fullText.substring(0, 20) + "..........";
 
             let toggled = false;
             desc.textContent = "Description: " + shortText;
@@ -502,15 +504,32 @@ if ($stmt) {
   </script>
 
   <script>
-    function toggleDropdown(id) {
-      const dropdown = document.getElementById(id);
-      const allDropdowns = document.querySelectorAll('.priority-dropdown');
-      allDropdowns.forEach(el => {
-        if (el.id !== id) el.style.display = 'none';
-      });
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  function toggleDropdown(id) {
+    const dropdown = document.getElementById(id);
+    const allDropdowns = document.querySelectorAll('.priority-dropdown');
+
+    allDropdowns.forEach(el => {
+      if (el.id !== id) el.style.display = 'none';
+    });
+
+    // Toggle the selected dropdown
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+
+    // Prevent multiple listeners
+    document.removeEventListener('click', handleOutsideClick);
+    setTimeout(() => {
+      document.addEventListener('click', handleOutsideClick);
+    }, 0);
+
+    function handleOutsideClick(e) {
+      // If the click is outside any .priority-dropdown and .priority-toggle
+      if (!dropdown.contains(e.target) && !e.target.closest('.priority-toggle')) {
+        dropdown.style.display = 'none';
+        document.removeEventListener('click', handleOutsideClick);
+      }
     }
-  </script>
+  }
+</script>
 
 
   <!-- Icons and Charts -->
