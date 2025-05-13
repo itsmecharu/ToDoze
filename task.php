@@ -13,6 +13,8 @@ if (!isset($_SESSION['userid'])) {
 
 $userid = $_SESSION['userid'];
 $filter = $_GET['filter'] ?? 'all';
+// Initialize $sort_by with a default value if not set
+$sort_by = $_GET['sort_by'] ?? '';
 $taskname = $taskdescription = $taskdate = $tasktime = $reminder_percentage = "";
 
 // Handle Task Submission
@@ -61,26 +63,82 @@ if ($update_stmt) {
   mysqli_stmt_execute($update_stmt);
 }
 
-// --- Task query based on filter ---
+// Base SQL query
+$sql = "SELECT * FROM tasks WHERE userid = ? AND is_deleted = 0 AND teamid IS NULL";
+
+// --- Apply the filter first ---
 if ($filter === 'completed') {
-  $sql = "SELECT * FROM tasks WHERE userid = ? AND taskstatus = 'completed' AND is_deleted = 0 AND teamid IS NULL ORDER BY completed_at DESC";
+  $sql .= " AND taskstatus = 'completed'"; // filter completed tasks
 } elseif ($filter === 'overdue') {
-  $sql = "SELECT * FROM tasks WHERE userid = ? AND is_overdue = 1 AND is_deleted = 0 AND taskstatus != 'completed' AND teamid IS NULL";
+  $sql .= " AND is_overdue = 1 AND taskstatus != 'completed'"; // filter overdue tasks
 } else {
-  $sql = "SELECT * FROM tasks WHERE userid = ? AND taskstatus != 'completed' AND is_deleted = 0 AND teamid IS NULL";
+  // Default filter is pending tasks
+  $sql .= " AND taskstatus != 'completed'";
 }
 
+// --- Now apply the sorting options ---
+switch ($sort_by) {
+  case 'priority_high':
+    $sql .= " ORDER BY 
+                    CASE 
+                        WHEN taskpriority = 'High' THEN 1
+                        WHEN taskpriority = 'Medium' THEN 2
+                        WHEN taskpriority = 'Low' THEN 3
+                        ELSE 4
+                    END ASC";
+    break;
+  case 'priority_low':
+    $sql .= " ORDER BY 
+                    CASE 
+                        WHEN taskpriority = 'Low' THEN 1
+                        WHEN taskpriority = 'Medium' THEN 2
+                        WHEN taskpriority = 'High' THEN 3
+                        ELSE 4
+                    END ASC";
+    break;
+  case 'duedate_asc':
+    $sql .= " ORDER BY 
+        CASE 
+            WHEN taskdate IS NOT NULL AND tasktime IS NOT NULL THEN 1
+            WHEN taskdate IS NOT NULL AND tasktime IS NULL THEN 2
+            WHEN taskdate IS NULL AND tasktime IS NOT NULL THEN 3
+            ELSE 4
+        END ASC,
+        taskdate ASC,
+        tasktime ASC";
+    break;
+
+
+case 'duedate_desc':
+    $sql .= " ORDER BY 
+        CASE 
+            WHEN taskdate IS NOT NULL AND taskdate != '0000-00-00' THEN 0
+            WHEN tasktime IS NOT NULL AND tasktime != '00:00:00' THEN 1
+            ELSE 2
+        END ASC,
+        taskdate DESC,
+        tasktime DESC";
+    break;
+
+
+
+  case 'created_new':
+    $sql .= " ORDER BY taskcreated_at DESC";
+    break;
+  case 'created_old':
+    $sql .= " ORDER BY taskcreated_at ASC";
+    break;
+  default:
+    $sql .= " ORDER BY taskid DESC"; // default order
+    break;
+}
+
+// Prepare and execute the query
 $stmt = mysqli_prepare($conn, $sql);
-if ($stmt) {
-  mysqli_stmt_bind_param($stmt, "i", $userid);
-  mysqli_stmt_execute($stmt);
-  $result = mysqli_stmt_get_result($stmt);
-} else {
-  echo "Error preparing statement: " . mysqli_error($conn);
-}
+mysqli_stmt_bind_param($stmt, "i", $userid);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 ?>
-
-
 
 
 <!DOCTYPE html>
@@ -124,12 +182,35 @@ if ($stmt) {
       <button id="AddTaskBtn" class="create-btn"> + Add task</button>
     </div>
 
-    <a href="task.php" class="task-filter <?= $filter == 'all' ? 'active' : '' ?>">🕒 Pending</a>
-    <a href="task.php?filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅
-      Completed</a>
-    <a href="task.php?filter=overdue" class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue</a>
+    <a href="task.php?filter=all&sort_by=<?= urlencode($sort_by) ?>"
+      class="task-filter <?= $filter == 'all' ? 'active' : '' ?>">🕒 Pending</a>
+    <a href="task.php?filter=completed&sort_by=<?= urlencode($sort_by) ?>"
+      class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed</a>
+    <a href="task.php?filter=overdue&sort_by=<?= urlencode($sort_by) ?>"
+      class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue</a>
   </div>
 
+  <!-- sorting -->
+
+<div style="display: flex; justify-content: flex-end; align-items: center; margin-top : 0px; margin: buttom 5px;">
+  <form id="sortForm" method="GET" action="task.php" style="margin: 0;">
+    <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
+    <!-- <label for="sort_by" style="font-size: 14px; margin-right: 5px;">Sort By:</label> -->
+    <select name="sort_by" id="sort_by" onchange="document.getElementById('sortForm').submit();"
+      style="padding: 3px 4px; border-radius: 2px; font-size: 12px; min-width: 50px;">
+      <option value=""> sort_by </option>
+      <option value="priority_high" <?= $sort_by == 'priority_high' ? 'selected' : '' ?>>Priority (High → Low)</option>
+      <option value="priority_low" <?= $sort_by == 'priority_low' ? 'selected' : '' ?>>Priority (Low → High)</option>
+      <option value="duedate_asc" <?= $sort_by == 'duedate_asc' ? 'selected' : '' ?>>Due Date (Soonest First)</option>
+      <option value="duedate_desc" <?= $sort_by == 'duedate_desc' ? 'selected' : '' ?>>Due Date (Latest First)</option>
+      <option value="created_new" <?= $sort_by == 'created_new' ? 'selected' : '' ?>>Task Added (Newest First)</option>
+      <option value="created_old" <?= $sort_by == 'created_old' ? 'selected' : '' ?>>Task Added (Oldest First)</option>
+    </select>
+  </form>
+</div>
+
+
+  <!-- sorting ends-->
   <div class="logo-container">
     <img src="img/logo.png" alt="App Logo" class="logo">
   </div>
@@ -177,7 +258,7 @@ if ($stmt) {
         echo "color: red;";
       }
       echo "'>" . htmlspecialchars($row['taskname']) . "</h4>";
-  
+
       if ($isOverdue && !$isCompleted) {
         echo "<span style='color: red; font-weight: light;'>(Overdue)</span>";
       }
@@ -208,18 +289,18 @@ if ($stmt) {
           'none' => '⚫'
         ];
 
-         echo "<div class='priority-wrapper' style='display: inline-block; vertical-align: middle; margin-right: 8px;'>"; 
+        echo "<div class='priority-wrapper' style='display: inline-block; vertical-align: middle; margin-right: 8px;'>";
 
 
         // Toggle icon
         echo "<span style='margin-right: 2px;'>Priority:</span>";
-      echo "<button type='button' class='priority-toggle' onclick=\"toggleDropdown('dropdown-$taskId')\" title='Priority' style='background: none; border: none; padding: 0; margin: 0; font-size: 16px; line-height: 1; width: auto; height: auto; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;'>"; 
-echo $priorityIcons[$currentPriority];
-echo "</button>";
+        echo "<button type='button' class='priority-toggle' onclick=\"toggleDropdown('dropdown-$taskId')\" title='Priority' style='background: none; border: none; padding: 0; margin: 0; font-size: 16px; line-height: 1; width: auto; height: auto; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;'>";
+        echo $priorityIcons[$currentPriority];
+        echo "</button>";
 
 
         // Hidden dropdown form
-        echo "<form method='POST' action='update_priority.php' class='priority-dropdown' id='dropdown-$taskId' style='background: none; border: none; padding: 0; margin: 0; font-size: 16px; line-height: 1; width: auto; height: auto; cursor: pointer; display: none; align-items: center; justify-content: center;'>"; 
+        echo "<form method='POST' action='update_priority.php' class='priority-dropdown' id='dropdown-$taskId' style='background: none; border: none; padding: 0; margin: 0; font-size: 16px; line-height: 1; width: auto; height: auto; cursor: pointer; display: none; align-items: center; justify-content: center;'>";
         echo "<input type='hidden' name='taskid' value='" . $taskId . "'>";
         echo "<select name='taskpriority' onchange='this.form.submit();'>";
         foreach ($priorityIcons as $key => $icon) {
@@ -231,7 +312,7 @@ echo "</button>";
 
         echo "</div>";
         // priority section ends
-
+  
 
         echo "<a href='edit_task.php?taskid=" . $row['taskid'] . "' class='edit-btn' title='Edit'><ion-icon name='create-outline'></ion-icon>Edit</a>";
         echo "<a href='#' class='delete-btn'   title='Delete'  data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon>Delete</a>";
@@ -504,32 +585,32 @@ echo "</button>";
   </script>
 
   <script>
-  function toggleDropdown(id) {
-    const dropdown = document.getElementById(id);
-    const allDropdowns = document.querySelectorAll('.priority-dropdown');
+    function toggleDropdown(id) {
+      const dropdown = document.getElementById(id);
+      const allDropdowns = document.querySelectorAll('.priority-dropdown');
 
-    allDropdowns.forEach(el => {
-      if (el.id !== id) el.style.display = 'none';
-    });
+      allDropdowns.forEach(el => {
+        if (el.id !== id) el.style.display = 'none';
+      });
 
-    // Toggle the selected dropdown
-    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+      // Toggle the selected dropdown
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
 
-    // Prevent multiple listeners
-    document.removeEventListener('click', handleOutsideClick);
-    setTimeout(() => {
-      document.addEventListener('click', handleOutsideClick);
-    }, 0);
+      // Prevent multiple listeners
+      document.removeEventListener('click', handleOutsideClick);
+      setTimeout(() => {
+        document.addEventListener('click', handleOutsideClick);
+      }, 0);
 
-    function handleOutsideClick(e) {
-      // If the click is outside any .priority-dropdown and .priority-toggle
-      if (!dropdown.contains(e.target) && !e.target.closest('.priority-toggle')) {
-        dropdown.style.display = 'none';
-        document.removeEventListener('click', handleOutsideClick);
+      function handleOutsideClick(e) {
+        // If the click is outside any .priority-dropdown and .priority-toggle
+        if (!dropdown.contains(e.target) && !e.target.closest('.priority-toggle')) {
+          dropdown.style.display = 'none';
+          document.removeEventListener('click', handleOutsideClick);
+        }
       }
     }
-  }
-</script>
+  </script>
 
 
   <!-- Icons and Charts -->

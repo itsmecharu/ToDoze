@@ -193,6 +193,7 @@ $result = mysqli_stmt_get_result($stmt);
                     <ion-icon name="trash-outline"></ion-icon> Delete
                   </a>
                 <?php else: ?>
+                  <div style="display: flex; gap: 45px; align-items: center;">
                   <span class="view-only-msg">🔒 View Only</span>
                 <?php endif; ?>
 
@@ -202,6 +203,7 @@ $result = mysqli_stmt_get_result($stmt);
    data-teamid="<?= $row['teamid'] ?>">
    <ion-icon name="log-out-outline"></ion-icon>Exit
 </a>
+</div>
 
                 <?php endif; ?>
 

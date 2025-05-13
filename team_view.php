@@ -185,29 +185,29 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
   <p style="font-size: small;"><strong>Description:</strong> <?php echo htmlspecialchars($team['teamdescription']); ?></p>
 
 
-  <div class="icons" style="display: flex; gap: 20px; margin-top: 10px;">
-    <div class="team-actions">
+    <!-- Team actions section -->
+  <!-- <div class="icons" > -->
+    <div class="tea-actions" style="justify-content: flex-start;">
+
       <?php if ($user_role === 'Admin'): ?>
-        <a href="team_task.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Add Task" >
+        <a href="team_task.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Add Task">
           <ion-icon name="add-circle-outline"></ion-icon> Task
         </a>
-       
       <?php else: ?>
-        <span class="view-only-msg">🔒 View Only</span>
-      <a href="#" class="edit-btn exit-team" data-teamid="<?= $teamId ?>">
-
-       <ion-icon name="log-out-outline"></ion-icon>Exit
-</a>
-
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <!-- <span class="view-only-msg">🔒 View Only</span> -->
+          <a href="#" class="edit-btn exit-team" data-teamid="<?= $teamId ?>">
+            <ion-icon name="log-out-outline"></ion-icon> Exit
+          </a>
+        </div>
       <?php endif; ?>
+
       <a href="member.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Add Member">
-      <ion-icon name="people-outline"></ion-icon> Member  </a>
+        <ion-icon name="people-outline"></ion-icon> Member
+      </a>
 
-       
-
-              
     </div>
-  </div>
+  <!-- </div> -->
   <div class="filter-container">
   <div style="display: flex; justify-content: center; margin-bottom: 10px;">
 </div>
@@ -239,6 +239,15 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
   font-size: 20px;
   margin: 0 0 10px 0;
   color: #333;
+}
+.tea-actions {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 15px;
+   margin-bottom: 0px;
 }
 
 .view-only-msg {
@@ -289,8 +298,13 @@ if ($result && mysqli_num_rows($result) > 0) {
         echo (!empty($row['tasktime']) ? "<span class='info'>DueTime: " . htmlspecialchars(date('H:i', strtotime($row['tasktime']))) . "</span>" : "");
         echo "<span class='info'>Reminder: " . (isset($row['reminder_percentage']) ? htmlspecialchars($row['reminder_percentage']) . "%" : "Not set") . "</span>";
         echo "</div>"; // task-details-left
+
     
         echo "<div class='task-actions'>";
+     
+
+
+    
         if ($user_role === 'Admin') {
             // Admin can edit and delete
             if (!$isCompleted) {
@@ -328,7 +342,9 @@ echo "</button>";
 
         echo "</div>";
         // priority section ends
-
+        // tatkal
+                echo "<a href='assign.php' class='edit-btn' title='Delete' data-taskid='" . $row['taskid'] . "'><ion-icon name='people-outline'></ion-icon></a>";
+                // tatkal
                 echo "<a href='editteam_task.php?teamid=" . $teamId . "&taskid=" . $row['taskid'] . "' class='edit-btn' title='Edit'><ion-icon name='create-outline'></ion-icon>Edit</a>";
             }
             echo "<a href='#' class='delete-btn' title='Delete' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon>Delete</a>";
