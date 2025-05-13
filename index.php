@@ -706,7 +706,7 @@ background: rgba(0,0,0,0.5);
 <p>Elegant task management for individuals and teams.</p>
 </div>
 <div class="footer-column">
-<h3>Product</h3>
+<h3>More</h3>
 <ul class="footer-links">
 <li><a href="#features">Features</a></li>
 <li><a href="#dashboard">Dashboard</a></li>

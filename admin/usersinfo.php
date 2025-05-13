@@ -38,12 +38,28 @@ $result = mysqli_query($conn, $sql);
         body {
             background-color: #f5f7fa;
             color: #333;
-            padding: 20px;
+        }
+        .navbar {
+            display: flex;
+            justify-content: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 150px;
             
         }
 
+        .navbar img {
+            height: 100px;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar img:hover {
+            transform: rotate(-5deg) scale(1.1);
+        }
+
         .user--nav {
-            background: linear-gradient(135deg, #4b6cb7, #182848);
+            background: #242481;
             color: white;
             padding: 15px 20px;
             border-radius: 8px;
@@ -52,6 +68,9 @@ $result = mysqli_query($conn, $sql);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-top: 30px;
+            margin-left: 35px;
+            margin-right: 35px;
         }
 
         .total-users {
@@ -116,6 +135,7 @@ $result = mysqli_query($conn, $sql);
             border-radius: 6px;
             transition: all 0.3s ease;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
         }
 
         .back:hover {
@@ -166,6 +186,9 @@ $result = mysqli_query($conn, $sql);
     </style>
 </head>
 <body>
+     <nav class="navbar">
+        <img src="../img/logo.png" alt="Logo">
+    </nav>
     <div class="user--nav">
         <p class="total-users"><h1>Total Users Registered till date: <span id="userCount"><?php echo $total_users; ?></h1></span></p>
     </div>
@@ -196,13 +219,14 @@ $result = mysqli_query($conn, $sql);
                 <?php endwhile; ?>
             </tbody>
         </table>
-    </div>
-    
-    <a href="admindashboard.php" class="back">
+         <a href="admindashboard.php" class="back">
         <div class="back__icon">↩</div>
         <div class="back__name">Back</div>
     </a>
 
+    </div>
+    
+   
     <script>
         // Animated counter for total users
         document.addEventListener('DOMContentLoaded', function() {
