@@ -677,7 +677,7 @@ background: rgba(0,0,0,0.5);
 <p>A clean, intuitive interface designed for focus and efficiency</p>
 </div>
 <div class="dashboard-container">
-<img src="img/dashboard.png" alt="ToDoze Dashboard" class="dashboard-image">
+<img src="img/dash.png" alt="ToDoze Dashboard" class="dashboard-image">
 <div class="dashboard-overlay">
 <button class="dashboard-btn">Explore Dashboard</button>
 </div>
