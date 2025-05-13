@@ -34,7 +34,7 @@ if (!isset($_SESSION['admin_userid'])) {
             display: flex;
             justify-content: center;
             padding: 50px;
-            background: linear-gradient(90deg,rgb(70, 129, 137) 0%,rgb(230, 216, 182) 100%);
+            background: linear-gradient(135deg, #4b6cb7, #182848);
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             height: 150px;
         }
