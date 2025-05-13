@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ToDoze | Premium Task Management</title>
+<title>ToDoze </title>
 <link rel="icon" href="img/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -653,7 +653,7 @@ background: rgba(0,0,0,0.5);
 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
 </svg>
 </div>
-<h3>Smart Reminders</h3>
+<h3>Set Reminders</h3>
 <p>Never miss a deadline with customizable notifications.</p>
 </div>
 <div class="feature-card">

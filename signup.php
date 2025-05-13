@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     if (empty(trim($_POST["username"]))) {
         $username_err = "Please enter your name.";
     } elseif (!preg_match("/^[A-Za-z]+( [A-Za-z]+)*$/", trim($_POST["username"]))) {
-        $username_err = "Name can only contain letters and one space between words.";
+        $username_err = "Name can only contain alphabets and one space between words.";
     } else {
         $username = trim($_POST["username"]);
     }
