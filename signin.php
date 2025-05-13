@@ -78,9 +78,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 12px;
             
         }
+.header {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+z-index: 1000;
+backdrop-filter: blur(10px);
+background-color: rgba(255, 255, 255, 0.9);
+box-shadow: var(--shadow-sm);
+transition: var(--transition);
+}
+
+.header-container {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 1.5rem 2rem;
+margin-top: -23rem;
+}
+
+.logo {
+height: 4.5rem;
+transition: var(--transition);
+}
+
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+html {
+scroll-behavior: smooth;
+}
+
+body {
+font-family: 'Poppins', sans-serif;
+color: var(--text);
+line-height: 1.7;
+background-color: white;
+overflow-x: hidden;
+}
+
     </style>
 </head>
 <body>
+    <header id="header">
+<div class="container header-container">
+<img src="img/logo.png" alt="ToDoze" class="logo">
+</header>
+
     <div class="form-wrapper">
         <!-- <h3>ToDoze</h3>
         <p>Boost Your Productivity – Organize, Prioritize, and Achieve More with Ease.</p>

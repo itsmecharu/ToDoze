@@ -120,11 +120,49 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        
+.header {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+z-index: 1000;
+backdrop-filter: blur(10px);
+background-color: rgba(255, 255, 255, 0.9);
+box-shadow: var(--shadow-sm);
+transition: var(--transition);
+}
+
+.header-container {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 1.5rem 2rem;
+margin-top: -23rem;
+}
+
+.logo {
+height: 4.5rem;
+transition: var(--transition);
+}
+
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+html {
+scroll-behavior: smooth;
+}
         .error { color: red; font-size: 12px; }
     </style>
 </head>
 <body>
-    
+     <header id="header">
+<div class="container header-container">
+<img src="img/logo.png" alt="ToDoze" class="logo">
+</header>
     <div class="form-wrapper">
     <div class="logo-container">
                 <img src="img/signup.svg" alt="Logo">
