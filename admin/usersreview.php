@@ -32,10 +32,28 @@ $result = mysqli_query($conn, $sql);
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        
+        .navbar {
+            display: flex;
+            justify-content: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 150px;
+            
+        }
+
+        .navbar img {
+            height: 100px;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar img:hover {
+            transform: rotate(-5deg) scale(1.1);
+        }
 
         body {
             background-color: #f8f9fa;
-            padding: 30px;
             color: #333;
         }
 
@@ -144,6 +162,9 @@ $result = mysqli_query($conn, $sql);
     </style>
 </head>
 <body>
+     <nav class="navbar">
+        <img src="../img/logo.png" alt="Logo">
+    </nav>
     <div class="review-container">
         <h2>User Reviews & Ratings</h2>
 
