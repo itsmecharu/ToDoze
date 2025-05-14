@@ -137,10 +137,13 @@ if (!isset($_SESSION['admin_userid'])) {
                 <div class="nav__icon">📝</div>
                 <div class="nav__name">Reviews</div>
             </a>
-            <a href="../logout.php" class="nav__link">
+            <!-- <a href="../logout.php" class="nav__link">
                 <div class="nav__icon">🚪</div>
                 <div class="nav__name">Logout</div>
-            </a>
+            </a> -->
+                    <a href="../javascript:void(0)" class="nav__link">
+                    <div class="nav__icon">🚪</div>
+                <div class="nav__name">Logout</div></a>
         </div>
     </div>
 
@@ -183,5 +186,6 @@ if (!isset($_SESSION['admin_userid'])) {
             });
         });
     </script>
+      <script src="../js/dash.js"></script>
 </body>
 </html>

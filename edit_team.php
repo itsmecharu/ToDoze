@@ -124,9 +124,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline"
                         class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
             </div>
-            <a href="logout.php" class="nav__link logout"><ion-icon name="log-out-outline"
-                    class="nav__icon"></ion-icon><span class="nav__name" style="color: #d96c4f;"><b>Log
-                        Out</b></span></a>
+                   <a href="javascript:void(0)" onclick="confirmLogout(event)()" class="nav__link logout">
+  <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+  <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
+</a>
         </nav>
     </div>
 
