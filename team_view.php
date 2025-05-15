@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Kathmandu');
 include 'config/database.php';
 include 'load_username.php';
 
@@ -41,49 +42,118 @@ mysqli_stmt_close($stmt);
 
 // mysqli_close($conn);
 
+// Update overdue status for tasks
 $now = date('Y-m-d H:i:s');
-$update_sql = "UPDATE tasks
+$update_sql = "UPDATE tasks 
     SET is_overdue = 
         CASE 
-            WHEN CONCAT(taskdate, ' ', IFNULL(tasktime, '00:00:00')) < ? 
+            WHEN taskdate IS NOT NULL 
+                AND CONCAT(taskdate, ' ', IFNULL(tasktime, '23:59:59')) < ? 
+                AND taskstatus != 'Completed'
             THEN 1 
             ELSE 0 
         END 
-    WHERE userid = ? AND taskstatus != 'Completed' AND is_deleted = 0 AND teamid = ?
-";
+    WHERE teamid = ? AND is_deleted = 0";
 
 $update_stmt = mysqli_prepare($conn, $update_sql);
 if ($update_stmt) {
-    mysqli_stmt_bind_param($update_stmt, "sii", $now, $userid, $teamId);
+    mysqli_stmt_bind_param($update_stmt, "si", $now, $teamId);
     mysqli_stmt_execute($update_stmt);
+    mysqli_stmt_close($update_stmt);
 }
-
 
 // --- Task query based on filter ---
 // Get the filter from URL if set (default to pending)
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'pending';
 
+// Function to get user initials
+function getInitials($name) {
+    $words = explode(' ', $name);
+    $initials = '';
+    foreach ($words as $word) {
+        $initials .= strtoupper(substr($word, 0, 1));
+    }
+    return $initials;
+}
+
+// Fetch tasks with assigned user information
 switch ($filter) {
     case 'completed':
-        $sql = "SELECT * FROM tasks 
-                WHERE teamid = ? 
-                AND taskstatus = 'Completed' AND is_deleted = 0 
-                ORDER BY completed_at DESC";
+        $sql = "SELECT t.*, u.username as assigned_username 
+                FROM tasks t 
+                LEFT JOIN users u ON t.assigned_to = u.userid 
+                WHERE t.teamid = ? 
+                AND t.taskstatus = 'Completed' AND t.is_deleted = 0";
         break;
     
     case 'overdue':
-        $sql = "SELECT * FROM tasks 
-                WHERE teamid = ? 
-                AND is_overdue = 1 AND is_deleted = 0 AND taskstatus != 'Completed' 
-                ORDER BY taskid DESC";
+        $sql = "SELECT t.*, u.username as assigned_username 
+                FROM tasks t 
+                LEFT JOIN users u ON t.assigned_to = u.userid 
+                WHERE t.teamid = ? 
+                AND t.is_overdue = 1 AND t.is_deleted = 0 AND t.taskstatus != 'Completed'";
         break;
 
     case 'pending':
     default:
-        $sql = "SELECT * FROM tasks 
-                WHERE teamid = ? 
-                AND taskstatus != 'Completed' AND is_deleted = 0 
-                ORDER BY taskid DESC";
+        $sql = "SELECT t.*, u.username as assigned_username 
+                FROM tasks t 
+                LEFT JOIN users u ON t.assigned_to = u.userid 
+                WHERE t.teamid = ? 
+                AND t.taskstatus != 'Completed' AND t.is_deleted = 0";
+        break;
+}
+
+// Add sorting to the query
+$sort_by = $_GET['sort_by'] ?? '';
+switch ($sort_by) {
+    case 'priority_high':
+        $sql .= " ORDER BY 
+                CASE 
+                    WHEN t.taskpriority = 'High' THEN 1
+                    WHEN t.taskpriority = 'Medium' THEN 2
+                    WHEN t.taskpriority = 'Low' THEN 3
+                    ELSE 4
+                END ASC";
+        break;
+    case 'priority_low':
+        $sql .= " ORDER BY 
+                CASE 
+                    WHEN t.taskpriority = 'Low' THEN 1
+                    WHEN t.taskpriority = 'Medium' THEN 2
+                    WHEN t.taskpriority = 'High' THEN 3
+                    ELSE 4
+                END ASC";
+        break;
+    case 'duedate_asc':
+        $sql .= " ORDER BY 
+            CASE 
+                WHEN t.taskdate IS NOT NULL AND t.tasktime IS NOT NULL THEN 1
+                WHEN t.taskdate IS NOT NULL AND t.tasktime IS NULL THEN 2
+                WHEN t.taskdate IS NULL AND t.tasktime IS NOT NULL THEN 3
+                ELSE 4
+            END ASC,
+            t.taskdate ASC,
+            t.tasktime ASC";
+        break;
+    case 'duedate_desc':
+        $sql .= " ORDER BY 
+            CASE 
+                WHEN t.taskdate IS NOT NULL AND t.taskdate != '0000-00-00' THEN 0
+                WHEN t.tasktime IS NOT NULL AND t.tasktime != '00:00:00' THEN 1
+                ELSE 2
+            END ASC,
+            t.taskdate DESC,
+            t.tasktime DESC";
+        break;
+    case 'created_new':
+        $sql .= " ORDER BY t.taskcreated_at DESC";
+        break;
+    case 'created_old':
+        $sql .= " ORDER BY t.taskcreated_at ASC";
+        break;
+    default:
+        $sql .= " ORDER BY t.taskid DESC"; // default order
         break;
 }
 
@@ -214,6 +284,24 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
 <a href="team_view.php?teamid=<?= $teamId ?>&filter=pending" class="task-filter <?= $filter == 'pending' ? 'active' : '' ?>">🕒 Pending Tasks</a>
 <a href="team_view.php?teamid=<?= $teamId ?>&filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed Tasks</a>
 <a href="team_view.php?teamid=<?= $teamId ?>&filter=overdue" class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue Tasks</a>
+
+<!-- Add sorting dropdown -->
+<div style="display: flex; justify-content: flex-end; align-items: center; margin: 10px;">
+  <form id="sortForm" method="GET" action="team_view.php" style="margin: 0;">
+    <input type="hidden" name="teamid" value="<?= $teamId ?>">
+    <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
+    <select name="sort_by" id="sort_by" onchange="document.getElementById('sortForm').submit();"
+      style="padding: 5px; border-radius: 4px; font-size: 14px;">
+      <option value="" <?= empty($_GET['sort_by']) ? 'selected' : '' ?>>Sort By</option>
+      <option value="priority_high" <?= ($_GET['sort_by'] ?? '') == 'priority_high' ? 'selected' : '' ?>>Priority (High → Low)</option>
+      <option value="priority_low" <?= ($_GET['sort_by'] ?? '') == 'priority_low' ? 'selected' : '' ?>>Priority (Low → High)</option>
+      <option value="duedate_asc" <?= ($_GET['sort_by'] ?? '') == 'duedate_asc' ? 'selected' : '' ?>>Due Date (Earliest)</option>
+      <option value="duedate_desc" <?= ($_GET['sort_by'] ?? '') == 'duedate_desc' ? 'selected' : '' ?>>Due Date (Latest)</option>
+      <option value="created_new" <?= ($_GET['sort_by'] ?? '') == 'created_new' ? 'selected' : '' ?>>Created (Newest)</option>
+      <option value="created_old" <?= ($_GET['sort_by'] ?? '') == 'created_old' ? 'selected' : '' ?>>Created (Oldest)</option>
+    </select>
+  </form>
+</div>
 </div>
 </div>
 <style>
@@ -255,6 +343,43 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
   font-style: italic;
 }
 
+.assigned-member {
+    display: inline-block;
+    background-color: #e0e0e0;
+    color: #333;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 32px;
+    font-size: 14px;
+    margin-right: 8px;
+    cursor: help;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.assigned-member:hover::after {
+    content: attr(data-fullname);
+    position: absolute;
+    background-color: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -30px;
+}
+
+.assigned-member.unassigned {
+    background-color: transparent;
+    font-size: 20px;
+    line-height: 32px;
+}
+
 </style>
 
 
@@ -267,7 +392,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
     while ($row = mysqli_fetch_assoc($result)) {
         $isOverdue = $row['is_overdue'] == 1;
-        $isCompleted = strtolower($row['taskstatus']) === 'Completed';
+        $isCompleted = strtolower($row['taskstatus']) === 'completed';
         $assignedTo = $row['assigned_to']; // Get assigned user
     
         echo "<div class='task' id='task-" . $row['taskid'] . "'>";
@@ -294,67 +419,90 @@ if ($result && mysqli_num_rows($result) > 0) {
         if (!empty($row['taskdescription'])) {
             echo "<div class='task-description'><span class='info'>Description: " . htmlspecialchars($row['taskdescription']) . "</span></div>";
         }
+        
         echo (!empty($row['taskdate']) ? "<span class='info'>DueDate: " . htmlspecialchars(date('Y-m-d', strtotime($row['taskdate']))) . "</span>" : "");
         echo (!empty($row['tasktime']) ? "<span class='info'>DueTime: " . htmlspecialchars(date('H:i', strtotime($row['tasktime']))) . "</span>" : "");
         echo "<span class='info'>Reminder: " . (isset($row['reminder_percentage']) ? htmlspecialchars($row['reminder_percentage']) . "%" : "Not set") . "</span>";
         echo "</div>"; // task-details-left
 
-    
         echo "<div class='task-actions'>";
      
-
-
-    
         if ($user_role === 'Admin') {
-            // Admin can edit and delete
-            if (!$isCompleted) {
-                    // priority section 
-        $currentPriority = $row['taskpriority'] ?? 'none';
-        $taskId = $row['taskid'];
+            if ($isCompleted) {
+                // For completed tasks, only show completion date and delete button
+                if (!empty($row['completed_at'])) {
+                    echo "<span class='info' style='color: green;'><ion-icon name='checkmark-done-outline'></ion-icon> Completed on: " . date('Y-m-d H:i', strtotime($row['completed_at'])) . "</span>";
+                }
+                echo "<a href='#' class='delete-btn' title='Delete' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon>Delete</a>";
+            } else {
+                // For non-completed tasks, show all controls
+                $currentPriority = $row['taskpriority'] ?? 'none';
+                $taskId = $row['taskid'];
 
-        // Map priorities to circle icons
-        $priorityIcons = [
-          'High' => '🔴',
-          'Medium' => '🟡',
-          'Low' => '🟢',
-          'none' => '⚫'
-        ];
+                // Map priorities to circle icons
+                $priorityIcons = [
+                    'High' => '🔴',
+                    'Medium' => '🟡',
+                    'Low' => '🟢',
+                    'none' => '⚫'
+                ];
 
-       echo "<div class='priority-wrapper' style='display: inline-block; vertical-align: middle; margin-right: 8px;'>"; 
+                echo "<div class='priority-wrapper' style='display: inline-block; vertical-align: middle; margin-right: 8px;'>"; 
+                echo "<span style='margin-right: 2px;'>Priority:</span>";
+                echo "<button type='button' class='priority-toggle' onclick=\"toggleDropdown('dropdown-$taskId')\" title='Priority' style='background: none; border: none; padding: 0; margin: 0; font-size: 16px; line-height: 1; width: auto; height: auto; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;'>"; 
+                echo $priorityIcons[$currentPriority];
+                echo "</button>";
 
+                echo "<form method='POST' action='update_priority.php' class='priority-dropdown' id='dropdown-$taskId'  style='background: none; border: none; padding: 0; margin: 0; font-size: 16px; line-height: 1; width: auto; height: auto; cursor: pointer; display: none; align-items: center; justify-content: center;'>";
+                echo "<input type='hidden' name='taskid' value='" . $taskId . "'>";
+                echo "<select name='taskpriority' onchange='this.form.submit();'>";
+                foreach ($priorityIcons as $key => $icon) {
+                    $selected = ($currentPriority === $key) ? 'selected' : '';
+                    echo "<option value='$key' $selected>$icon $key</option>";
+                }
+                echo "</select>";
+                echo "</form>";
+                echo "</div>";
 
-        // Toggle icon
-          echo "<span style='margin-right: 2px;'>Priority:</span>";
-         echo "<button type='button' class='priority-toggle' onclick=\"toggleDropdown('dropdown-$taskId')\" title='Priority' style='background: none; border: none; padding: 0; margin: 0; font-size: 16px; line-height: 1; width: auto; height: auto; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;'>"; 
-echo $priorityIcons[$currentPriority];
-echo "</button>";
-
-        // Hidden dropdown form
-        echo "<form method='POST' action='update_priority.php' class='priority-dropdown' id='dropdown-$taskId'  style='background: none; border: none; padding: 0; margin: 0; font-size: 16px; line-height: 1; width: auto; height: auto; cursor: pointer; display: none; align-items: center; justify-content: center;'>";
-        echo "<input type='hidden' name='taskid' value='" . $taskId . "'>";
-        echo "<select name='taskpriority' onchange='this.form.submit();'>";
-        foreach ($priorityIcons as $key => $icon) {
-          $selected = ($currentPriority === $key) ? 'selected' : '';
-          echo "<option value='$key' $selected>$icon $key</option>";
-        }
-        echo "</select>";
-        echo "</form>";
-
-        echo "</div>";
-        // priority section ends
-        // tatkal
-                echo "<a href='assign.php' class='edit-btn' title='Delete' data-taskid='" . $row['taskid'] . "'><ion-icon name='people-outline'></ion-icon></a>";
-                // tatkal
+                // Assignment section for admin
+                if (empty($row['assigned_username'])) {
+                    echo "<span class='assigned-member unassigned'>👤</span>";
+                } else {
+                    $initials = getInitials($row['assigned_username']);
+                    echo "<span class='assigned-member' data-fullname='Assigned to: " . htmlspecialchars($row['assigned_username']) . "'>" . htmlspecialchars($initials) . "</span>";
+                }
                 echo "<a href='editteam_task.php?teamid=" . $teamId . "&taskid=" . $row['taskid'] . "' class='edit-btn' title='Edit'><ion-icon name='create-outline'></ion-icon>Edit</a>";
+                echo "<a href='#' class='delete-btn' title='Delete' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon>Delete</a>";
             }
-            echo "<a href='#' class='delete-btn' title='Delete' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon>Delete</a>";
-        } elseif ($isCompleted && $assignedTo == $currentUserId) {
-            // Assigned user sees completed date
-            if (!empty($row['completed_at'])) {
-                echo "<span class='info' style='color: green;'><ion-icon name='checkmark-done-outline'></ion-icon> Completed on: " . date('Y-m-d H:i', strtotime($row['completed_at'])) . "</span>";
-                echo "<a href='#' class='delete-btn' title='Delete' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon>Dlete</a>";
-              }
-            
+        } else {
+            // Non-admin view - show priority and assigned member in read-only mode
+            if ($isCompleted) {
+                // Show completion date for completed tasks
+                if (!empty($row['completed_at'])) {
+                    echo "<span class='info' style='color: green;'><ion-icon name='checkmark-done-outline'></ion-icon> Completed on: " . date('Y-m-d H:i', strtotime($row['completed_at'])) . "</span>";
+                }
+            } else {
+                // Show priority in read-only mode
+                $currentPriority = $row['taskpriority'] ?? 'none';
+                $priorityIcons = [
+                    'High' => '🔴',
+                    'Medium' => '🟡',
+                    'Low' => '🟢',
+                    'none' => '⚫'
+                ];
+                
+                echo "<div class='priority-wrapper' style='display: inline-block; vertical-align: middle; margin-right: 8px;'>"; 
+                echo "<span style='margin-right: 2px;'>Priority: " . $priorityIcons[$currentPriority] . " " . $currentPriority . "</span>";
+                echo "</div>";
+
+                // Show assigned member in read-only mode
+                if (!empty($row['assigned_username'])) {
+                    $initials = getInitials($row['assigned_username']);
+                    echo "<span class='assigned-member' data-fullname='Assigned to: " . htmlspecialchars($row['assigned_username']) . "'>" . htmlspecialchars($initials) . "</span>";
+                } else {
+                    echo "<span class='assigned-member unassigned'>👤</span>";
+                }
+            }
         }
         echo "</div>"; // task-actions
     

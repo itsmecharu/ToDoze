@@ -21,34 +21,53 @@ if (!$taskid || !is_numeric($taskid)) {
     die("Task ID is missing or invalid.");
 }
 
+// Check if user is admin
+$check_admin_sql = "SELECT role FROM team_members WHERE teamid = ? AND userid = ? AND status = 'Accepted'";
+$check_admin_stmt = mysqli_prepare($conn, $check_admin_sql);
+mysqli_stmt_bind_param($check_admin_stmt, "ii", $teamId, $userid);
+mysqli_stmt_execute($check_admin_stmt);
+$admin_result = mysqli_stmt_get_result($check_admin_stmt);
+$is_admin = false;
+if ($admin_row = mysqli_fetch_assoc($admin_result)) {
+    $is_admin = ($admin_row['role'] === 'Admin');
+}
+mysqli_stmt_close($check_admin_stmt);
 
-// if (!isset($_GET['taskid'])) {
-//   echo "Task ID is missing.";
-//   exit();
-// }
-
-// $taskid = $_GET['taskid'];
-
-
-
-
+// Get team members for assignment dropdown
+$members_sql = "SELECT u.userid, u.username 
+                FROM users u 
+                JOIN team_members tm ON u.userid = tm.userid 
+                WHERE tm.teamid = ? AND tm.status = 'Accepted'";
+$members_stmt = mysqli_prepare($conn, $members_sql);
+mysqli_stmt_bind_param($members_stmt, "i", $teamId);
+mysqli_stmt_execute($members_stmt);
+$members_result = mysqli_stmt_get_result($members_stmt);
+$team_members = [];
+while ($member = mysqli_fetch_assoc($members_result)) {
+    $team_members[] = $member;
+}
+mysqli_stmt_close($members_stmt);
 
 // Fetch task details (only if not deleted)
-$sql = "SELECT * FROM tasks WHERE taskid = ? AND userid = ? AND is_deleted = 0";
+$sql = "SELECT t.*, u.username as assigned_username 
+        FROM tasks t 
+        LEFT JOIN users u ON t.assigned_to = u.userid 
+        WHERE t.taskid = ? AND t.teamid = ? AND t.is_deleted = 0";
 $stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "ii", $taskid, $userid);
+mysqli_stmt_bind_param($stmt, "ii", $taskid, $teamId);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
 if (mysqli_num_rows($result) == 0) {
-  echo "Task not found.";
-  exit();
+    echo "Task not found.";
+    exit();
 }
 
 $task = mysqli_fetch_assoc($result);
 $taskname = $task['taskname'];
 $taskdescription = $task['taskdescription'];
 $reminder_percentage = $task['reminder_percentage'];
+$assigned_to = $task['assigned_to'];
 
 $taskdate = isset($task['taskdate']) ? $task['taskdate'] : '';  
 $tasktime = isset($task['tasktime']) ? $task['tasktime'] : ''; 
@@ -60,9 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taskdate = isset($_POST['taskdate']) ? trim($_POST['taskdate']) : null;
     $tasktime = isset($_POST['tasktime']) ? trim($_POST['tasktime']) : null;
     $reminder_percentage = (!empty($_POST['reminder_percentage'])) ? $_POST['reminder_percentage'] : null;
-    // $teamid = isset($_POST['teamid']) ? $_POST['teamid'] : null; // Get team ID from form submission
-
-
+    $new_assigned_to = !empty($_POST['assigned_to']) ? intval($_POST['assigned_to']) : null;
 
     // Initialize update values with the current data
     $update_values = [
@@ -105,22 +122,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $params[] = $reminder_percentage;
         $types .= "s";
     }
+    if ($is_admin) {
+        $fields[] = "assigned_to = ?";
+        $params[] = $new_assigned_to;  // This will be NULL if no user is selected
+        $types .= "i";
+    }
 
     // Only execute the update if there are any fields to update
     if (count($fields) > 0) {
-        $sql .= implode(", ", $fields) . " WHERE taskid = ? AND userid = ?";
+        $sql .= implode(", ", $fields) . " WHERE taskid = ? AND teamid = ?";
         $params[] = $taskid;
-        $params[] = $userid;
+        $params[] = $teamId;
         $types .= "ii";
 
         // Prepare and execute the statement
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, $types, ...$params);
-        if (mysqli_stmt_execute($stmt)) {
-            header("Location: team_view.php?teamid=" . $teamId);
-            exit();
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, $types, ...$params);
+            if (mysqli_stmt_execute($stmt)) {
+                header("Location: team_view.php?teamid=" . $teamId);
+                exit();
+            } else {
+                echo "Error updating task: " . mysqli_error($conn);
+            }
         } else {
-            echo "Error updating task: " . mysqli_error($conn);
+            echo "Error preparing statement: " . mysqli_error($conn);
         }
     } else {
         // No fields to update
@@ -220,17 +246,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <select id="reminder" name="reminder_percentage">
-    <option value="" <?php if ($reminder_percentage === null || $reminder_percentage === "") echo "selected"; ?>>
-        No Reminder 🔕
-    </option>
-    <option value="50" <?php if ($reminder_percentage == 50) echo "selected"; ?>>50% (Halfway to Due Date)</option>
-    <option value="75" <?php if ($reminder_percentage == 75) echo "selected"; ?>>75% (Closer to Due Date)</option>
-    <option value="90" <?php if ($reminder_percentage == 90) echo "selected"; ?>>90% (Near Due Date)</option>
-    <option value="100" <?php if ($reminder_percentage == 100) echo "selected"; ?>>100% (On Time)</option>
-</select>
+            <option value="" disabled selected>Set Reminder Here 🔔</option>
+            <option value="50" <?php echo ($reminder_percentage == 50) ? 'selected' : ''; ?>>50% (Halfway to Due Date)</option>
+            <option value="75" <?php echo ($reminder_percentage == 75) ? 'selected' : ''; ?>>75% (Closer to Due Date)</option>
+            <option value="90" <?php echo ($reminder_percentage == 90) ? 'selected' : ''; ?>>90% (Near Due Date)</option>
+            <option value="100" <?php echo ($reminder_percentage == 100) ? 'selected' : ''; ?>>100% (On Time)</option>
+        </select>
 
+        <?php if ($is_admin): ?>
+        <div style="margin-top: 10px;">
+            <label for="assigned_to">Assign To:</label>
+            <select id="assigned_to" name="assigned_to">
+                <option value="">Unassigned</option>
+                <?php foreach ($team_members as $member): ?>
+                    <option value="<?php echo htmlspecialchars($member['userid']); ?>" 
+                            <?php echo ($assigned_to == $member['userid']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($member['username']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <?php endif; ?>
 
-        <button type="submit">Update Task</button>
+        <button type="submit" style="margin-top: 20px;">Update Task</button>
       </form>
       <br>
       <a href="team_view.php?teamid=<?php echo $teamId; ?>">Back</a>

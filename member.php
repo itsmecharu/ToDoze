@@ -52,11 +52,12 @@ $accepted_members = mysqli_fetch_all($result, MYSQLI_ASSOC);
 mysqli_stmt_close($stmt);
 
 
-// Fetch ex  members
-$sql = "SELECT users.userid, users.useremail, team_members.role 
+// Fetch ex members with exit dates
+$sql = "SELECT u.userid, u.useremail, team_members.role, team_members.exited_at 
         FROM team_members 
-        JOIN users ON team_members.userid = users.userid 
-        WHERE team_members.teamid = ? AND team_members.has_exited = 1";
+        JOIN users u ON team_members.userid = u.userid 
+        WHERE team_members.teamid = ? AND team_members.has_exited = 1
+        ORDER BY team_members.exited_at DESC";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $teamId);
 mysqli_stmt_execute($stmt);
@@ -300,22 +301,15 @@ mysqli_stmt_close($stmt);
           <li class="member-card">
             <div class="member-info">
               <span class="member-email"><?= htmlspecialchars($member['useremail']) ?></span>
+              <span class="exit-date">Left on: <?= date('Y-m-d', strtotime($member['exited_at'])) ?></span>
             </div>
-      
-
             <?php if ($user_role === 'Admin'): ?>
-            <?php if ($member['userid'] != $admin_userid) { ?>
-              
-              
-            <?php }  else { ?>
-              <span class="admin-badge">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-                </svg>
-                Admin
-              </span>
-            <?php } ?>
-
+              <div class="member-actions">
+                <a href="send_invitation.php?teamid=<?= $teamId ?>&useremail=<?= urlencode($member['useremail']) ?>" 
+                   class="reinvite-btn" title="Re-invite member">
+                   <ion-icon name="person-add-outline"></ion-icon> Re-invite
+                </a>
+              </div>
             <?php endif; ?>
           </li>
         <?php } ?>
@@ -337,7 +331,48 @@ mysqli_stmt_close($stmt);
 <?php endif; ?>
 
 <style>
- 
+.member-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #f6f8fa;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    margin-bottom: 8px;
+}
+
+.member-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.exit-date {
+    font-size: 12px;
+    color: #666;
+}
+
+.reinvite-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    background-color: #0366d6;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.reinvite-btn:hover {
+    background-color: #0256b4;
+}
+
+.reinvite-btn ion-icon {
+    font-size: 16px;
+}
 </style>
 
 <script>

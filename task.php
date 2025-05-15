@@ -218,7 +218,7 @@ $result = mysqli_stmt_get_result($stmt);
   <div class="l-navbar" id="navbar">
     <nav class="nav">
       <div class="nav__list">
-        <a href="dash.php" class="nav__link "><ion-icon name="home-outline" class="nav__icon"></ion-icon><span
+        <a href="dash.php" class="nav__link"><ion-icon name="home-outline" class="nav__icon"></ion-icon><span
             class="nav__name">Home</span></a>
         <a href="task.php" class="nav__link active"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
             class="nav__name">Task</span></a>
@@ -226,6 +226,10 @@ $result = mysqli_stmt_get_result($stmt);
             class="nav__name">Team</span></a>
         <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline"
             class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
+        <a href="change_name.php" class="nav__link"><ion-icon name="person-circle-outline"
+            class="nav__icon"></ion-icon><span class="nav__name">Change Name</span></a>
+        <a href="change_password.php" class="nav__link"><ion-icon name="key-outline"
+            class="nav__icon"></ion-icon><span class="nav__name">Change Password</span></a>
       </div>
 
           <a href="javascript:void(0)" onclick="confirmLogout(event)()" class="nav__link logout">
@@ -387,19 +391,18 @@ $result = mysqli_stmt_get_result($stmt);
 
 
 
-  <?php if (isset($_SESSION['success_message'])): ?>
+  <?php if (isset($_SESSION['success_message']) && $_SERVER['REQUEST_METHOD'] === 'POST'): ?>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         Swal.fire({
-          title: "Task added successfully!",
-          text: "", // Empty text since you only want "Task added successfully"
-          // icon: "success",
+          title: "<?php echo $_SESSION['success_message']; ?>",
+          text: "", // Empty text since you only want the success message
           timer: 1000,
           showConfirmButton: false,
           customClass: {
-            popup: 'small-swal', // Custom class for SweetAlert popup
-            title: 'small-swal-title', // Custom class for the title
-            content: 'small-swal-content' // Custom class for the content
+            popup: 'small-swal',
+            title: 'small-swal-title',
+            content: 'small-swal-content'
           }
         });
       });
@@ -408,24 +411,18 @@ $result = mysqli_stmt_get_result($stmt);
     <style>
       .small-swal {
         width: 200px;
-        /* Set the width of the card */
         padding: 20px;
-        /* Optional: Add padding to adjust internal spacing */
       }
 
       .small-swal-title {
         font-size: 16px;
-        /* Adjust font size of the title */
         font-weight: bold;
-        /* Optional: Make title bold */
       }
 
       .small-swal-content {
         font-size: 14px;
-        /* Adjust font size of the text content */
       }
     </style>
-
 
     <?php unset($_SESSION['success_message']); ?>
   <?php endif; ?>

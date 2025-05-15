@@ -167,9 +167,10 @@ $sql = "CREATE TABLE IF NOT EXISTS reviews (
     review TEXT NULL,
     rating INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (userid) REFERENCES users(userid)
 )";
-
+// $sql = "ALTER TABLE reviews ADD COLUMN  last_updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP";
 
 if (mysqli_query($conn, $sql)) {
     // echo "'reviews' table created successfully.<br>";

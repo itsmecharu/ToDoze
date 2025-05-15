@@ -52,7 +52,7 @@ if (!$teamid || !$user_email) {
                 $message = "You cannot invite yourself to the team.";
             } else {
                 // Check if the user is already invited or a member of the team
-                $sql = "SELECT * FROM team_members WHERE teamid = ? AND userid = ? And status = 'Pending'||'Accepted' ";
+                $sql = "SELECT * FROM team_members WHERE teamid = ? AND userid = ? AND status IN ('Pending', 'Accepted') AND has_exited = 0";
                 $stmt = mysqli_prepare($conn, $sql);
                 mysqli_stmt_bind_param($stmt, "ii", $teamid, $invitee_id);
                 mysqli_stmt_execute($stmt);
@@ -62,10 +62,31 @@ if (!$teamid || !$user_email) {
                 if ($existing) {
                     $message = "This user is already a member or has a pending invitation.";
                 } else {
-                    // Send the invitation (insert into team_members with 'Pending' status)
-                    $sql = "INSERT INTO team_members (teamid, userid, role, status ,invited_at) VALUES (?, ?, 'Member', 'Pending', ? )";
+                    // Check if user was previously a member (has_exited = 1)
+                    $sql = "SELECT * FROM team_members WHERE teamid = ? AND userid = ? AND has_exited = 1";
                     $stmt = mysqli_prepare($conn, $sql);
-                    mysqli_stmt_bind_param($stmt, "iis", $teamid, $invitee_id, $now);
+                    mysqli_stmt_bind_param($stmt, "ii", $teamid, $invitee_id);
+                    mysqli_stmt_execute($stmt);
+                    $result = mysqli_stmt_get_result($stmt);
+                    $was_member = mysqli_fetch_assoc($result);
+
+                    if ($was_member) {
+                        // Update existing record for ex-member
+                        $sql = "UPDATE team_members 
+                                SET status = 'Pending', 
+                                    has_exited = 0, 
+                                    exited_at = NULL, 
+                                    invited_at = NOW() 
+                                WHERE teamid = ? AND userid = ?";
+                        $stmt = mysqli_prepare($conn, $sql);
+                        mysqli_stmt_bind_param($stmt, "ii", $teamid, $invitee_id);
+                    } else {
+                        // Insert new invitation
+                        $sql = "INSERT INTO team_members (teamid, userid, role, status, invited_at) 
+                                VALUES (?, ?, 'Member', 'Pending', NOW())";
+                        $stmt = mysqli_prepare($conn, $sql);
+                        mysqli_stmt_bind_param($stmt, "ii", $teamid, $invitee_id);
+                    }
 
                     if (mysqli_stmt_execute($stmt)) {
                         $message = "Invitation sent successfully.";

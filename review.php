@@ -7,23 +7,64 @@ if (!isset($_SESSION['userid'])) {
     exit();
 }
 
+$userid = $_SESSION['userid'];
+
+// Check if user has been registered for at least 2 days and has 5 tasks
+$sql = "SELECT u.created_at, COUNT(t.taskid) as task_count 
+        FROM users u 
+        LEFT JOIN tasks t ON u.userid = t.userid AND t.is_deleted = 0
+        WHERE u.userid = ?
+        GROUP BY u.userid, u.created_at";
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "i", $userid);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$user = mysqli_fetch_assoc($result);
+
+$registrationDate = new DateTime($user['created_at']);
+$currentDate = new DateTime();
+$daysSinceRegistration = $currentDate->diff($registrationDate)->days;
+$taskCount = $user['task_count'];
+
+// Check if user already has a review
+$sql = "SELECT * FROM reviews WHERE userid = ?";
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "i", $userid);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$existingReview = mysqli_fetch_assoc($result);
+
+$canReview = ($daysSinceRegistration >= 2 && $taskCount >= 5) || $existingReview;
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $userid = $_SESSION['userid'];  // Assuming the user is logged in and their user ID is stored in the session
-    $review = $_POST['review'];
-    $rating = $_POST['rating'] ?? null;  // Get the rating from the form
+    $review = trim($_POST['review']);
+    $rating = $_POST['rating'] ?? null;
 
-    // Insert review and rating into the database
     if (empty($rating)) {
-
+        $_SESSION['error_message'] = "Please select a rating before submitting.";
     } else {
-        $sql = "INSERT INTO reviews (userid, review, rating) VALUES (?, ?, ?)";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "isi", $userid, $review, $rating);
+        if ($existingReview) {
+            // Update existing review
+            $sql = "UPDATE reviews SET review = ?, rating = ? WHERE userid = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "sii", $review, $rating, $userid);
+            
+            if (mysqli_stmt_execute($stmt)) {
+                $_SESSION['success_message'] = "Review updated successfully!";
+                header("Location: review.php");
+                exit();
+            }
+        } elseif ($canReview) {
+            // Insert new review
+            $sql = "INSERT INTO reviews (userid, review, rating) VALUES (?, ?, ?)";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "isi", $userid, $review, $rating);
 
-        if (mysqli_stmt_execute($stmt)) {
-            $_SESSION['success_message'] = "Review sent sucessfully!";
-        } else {
-            echo "<div class='popup error'>Error submitting review: " . mysqli_error($conn) . "</div>";
+            if (mysqli_stmt_execute($stmt)) {
+                $_SESSION['success_message'] = "Review submitted successfully!";
+                header("Location: review.php");
+                exit();
+            }
         }
     }
 }
@@ -44,132 +85,149 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <body id="body">
     <!-- Top Bar -->
-  <div class="top-bar">
-    <div class="top-left">
-      <!-- Removed profile from here -->
-    </div>
-
-    <div class="top-right-icons">
-      <!-- Notification Icon -->
-      <a href="invitation.php" class="top-icon">
-        <ion-icon name="notifications-outline"></ion-icon>
-      </a>
-      
-         <!-- Profile Icon -->
-         <div class="profile-info">
-  <a href="#" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
-    <ion-icon name="person-outline"></ion-icon>
-  </a>
-  <span class="username-text"><?= htmlspecialchars($username) ?></span>
-</div>
-    </div>
-  </div>
-
-  <!-- Logo Above Sidebar -->
-  <div class="logo-container">
-    <img src="img/logo.png" alt="Logo" class="logo">
-  </div>
-
-  <!-- Sidebar Navigation -->
-  <div class="l-navbar" id="navbar">
-    <nav class="nav">
-      <div class="nav__list">
-        <a href="dash.php" class="nav__link ">
-          <ion-icon name="home-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Home</span>
-        </a>
-        <a href="task.php" class="nav__link">
-          <ion-icon name="add-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Task</span>
-        </a>
-        <a href="team.php" class="nav__link">
-          <ion-icon name="people-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Team </span>
-        </a>
-        <a href="review.php" class="nav__link active">
-          <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Review</span>
-        </a>
-      </div>
-              <a href="javascript:void(0)" onclick="confirmLogout(event)()" class="nav__link logout">
-  <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-  <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
-</a>
-    </nav>
-  </div>
-
-  <div class="main-container">
-
-    <div class="review-form-container">
-        <h3>Share Review</h3>
-        <form method="POST">
-            <label for="rating">
-                <h2>How was your experience?</h2>
-            </label>
-            <p>Your review will help our product and make
-                it user friendly for more users.</>
-            <div class="rating-stars" id="rating-stars">
-                <input type="radio" name="rating" value="5" id="star1">
-                <label for="star1">&#9733;</label>
-                <input type="radio" name="rating" value="4" id="star2">
-                <label for="star2">&#9733;</label>
-                <input type="radio" name="rating" value="3" id="star3">
-                <label for="star3">&#9733;</label>
-                <input type="radio" name="rating" value="2" id="star4">
-                <label for="star4">&#9733;</label>
-                <input type="radio" name="rating" value="1" id="star5">
-                <label for="star5">&#9733;</label>
-            </div>
-
-            <label for="review"></label>
-            <textarea name="review" placeholder="Share feedback..."></textarea>
-
-            <!-- The submit button is enabled by default -->
-            <button type="submit" class="submit-btn" id="submitReview">Submit Review</button>
-        </form>
-    </div>
-     <!-- No Reviews Container -->
-     <div class="no-reviews-container">
-            <div class="no-reviews-image">
-                <!-- Replace with your actual image -->
-                <img src="img/sad.svg" alt="No reviews yet">
-            </div>
-            <h3>No Recent Reviews</h3>
-            <p>There are no reviews available at the moment. Be the first to share your experience!</p>
+    <div class="top-bar">
+        <div class="top-left">
+            <!-- Removed profile from here -->
         </div>
-  </div>
+
+        <div class="top-right-icons">
+            <!-- Notification Icon -->
+            <a href="invitation.php" class="top-icon">
+                <ion-icon name="notifications-outline"></ion-icon>
+            </a>
+
+            <!-- Profile Icon -->
+            <div class="profile-info">
+                <a href="#" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+                    <ion-icon name="person-outline"></ion-icon>
+                </a>
+                <span class="username-text"><?= htmlspecialchars($username) ?></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logo Above Sidebar -->
+    <div class="logo-container">
+        <img src="img/logo.png" alt="Logo" class="logo">
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <div class="l-navbar" id="navbar">
+        <nav class="nav">
+            <div class="nav__list">
+                <a href="dash.php" class="nav__link"><ion-icon name="home-outline" class="nav__icon"></ion-icon><span
+                        class="nav__name">Home</span></a>
+                <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
+                        class="nav__name">Task</span></a>
+                <a href="team.php" class="nav__link"><ion-icon name="people-outline" class="nav__icon"></ion-icon><span
+                        class="nav__name">Team</span></a>
+                <a href="review.php" class="nav__link active"><ion-icon name="chatbox-ellipses-outline"
+                        class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
+                <a href="change_name.php" class="nav__link"><ion-icon name="person-circle-outline"
+                        class="nav__icon"></ion-icon><span class="nav__name">Change Name</span></a>
+                <a href="change_password.php" class="nav__link"><ion-icon name="key-outline"
+                        class="nav__icon"></ion-icon><span class="nav__name">Change Password</span></a>
+            </div>
+            <a href="javascript:void(0)" onclick="confirmLogout(event)" class="nav__link logout">
+                <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+                <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-container">
+        <?php if (!$canReview): ?>
+            <div class="review-form-container">
+                <h3>Cannot Submit Review Yet</h3>
+                <p>To submit a review, you need:</p>
+                <div class="requirements">
+                    <p>
+                        <ion-icon name="time-outline"></ion-icon> 
+                        2 days since registration: 
+                        <span class="<?= $daysSinceRegistration >= 2 ? 'met' : 'not-met' ?>">
+                            <?= $daysSinceRegistration ?>/2 days
+                        </span>
+                    </p>
+                    <p>
+                        <ion-icon name="list-outline"></ion-icon> 
+                        5 tasks created: 
+                        <span class="<?= $taskCount >= 5 ? 'met' : 'not-met' ?>">
+                            <?= $taskCount ?>/5 tasks
+                        </span>
+                    </p>
+                </div>
+                <img src="img/wait.svg" alt="Please wait" style="width: 200px; margin-top: 30px;">
+            </div>
+        <?php else: ?>
+            <div class="review-form-container">
+                <h3><?= $existingReview ? 'Update Your Review' : 'Share Review' ?></h3>
+                <form method="POST">
+                    <label for="rating">
+                        <h2>How was your experience?</h2>
+                    </label>
+                    <p>Your review will help improve our product and make it more user-friendly.</p>
+                    <div class="rating-stars" id="rating-stars">
+                        <?php for($i = 5; $i >= 1; $i--): ?>
+                            <input type="radio" name="rating" value="<?= $i ?>" id="star<?= 6-$i ?>" 
+                                <?= ($existingReview && $existingReview['rating'] == $i) ? 'checked' : '' ?>>
+                            <label for="star<?= 6-$i ?>" title="<?= $i ?> stars">&#9733;</label>
+                        <?php endfor; ?>
+                    </div>
+
+                    <textarea name="review" placeholder="Share your feedback here..."><?= $existingReview ? htmlspecialchars($existingReview['review']) : '' ?></textarea>
+
+                    <button type="submit" class="submit-btn" id="submitReview">
+                        <?= $existingReview ? 'Update Review' : 'Submit Review' ?>
+                    </button>
+                </form>
+            </div>
+
+            <?php if ($existingReview): ?>
+                <div class="no-reviews-container">
+                    <div class="no-reviews-image">
+                        <img src="img/review.svg" alt="Your review">
+                    </div>
+                    <h3>Your Current Review</h3>
+                    <p>Rating: <?= str_repeat('⭐', $existingReview['rating']) ?></p>
+                    <p style="white-space: pre-wrap;"><?= htmlspecialchars($existingReview['review']) ?></p>
+                    <p style="color: #6c757d; font-size: 0.9em; margin-top: 20px;">
+                        Last updated: <?= date('F j, Y g:i A', strtotime($existingReview['last_updated_at'] ?? $existingReview['created_at'])) ?>
+                    </p>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
-    <!-- ===== MAIN JS ===== -->
     <script src="js/dash.js"></script>
 
-    <!-- JavaScript to disable submit if no rating is selected and highlight rating container -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const form = document.querySelector('form');
             const ratingInputs = document.querySelectorAll('input[name="rating"]');
             const ratingContainer = document.getElementById('rating-stars');
 
-            form.addEventListener('submit', function (event) {
-                const ratingChecked = document.querySelector('input[name="rating"]:checked');
-                if (!ratingChecked) {
-                    event.preventDefault(); // Prevent submission
-                    // Highlight the rating container
-                    ratingContainer.classList.add('error');
-                    //         Swal.fire({
-                    //             title: "Rating Required",
-                    //             text: "Please select a rating before submitting your review.",
-                    //             icon: "warning",
-                    //             confirmButtonText: "OK"
-                    //         });
-                }
-            });
-
-            // Remove the highlight when a rating is selected
-            ratingInputs.forEach(input => {
-                input.addEventListener('change', function () {
-                    ratingContainer.classList.remove('error');
+            if (form) {
+                form.addEventListener('submit', function (event) {
+                    const ratingChecked = document.querySelector('input[name="rating"]:checked');
+                    if (!ratingChecked) {
+                        event.preventDefault();
+                        ratingContainer.classList.add('error');
+                        Swal.fire({
+                            title: "Rating Required",
+                            text: "Please select a rating before submitting your review.",
+                            icon: "warning",
+                            confirmButtonText: "OK"
+                        });
+                    }
                 });
-            });
+
+                ratingInputs.forEach(input => {
+                    input.addEventListener('change', function () {
+                        ratingContainer.classList.remove('error');
+                    });
+                });
+            }
         });
     </script>
 
@@ -180,33 +238,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     toast: true,
                     position: 'top-center',
                     icon: 'success',
-                    title: "Review sent successfully!",
+                    title: "<?php echo $_SESSION['success_message']; ?>",
                     showConfirmButton: false,
-                    timer: 1000,
-                    timerProgressBar: true,
-                    customClass: {
-                        popup: 'swal-toast'
-                    }
+                    timer: 1500,
+                    timerProgressBar: true
                 });
-
             });
         </script>
-        <style>
-            .small-swal {
-                width: 200px;
-                padding: 20px;
-            }
-
-            .small-swal-title {
-                font-size: 16px;
-                font-weight: bold;
-            }
-
-            .small-swal-content {
-                font-size: 14px;
-            }
-        </style>
         <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: "<?php echo $_SESSION['error_message']; ?>"
+                });
+            });
+        </script>
+        <?php unset($_SESSION['error_message']); ?>
     <?php endif; ?>
 </body>
 

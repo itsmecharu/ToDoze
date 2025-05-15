@@ -42,30 +42,44 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+// Logout confirmation function
 function confirmLogout(event) {
-  event.preventDefault(); // Stop the default link behavior
-  document.activeElement.blur(); // Remove focus from clicked element
+    event.preventDefault(); // Stop the default link behavior
+    document.activeElement.blur(); // Remove focus from clicked element
 
-  Swal.fire({
-    title: 'Log out?',
-    text: "Are you sure you want to log out?",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, log out',
-    cancelButtonText: 'Stay',
-    backdrop: false,
-    background: '#fff',
-    allowOutsideClick: true,
-    customClass: {
-      popup: 'swal2-custom-popup'
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      window.location.href = "logout.php?action=logout";
-    } else if (result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.cancel) {
-      console.log("Logout cancelled");
-    }
-  });
+    Swal.fire({
+        title: 'Log out?',
+        text: "Are you sure you want to log out?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, log out',
+        cancelButtonText: 'Stay',
+        backdrop: false,
+        background: '#fff',
+        allowOutsideClick: true,
+        customClass: {
+            popup: 'swal2-custom-popup'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "logout.php?action=logout";
+        } else if (result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.cancel) {
+            console.log("Logout cancelled");
+        }
+    });
 }
+
+// Navigation active state
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPage = window.location.pathname.split('/').pop();
+    const navLinks = document.querySelectorAll('.nav__link');
+    
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === currentPage) {
+            link.classList.add('active');
+        }
+    });
+});
 
 

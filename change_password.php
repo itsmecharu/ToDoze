@@ -100,19 +100,23 @@ if (isset($_POST['update_password'])) {
   <div class="l-navbar" id="navbar">
     <nav class="nav">
       <div class="nav__list">
-        <a href="dash.php" class="nav__link "><ion-icon name="home-outline" class="nav__icon"></ion-icon><span
+        <a href="dash.php" class="nav__link"><ion-icon name="home-outline" class="nav__icon"></ion-icon><span
             class="nav__name">Home</span></a>
-        <a href="task.php" class="nav__link active"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
+        <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
             class="nav__name">Task</span></a>
         <a href="team.php" class="nav__link"><ion-icon name="people-outline" class="nav__icon"></ion-icon><span
             class="nav__name">Team</span></a>
         <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline"
             class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
+        <a href="change_name.php" class="nav__link"><ion-icon name="person-circle-outline"
+            class="nav__icon"></ion-icon><span class="nav__name">Change Name</span></a>
+        <a href="change_password.php" class="nav__link active"><ion-icon name="key-outline"
+            class="nav__icon"></ion-icon><span class="nav__name">Change Password</span></a>
       </div>
-              <a href="javascript:void(0)" onclick="confirmLogout(event)()" class="nav__link logout">
-  <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-  <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
-</a>
+      <a href="javascript:void(0)" onclick="confirmLogout(event)" class="nav__link logout">
+        <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+        <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
+      </a>
     </nav>
   </div>
 
