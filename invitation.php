@@ -127,29 +127,44 @@ mysqli_stmt_close($stmt);
     <div class="logo-container">
         <img src="img/logo.png" alt="App Logo" class="logo">
     </div>
-
-    <div class="l-navbar" id="navbar">
-        <nav class="nav">
-            <div class="nav__list">
-                <a href="dash.php" class="nav__link"><ion-icon name="home-outline"
-                        class="nav__icon"></ion-icon><span class="nav__name">Home</span></a>
-                <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
-                        class="nav__name">Task</span></a>
-                <a href="team.php" class="nav__link"><ion-icon name="people-outline" class="nav__icon"></ion-icon><span
-                        class="nav__name">Team</span></a>
-                <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline"
-                        class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
-                <a href="change_name.php" class="nav__link"><ion-icon name="person-circle-outline"
-                        class="nav__icon"></ion-icon><span class="nav__name">Change Name</span></a>
-                <a href="change_password.php" class="nav__link"><ion-icon name="key-outline"
-                        class="nav__icon"></ion-icon><span class="nav__name">Change Password</span></a>
-            </div>
-            <a href="javascript:void(0)" onclick="confirmLogout(event)" class="nav__link logout">
-                <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-                <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
-            </a>
-        </nav>
+  
+<div class="l-navbar" id="navbar">
+  <nav class="nav">
+    <div class="nav__list">
+      <a href="dash.php" class="nav__link "><ion-icon name="home-outline" class="nav__icon"></ion-icon><span
+          class="nav__name">Home</span></a>
+      <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
+          class="nav__name">Task</span></a>
+      <a href="team.php" class="nav__link"><ion-icon name="people-outline" class="nav__icon"></ion-icon><span
+          class="nav__name">Team</span></a>
+      
+      <!-- Dropdown Section -->
+      <div class="nav__dropdown">
+        <button class="nav__dropdown-btn">
+          <ion-icon name="settings-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name">Settings</span>
+          <i class="nav__dropdown-icon fa fa-caret-down"></i>
+        </button>
+        <div class="nav__dropdown-content nav__link">
+          <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline"
+              class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
+          <a href="change_name.php" class="nav__link"><ion-icon name="person-circle-outline"
+              class="nav__icon"></ion-icon><span class="nav__name">Change Name</span></a>
+          <a href="change_password.php" class="nav__link"><ion-icon name="key-outline"
+              class="nav__icon"></ion-icon><span class="nav__name">Change Password</span></a>
+        </div>
+      </div>
     </div>
+    
+    <!-- Logout button centered and positioned 40px from bottom -->
+    <div class="nav__logout-container">
+      <a href="javascript:void(0)" onclick="confirmLogout(event)" class="nav__link logout">
+        <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+        <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
+      </a>
+    </div>
+  </nav>
+</div>
 
 
 
@@ -198,7 +213,15 @@ mysqli_stmt_close($stmt);
             <?php } ?>
         </div>
     </div>
-
+<script>
+// Dropdown functionality
+document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
+  button.addEventListener('click', () => {
+    const dropdown = button.closest('.nav__dropdown');
+    dropdown.classList.toggle('active');
+  });
+});
+</script>
     <!-- IONICONS -->
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
     <script src="js/dash.js"></script>
