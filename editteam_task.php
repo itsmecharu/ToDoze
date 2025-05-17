@@ -180,10 +180,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </a>
       
         <!-- Profile Icon -->
-        <div class="profile-info">
-  <a href="#" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+         <div class="profile-info">
+  <div class="profile-circle" title="<?= htmlspecialchars($username) ?>">
     <ion-icon name="person-outline"></ion-icon>
-  </a>
+  </div>
   <span class="username-text"><?= htmlspecialchars($username) ?></span>
 </div>
     </div>

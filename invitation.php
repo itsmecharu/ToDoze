@@ -116,12 +116,12 @@ mysqli_stmt_close($stmt);
             <ion-icon name="notifications-outline"></ion-icon>
         </a>
         <!-- Profile Icon -->
-        <div class="profile-info">
-            <a href="#" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
-                <ion-icon name="person-outline"></ion-icon>
-            </a>
-            <span class="username-text"><?= htmlspecialchars($username) ?></span>
-        </div>
+              <div class="profile-info">
+  <div class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+    <ion-icon name="person-outline"></ion-icon>
+  </div>
+  <span class="username-text"><?= htmlspecialchars($username) ?></span>
+</div>
     </div>
 
     <div class="logo-container">
@@ -141,8 +141,8 @@ mysqli_stmt_close($stmt);
       <!-- Dropdown Section -->
       <div class="nav__dropdown">
         <button class="nav__dropdown-btn">
-          <ion-icon name="settings-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Settings</span>
+          <ion-icon name="Others-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name">Others</span>
           <i class="nav__dropdown-icon fa fa-caret-down"></i>
         </button>
         <div class="nav__dropdown-content nav__link">

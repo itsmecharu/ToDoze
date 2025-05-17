@@ -97,12 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </a>
 
             <!-- Profile Icon -->
-            <div class="profile-info">
-                <a href="#" class="profile-circle" title="<?= htmlspecialchars($username) ?>">
-                    <ion-icon name="person-outline"></ion-icon>
-                </a>
-                <span class="username-text"><?= htmlspecialchars($username) ?></span>
-            </div>
+                    <div class="profile-info">
+  <div class="profile-circle" title="<?= htmlspecialchars($username) ?>">
+    <ion-icon name="person-outline"></ion-icon>
+  </div>
+  <span class="username-text"><?= htmlspecialchars($username) ?></span>
+</div>
         </div>
     </div>
 
@@ -124,8 +124,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <!-- Dropdown Section -->
       <div class="nav__dropdown">
         <button class="nav__dropdown-btn">
-          <ion-icon name="settings-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name active">Settings</span>
+          <ion-icon name="Others-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name active">Others</span>
           <i class="nav__dropdown-icon fa fa-caret-down"></i>
         </button>
         <div class="nav__dropdown-content nav__link">

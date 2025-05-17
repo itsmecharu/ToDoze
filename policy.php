@@ -137,7 +137,7 @@
 
         <h3>3. Cookies and Tracking</h3>
         <p>We use cookies to improve user experience and analyze website traffic. You can control cookies through your
-            browser settings.</p>
+            browser Others.</p>
 
         <h3>4. Data Sharing</h3>
         <p>We do not sell or rent your personal information. We may share it with trusted partners who assist in

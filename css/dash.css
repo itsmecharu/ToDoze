@@ -460,14 +460,7 @@ body {
     .add-task-form button[type="submit"]:hover {
       background-color: #45a049;
     }
-    /* .task {
-      padding: 5px;
-      border-radius: 10px;
-      background: #fff;
-      margin-bottom: 8px;
-      position: relative;
-      transition: background 0.3s ease;
-    } */
+   
     
     .task:hover {
       background: #fff;
@@ -1309,8 +1302,8 @@ text-decoration: underline;
 
 /* priority */
     .priority-dropdown select {
-  padding: 3px;
-  font-size: 14px;
+  padding: 1px;
+  font-size: 12px;
 }
 .priority-toggle:hover {
   opacity: 0.8;
