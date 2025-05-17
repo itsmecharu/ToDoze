@@ -236,10 +236,23 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
           <ion-icon name="people-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Team </span>
         </a>
-        <a href="review.php" class="nav__link">
-          <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Review</span>
-        </a>
+         <!-- -------------------------dropdown------------------------ -->
+      <div class="nav__dropdown">
+        <button class="nav__dropdown-btn">
+          <ion-icon name="settings-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name">Settings</span>
+          <i class="nav__dropdown-icon fa fa-caret-down"></i>
+        </button>
+        <div class="nav__dropdown-content">
+          <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline"
+              class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
+          <a href="change_name.php" class="nav__link"><ion-icon name="person-circle-outline"
+              class="nav__icon"></ion-icon><span class="nav__name">Change Name</span></a>
+          <a href="change_password.php" class="nav__link"><ion-icon name="key-outline"
+              class="nav__icon"></ion-icon><span class="nav__name">Change Password</span></a>
+        </div>
+      </div>
+      
       </div>
              <a href="javascript:void(0)" onclick="confirmLogout(event)()" class="nav__link logout">
   <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
@@ -637,34 +650,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
- <script>
-  function toggleDropdown(id) {
-    const dropdown = document.getElementById(id);
-    const allDropdowns = document.querySelectorAll('.priority-dropdown');
-
-    allDropdowns.forEach(el => {
-      if (el.id !== id) el.style.display = 'none';
-    });
-
-    // Toggle the selected dropdown
-    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-
-    // Prevent multiple listeners
-    document.removeEventListener('click', handleOutsideClick);
-    setTimeout(() => {
-      document.addEventListener('click', handleOutsideClick);
-    }, 0);
-
-    function handleOutsideClick(e) {
-      // If the click is outside any .priority-dropdown and .priority-toggle
-      if (!dropdown.contains(e.target) && !e.target.closest('.priority-toggle')) {
-        dropdown.style.display = 'none';
-        document.removeEventListener('click', handleOutsideClick);
-      }
-    }
-  }
+<script>
+// Dropdown functionality
+document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
+  button.addEventListener('click', () => {
+    const dropdown = button.closest('.nav__dropdown');
+    dropdown.classList.toggle('active');
+  });
+});
 </script>
-
  <!-- IONICONS -->
  <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
 

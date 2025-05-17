@@ -111,29 +111,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <img src="img/logo.png" alt="Logo" class="logo">
     </div>
 
-    <!-- Sidebar Navigation -->
-    <div class="l-navbar" id="navbar">
-        <nav class="nav">
-            <div class="nav__list">
-                <a href="dash.php" class="nav__link"><ion-icon name="home-outline" class="nav__icon"></ion-icon><span
-                        class="nav__name">Home</span></a>
-                <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
-                        class="nav__name">Task</span></a>
-                <a href="team.php" class="nav__link"><ion-icon name="people-outline" class="nav__icon"></ion-icon><span
-                        class="nav__name">Team</span></a>
-                <a href="review.php" class="nav__link active"><ion-icon name="chatbox-ellipses-outline"
-                        class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
-                <a href="change_name.php" class="nav__link"><ion-icon name="person-circle-outline"
-                        class="nav__icon"></ion-icon><span class="nav__name">Change Name</span></a>
-                <a href="change_password.php" class="nav__link"><ion-icon name="key-outline"
-                        class="nav__icon"></ion-icon><span class="nav__name">Change Password</span></a>
-            </div>
-            <a href="javascript:void(0)" onclick="confirmLogout(event)" class="nav__link logout">
-                <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-                <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
-            </a>
-        </nav>
+<div class="l-navbar" id="navbar">
+  <nav class="nav">
+    <div class="nav__list">
+      <a href="dash.php" class="nav__link "><ion-icon name="home-outline" class="nav__icon"></ion-icon><span
+          class="nav__name">Home</span></a>
+      <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
+          class="nav__name">Task</span></a>
+      <a href="team.php" class="nav__link"><ion-icon name="people-outline" class="nav__icon"></ion-icon><span
+          class="nav__name">Team</span></a>
+      
+      <!-- Dropdown Section -->
+      <div class="nav__dropdown">
+        <button class="nav__dropdown-btn">
+          <ion-icon name="settings-outline" class="nav__icon"></ion-icon>
+          <span class="nav__name active">Settings</span>
+          <i class="nav__dropdown-icon fa fa-caret-down"></i>
+        </button>
+        <div class="nav__dropdown-content nav__link">
+          <a href="review.php" class="nav__link active"><ion-icon name="chatbox-ellipses-outline"
+              class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
+          <a href="change_name.php" class="nav__link"><ion-icon name="person-circle-outline"
+              class="nav__icon"></ion-icon><span class="nav__name">Change Name</span></a>
+          <a href="change_password.php" class="nav__link"><ion-icon name="key-outline"
+              class="nav__icon"></ion-icon><span class="nav__name">Change Password</span></a>
+        </div>
+      </div>
     </div>
+    
+    <!-- Logout button centered and positioned 40px from bottom -->
+    <div class="nav__logout-container">
+      <a href="javascript:void(0)" onclick="confirmLogout(event)" class="nav__link logout">
+        <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
+        <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
+      </a>
+    </div>
+  </nav>
+</div>
 
     <div class="main-container">
         <?php if (!$canReview): ?>
@@ -245,6 +259,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 });
             });
         </script>
+            <script>
+// Dropdown functionality
+document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
+  button.addEventListener('click', () => {
+    const dropdown = button.closest('.nav__dropdown');
+    dropdown.classList.toggle('active');
+  });
+});
+</script>
         <?php unset($_SESSION['success_message']); ?>
     <?php endif; ?>
 
@@ -258,6 +281,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 });
             });
         </script>
+        
         <?php unset($_SESSION['error_message']); ?>
     <?php endif; ?>
 </body>

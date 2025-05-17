@@ -37,19 +37,18 @@ body {
   .logo {
     height: 50px; /* Slightly smaller on mobile */
   }
-}  
-/* Sidebar Navigation - Enlarged */
+} /* Sidebar Navigation - Enlarged */
 .l-navbar {
   position: fixed;
   top: 80px;
   left: 1px;
-  width: 220px; /* Increased from 180px */
+  width: 220px;
   height: calc(100% - 60px);
   background: #dde4e5;
-  border-top-right-radius: 25px; /* Increased from 20px */
-  border-bottom-right-radius: 25px; /* Increased from 20px */
-  box-shadow: 3px 0 8px rgba(0,0,0,0.12); /* Slightly stronger shadow */
-  padding-top: 25px; /* Increased from 20px */
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+  box-shadow: 3px 0 8px rgba(0,0,0,0.12);
+  padding-top: 25px;
   transition: left 0.3s ease;
 }
 
@@ -63,8 +62,8 @@ body {
 .nav__list {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem; /* Increased from 1rem */
-  padding-left: 25px; /* Increased from 20px */
+  gap: 1.2rem;
+  padding-left: 25px;
 }
 
 .nav__link {
@@ -73,38 +72,37 @@ body {
   text-decoration: none;
   color: #333;
   font-weight: 500;
-  font-size: 1.1rem; /* Added font size */
-  transition: all 0.2s; /* Changed from just background */
-  padding: 8px 15px; /* Added consistent padding */
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  padding: 8px 15px;
   border-radius: 10px;
 }
 
 .nav__link:hover {
   background-color: #f0f0f0;
-  transform: translateX(3px); /* Added slight movement */
+  transform: translateX(3px);
 }
 
 .nav__link.active {
   background-color: #4CAF50;
   color: white;
-  font-weight: 600; /* Slightly bolder */
+  font-weight: 600;
   padding: 8px 15px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Added shadow */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .nav__icon {
-  font-size: 1.7rem; /* Increased from 1.5rem */
-  margin-right: 12px; /* Increased from 10px */
-  width: 24px; /* Added fixed width */
+  font-size: 1.7rem;
+  margin-right: 12px;
+  width: 24px;
   text-align: center;
 }
 
-/* For better spacing */
 .nav__name {
-  margin-top: 2px; /* Helps align text with icon */
+  margin-top: 2px;
 }
 
-/* Dropdown Specific Styles */
+/* Dropdown Styles */
 .nav__dropdown {
   position: relative;
 }
@@ -151,11 +149,22 @@ body {
   gap: 0.8rem;
 }
 
+/* Logout Container - Centered and 40px from bottom */
+.nav__logout-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  margin-bottom: 40px; /* 40px from bottom */
+  width: 100%;
+}
+
 .nav__link.logout {
-  padding: 12px 20px; /* Increased from 10px */
-  margin-bottom: 80px; 
-  margin-left:25px;/* Increased from 20px */
-  font-size: 1.1rem; /* Added font size */
+  padding: 12px 20px;
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: center;
+  width: auto;
+  margin: 0;
 }
 
 /* For better spacing */
@@ -403,7 +412,7 @@ body {
     }
     
     button {
-      background: linear-gradient(135deg, #3498db, #0578c5);
+      /* background: linear-gradient(135deg, #3498db, #0578c5); */
       color: white;
       cursor: pointer;
       border-radius: 10px;
