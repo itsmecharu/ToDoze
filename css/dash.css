@@ -38,7 +38,6 @@ body {
     height: 50px; /* Slightly smaller on mobile */
   }
 }  
-
 /* Sidebar Navigation - Enlarged */
 .l-navbar {
   position: fixed;
@@ -98,6 +97,58 @@ body {
   margin-right: 12px; /* Increased from 10px */
   width: 24px; /* Added fixed width */
   text-align: center;
+}
+
+/* For better spacing */
+.nav__name {
+  margin-top: 2px; /* Helps align text with icon */
+}
+
+/* Dropdown Specific Styles */
+.nav__dropdown {
+  position: relative;
+}
+
+.nav__dropdown-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 8px 15px;
+  cursor: pointer;
+  color: #333;
+  font-weight: 500;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.nav__dropdown-btn:hover {
+  background-color: #f0f0f0;
+  transform: translateX(3px);
+}
+
+.nav__dropdown-icon {
+  margin-left: auto;
+  font-size: 1rem;
+  transition: transform 0.3s;
+}
+
+.nav__dropdown.active .nav__dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.nav__dropdown-content {
+  display: none;
+  padding-left: 20px;
+  margin-top: 5px;
+}
+
+.nav__dropdown.active .nav__dropdown-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
 .nav__link.logout {
