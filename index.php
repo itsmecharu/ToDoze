@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ToDoze </title>
+<title>ToDoze</title>
 <link rel="icon" href="img/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -69,7 +69,7 @@ padding: 1.5rem 2rem;
 }
 
 .logo {
-height: 2.5rem;
+height: 3.5rem;
 transition: var(--transition);
 }
 
@@ -607,8 +607,8 @@ background: rgba(0,0,0,0.5);
 <div class="container">
 <div class="hero-content">
 <div class="hero-text">
-<h1>Team Task Management, Minus the Mess</h1>
-<p>ToDoze combines elegant design with powerful functionality to help you and your team achieve more with less effort.</p>
+<h1>Simplified Task Management for You and Your Team</h1>
+<p>ToDoze helps you stay organized, whether you're managing personal tasks or collaborating with others.</p>
 <div class="hero-buttons">
 <a href="signin.php" class="btn btn-primary">Start Exploring</a>
 <a href="#features" class="btn btn-secondary">Learn More</a>
@@ -645,7 +645,7 @@ background: rgba(0,0,0,0.5);
 </svg>
 </div>
 <h3>Team Collaboration</h3>
-<p>Work together by assigning tasks and tracking progress in real-time.</p>
+<p>Work together by assigning tasks and tracking progress.</p>
 </div>
 <div class="feature-card">
 <div class="feature-icon">
@@ -654,7 +654,8 @@ background: rgba(0,0,0,0.5);
 </svg>
 </div>
 <h3>Set Reminders</h3>
-<p>Never miss a deadline with customizable notifications.</p>
+<br>
+<p>Set reminders so you never miss a deadline.</p>
 </div>
 <div class="feature-card">
 <div class="feature-icon">
@@ -703,7 +704,7 @@ background: rgba(0,0,0,0.5);
 <div class="footer-content">
 <div class="footer-column">
 <h3>ToDoze</h3>
-<p>Elegant task management for individuals and teams.</p>
+<p>Easy task management for individuals and teams.</p>
 </div>
 <div class="footer-column">
 <h3>More</h3>
