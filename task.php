@@ -5,6 +5,7 @@ include 'config/database.php';
 include 'load_username.php';
 
 
+
 // Ensure user is logged in
 if (!isset($_SESSION['userid'])) {
   header("Location: signin.php");
@@ -152,31 +153,10 @@ $result = mysqli_stmt_get_result($stmt);
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-
+<?php include 'navbar.php'; ?>
+<?php include 'toolbar.php'; ?>
 <body id="body-pd">
-  <div class="top-bar">
-    <div class="top-left">
-      <!-- Removed profile from here -->
-    </div>
-
-    <div class="top-right-icons">
-      <!-- Notification Icon -->
-      <a href="invitation.php" class="top-icon">
-        <ion-icon name="notifications-outline"></ion-icon>
-      </a>
-
-      <!-- Profile Icon -->
-           <div class="profile-info">
-  <div class="profile-circle" title="<?= htmlspecialchars($username) ?>">
-    <ion-icon name="person-outline"></ion-icon>
-  </div>
-  <span class="username-text"><?= htmlspecialchars($username) ?></span>
-</div>
-
-
-    </div>
-  </div>
-
+  
   <div class="filter-container">
     <div style="display: flex; justify-content: center;">
       <button id="AddTaskBtn" class="create-btn"> + Add task</button>
@@ -210,48 +190,6 @@ $result = mysqli_stmt_get_result($stmt);
 </div>
 
 
-  <!-- sorting ends-->
-  <div class="logo-container">
-    <img src="img/logo.png" alt="App Logo" class="logo">
-  </div>
-
-  
-<div class="l-navbar" id="navbar">
-  <nav class="nav">
-    <div class="nav__list">
-      <a href="dash.php" class="nav__link "><ion-icon name="home-outline" class="nav__icon"></ion-icon><span
-          class="nav__name">Home</span></a>
-      <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
-          class="nav__name">Task</span></a>
-      <a href="team.php" class="nav__link"><ion-icon name="people-outline" class="nav__icon"></ion-icon><span
-          class="nav__name">Team</span></a>
-      
-      <!-- Dropdown Section -->
-      <div class="nav__dropdown">
-        <button class="nav__dropdown-btn">
-          <ion-icon name="Others-outline" class="nav__icon"></ion-icon>
-          <span class="nav__name">Others</span>
-          <i class="nav__dropdown-icon fa fa-caret-down"></i>
-        </button>
-        <div class="nav__dropdown-content nav__link">
-          <a href="review.php" class="nav__link"><ion-icon name="chatbox-ellipses-outline"
-              class="nav__icon"></ion-icon><span class="nav__name">Review</span></a>
-          <a href="change_name.php" class="nav__link"><ion-icon name="person-circle-outline"
-              class="nav__icon"></ion-icon><span class="nav__name">Change Name</span></a>
-          <a href="change_password.php" class="nav__link"><ion-icon name="key-outline"
-              class="nav__icon"></ion-icon><span class="nav__name">Change Password</span></a>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Logout button centered and positioned 40px from bottom -->
-    <div class="nav__logout-container">
-      <a href="javascript:void(0)" onclick="confirmLogout(event)" class="nav__link logout">
-        <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-        <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
-      </a>
-    </div>
-  </nav>
 </div>
 
 
@@ -451,6 +389,48 @@ $result = mysqli_stmt_get_result($stmt);
       container.classList.toggle('actives');
     });
   </script>
+
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const dateInput = document.getElementById('taskdate');
+    const timeInput = document.getElementById('tasktime');
+
+    function setMinDate() {
+        const today = new Date();
+        // Format YYYY-MM-DD for min attribute
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const minDate = `${yyyy}-${mm}-${dd}`;
+        dateInput.min = minDate;
+
+        // If current date selected is today, restrict time to now or later
+        if (dateInput.value === minDate) {
+            // Format time as HH:MM in 24-hour format
+            const hh = String(today.getHours()).padStart(2, '0');
+            const min = String(today.getMinutes()).padStart(2, '0');
+            const minTime = `${hh}:${min}`;
+            timeInput.min = minTime;
+
+            // If current time value is before minTime, reset time value
+            if (timeInput.value && timeInput.value < minTime) {
+                timeInput.value = minTime;
+            }
+        } else {
+            // For future dates, no min time restriction
+            timeInput.min = "";
+        }
+    }
+
+    // Run on page load
+    setMinDate();
+
+    // Whenever the date changes, update min time accordingly
+    dateInput.addEventListener('change', setMinDate);
+});
+</script>
+
+
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const taskDate = document.getElementById('taskdate');

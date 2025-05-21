@@ -4,6 +4,7 @@ date_default_timezone_set('Asia/Kathmandu');
 include 'config/database.php';
 include 'load_username.php';
 
+
 // Ensure user is logged in
 if (!isset($_SESSION['userid'])) {
     header("Location: signin.php");
@@ -92,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (empty($assigned_to)) {
             $assigned_to = null;
         }
-        
+
         mysqli_stmt_bind_param($stmt, "iisssssi", $userid, $teamid, $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage, $assigned_to);
         if (mysqli_stmt_execute($stmt)) {
             $_SESSION['success_message'] = "Task added successfully!";
@@ -121,56 +122,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
+<?php include 'navbar.php'; ?>
+<?php include 'toolbar.php'; ?>
+
 <body>
-    <div class="top-bar">
-        <div class="top-right-icons">
-            <!-- Notification Icon -->
-            <a href="invitation.php" class="top-icon">
-                <ion-icon name="notifications-outline"></ion-icon>
-            </a>
 
-            <!-- Profile Icon -->
-                  <div class="profile-info">
-  <div class="profile-circle" title="<?= htmlspecialchars($username) ?>">
-    <ion-icon name="person-outline"></ion-icon>
-  </div>
-  <span class="username-text"><?= htmlspecialchars($username) ?></span>
-</div>
-        </div>
-    </div>
 
-    <!-- Logo Above Sidebar -->
-    <div class="logo-container">
-        <img src="img/logo.png" alt="Logo" class="logo">
-    </div>
 
-    <!-- Sidebar Navigation -->
-    <div class="l-navbar" id="navbar">
-        <nav class="nav">
-            <div class="nav__list">
-                <a href="dash.php" class="nav__link ">
-                    <ion-icon name="home-outline" class="nav__icon"></ion-icon>
-                    <span class="nav__name">Home</span>
-                </a>
-                <a href="task.php" class="nav__link ">
-                    <ion-icon name="add-outline" class="nav__icon"></ion-icon>
-                    <span class="nav__name">Task</span>
-                </a>
-                <a href="team.php" class="nav__link active">
-                    <ion-icon name="people-outline" class="nav__icon"></ion-icon>
-                    <span class="nav__name">Team </span>
-                </a>
-                <a href="review.php" class="nav__link">
-                    <ion-icon name="chatbox-ellipses-outline" class="nav__icon"></ion-icon>
-                    <span class="nav__name">Review</span>
-                </a>
-            </div>
-                    <a href="javascript:void(0)" onclick="confirmLogout(event)()" class="nav__link logout">
-  <ion-icon name="log-out-outline" class="nav__icon"></ion-icon>
-  <span class="nav__name" style="color: #d96c4f;"><b>Log Out</b></span>
-</a>
-        </nav>
-    </div>
     <div class="container">
         <h2>Add New Tasks</h2>
         <a href="team_view.php?teamid=<?php echo $teamid; ?>" class="back-link">View Project</a>
@@ -191,7 +149,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <!-- Date Section -->
                     <div style="display: inline-block; vertical-align: top; margin-right: 20px;">
                         <label for="taskdate" style="display: block;">Select Due Date 📅</label>
-                        <input type="date" id="taskdate" name="taskdate" style="width: 170px;" min="<?php echo date('Y-m-d'); ?>">
+                        <input type="date" id="taskdate" name="taskdate" style="width: 170px;"
+                            min="<?php echo date('Y-m-d'); ?>">
                     </div>
 
                     <!-- Time Section -->
@@ -210,17 +169,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </select>
 
                     <?php if ($is_admin): ?>
-                    <div style="margin-top: 10px;">
-                        <label for="assigned_to">Assign To:</label>
-                        <select id="assigned_to" name="assigned_to">
-                            <option value="">Unassigned</option>
-                            <?php foreach ($team_members as $member): ?>
-                                <option value="<?php echo htmlspecialchars($member['userid']); ?>">
-                                    <?php echo htmlspecialchars($member['username']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
+                        <div style="margin-top: 10px;">
+                            <label for="assigned_to">Assign To:</label>
+                            <select id="assigned_to" name="assigned_to">
+                                <option value="">Unassigned</option>
+                                <?php foreach ($team_members as $member): ?>
+                                    <option value="<?php echo htmlspecialchars($member['userid']); ?>">
+                                        <?php echo htmlspecialchars($member['username']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                     <?php endif; ?>
 
                     <button type="submit" style="margin-top: 20px;">Done</button>
@@ -304,7 +263,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 const day = String(now.getDate()).padStart(2, '0');
                 const hours = String(now.getHours()).padStart(2, '0');
                 const minutes = String(now.getMinutes()).padStart(2, '0');
-                
+
                 return {
                     date: `${year}-${month}-${day}`,
                     time: `${hours}:${minutes}`
@@ -323,7 +282,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         alert("Please select a future time for today's tasks.");
                         return false;
                     }
+
                 }
+
+                if (taskDate.value === current.date) {
+                    taskTime.min = current.time; // Set minimum time to current time
+                } else {
+                    taskTime.removeAttribute('min'); // Allow full range for future dates
+                }
+
                 return true;
             }
 
@@ -355,7 +322,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     alert("Please select a valid future date and time.");
                     return;
                 }
-                
+
                 if (reminderSelect.value && (!taskDate.value || !taskTime.value)) {
                     alert("Set both date and time before setting a reminder.");
                     event.preventDefault();  // Prevent form submission

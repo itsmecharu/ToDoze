@@ -3,6 +3,7 @@ session_start();
 include 'config/database.php';
 include 'load_username.php';
 
+
 if (!isset($_SESSION['userid'])) {
     header("Location: signin.php");
     exit();
@@ -109,23 +110,12 @@ mysqli_stmt_close($stmt);
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
   
 </head>
-<body id="body-pd">
-  <div class="top-bar">
-    <div class="top-right-icons">
-      <!-- Notification Icon -->
-      <a href="invitation.php" class="top-icon">
-        <ion-icon name="notifications-outline"></ion-icon>
-      </a>
 
-      <!-- Profile Icon -->
-             <div class="profile-info">
-  <div class="profile-circle" title="<?= htmlspecialchars($username) ?>">
-    <ion-icon name="person-outline"></ion-icon>
-  </div>
-  <span class="username-text"><?= htmlspecialchars($username) ?></span>
-</div>
-    </div>
-  </div>
+<?php include 'navbar.php'; ?>
+<?php include 'toolbar.php'; ?>
+
+<body id="body-pd">
+ 
 
   <!-- Logo Above Sidebar -->
   <div class="logo-container">
@@ -139,13 +129,13 @@ mysqli_stmt_close($stmt);
           class="nav__name">Home</span></a>
       <a href="task.php" class="nav__link"><ion-icon name="add-outline" class="nav__icon"></ion-icon><span
           class="nav__name">Task</span></a>
-      <a href="team.php" class="nav__link"><ion-icon name="people-outline" class="nav__icon"></ion-icon><span
+      <a href="team.php" class="nav__link active"><ion-icon name="people-outline" class="nav__icon"></ion-icon><span
           class="nav__name">Team</span></a>
       
       <!-- Dropdown Section -->
       <div class="nav__dropdown">
         <button class="nav__dropdown-btn">
-          <ion-icon name="Others-outline" class="nav__icon"></ion-icon>
+          <ion-icon name="ellipsis-horizontal-outline" class="nav__icon"></ion-icon>
           <span class="nav__name">Others</span>
           <i class="nav__dropdown-icon fa fa-caret-down"></i>
         </button>
@@ -412,8 +402,6 @@ document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
 <!-- Icons and Charts -->
 <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
 <script src="js/dash.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
 </body>
 </html>

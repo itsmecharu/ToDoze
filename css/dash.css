@@ -412,8 +412,8 @@ body {
     }
     
     button {
-      /* background: linear-gradient(135deg, #3498db, #0578c5); */
-      color: rgb(20, 20, 20);
+      background: linear-gradient(135deg, #3498db, #0578c5);
+      color: white;
       cursor: pointer;
       border-radius: 10px;
       width: 200px;

@@ -83,3 +83,17 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+
+// togglong the others  button
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdownBtn = document.querySelector('.nav__dropdown-btn');
+    const dropdownContent = document.querySelector('.nav__dropdown-content');
+    const caretIcon = document.querySelector('.nav__dropdown-icon');
+
+    dropdownBtn.addEventListener('click', function () {
+      dropdownContent.classList.toggle('show-dropdown');
+
+      // Optional: rotate caret icon
+      caretIcon.classList.toggle('rotate-caret');
+    });
+  });
