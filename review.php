@@ -152,8 +152,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
     </div>
 
-    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
-    <script src="js/dash.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -224,6 +222,11 @@ document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
         
         <?php unset($_SESSION['error_message']); ?>
     <?php endif; ?>
+
+    
+    <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+    <script src="js/dash.js"></script>
+    
 </body>
 
 </html>
