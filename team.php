@@ -19,14 +19,14 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'admin';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $teamName = trim($_POST['teamname']);
   $teamDescription = trim($_POST['teamdescription']);
-  $teamDueDate = trim($_POST['teamduedate']);
-  $teamDueDate = $teamDueDate === '' ? null : $teamDueDate;
+  // $teamDueDate = trim($_POST['teamduedate']);
+  // $teamDueDate = $teamDueDate === '' ? null : $teamDueDate;
 
   // Insert into 'teams' table
-  $sql = "INSERT INTO teams (teamname, teamdescription, teamduedate) VALUES (?, ?, ?)";
+  $sql = "INSERT INTO teams (teamname, teamdescription) VALUES (?, ?)";
   $stmt = mysqli_prepare($conn, $sql);
   if ($stmt) {
-    mysqli_stmt_bind_param($stmt, "sss", $teamName, $teamDescription, $teamDueDate);
+    mysqli_stmt_bind_param($stmt, "ss", $teamName, $teamDescription);
     if (mysqli_stmt_execute($stmt)) {
       $teamId = mysqli_insert_id($conn);
 

@@ -69,6 +69,7 @@ $taskname = $task['taskname'];
 $taskdescription = $task['taskdescription'];
 $reminder_percentage = $task['reminder_percentage'];
 $assigned_to = $task['assigned_to'];
+$taskpriority = $task['taskpriority'] ?? 'none';
 
 $taskdate = isset($task['taskdate']) ? $task['taskdate'] : '';  
 $tasktime = isset($task['tasktime']) ? $task['tasktime'] : ''; 
@@ -81,6 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tasktime = isset($_POST['tasktime']) ? trim($_POST['tasktime']) : null;
     $reminder_percentage = (!empty($_POST['reminder_percentage'])) ? $_POST['reminder_percentage'] : null;
     $new_assigned_to = !empty($_POST['assigned_to']) ? intval($_POST['assigned_to']) : null;
+    $new_taskpriority = isset($_POST['taskpriority']) ? $_POST['taskpriority'] : 'none';
 
     // Initialize update values with the current data
     $update_values = [
@@ -88,7 +90,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'taskdescription' => $taskdescription,
         'taskdate' => $taskdate,
         'tasktime' => $tasktime,
-        'reminder_percentage' => $reminder_percentage
+        'reminder_percentage' => $reminder_percentage,
+        'taskpriority' => $new_taskpriority
     ];
 
     // Check if any field is empty, and if so, don't update it in the database
@@ -127,6 +130,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $fields[] = "assigned_to = ?";
         $params[] = $new_assigned_to;  // This will be NULL if no user is selected
         $types .= "i";
+    }
+    if (!empty($new_taskpriority) && $new_taskpriority !== $task['taskpriority']) {
+        $fields[] = "taskpriority = ?";
+        $params[] = $new_taskpriority;
+        $types .= "s";
     }
 
     // Only execute the update if there are any fields to update
@@ -204,6 +212,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <option value="90" <?php echo ($reminder_percentage == 90) ? 'selected' : ''; ?>>90% (Near Due Date)</option>
             <option value="100" <?php echo ($reminder_percentage == 100) ? 'selected' : ''; ?>>100% (On Time)</option>
         </select>
+
+        <!-- Priority Section -->
+        <div style="margin-top: 10px;">
+            <label for="taskpriority">Priority:</label>
+            <select id="taskpriority" name="taskpriority">
+                <option value="none" <?php echo ($taskpriority == 'none') ? 'selected' : ''; ?>>⚫ None</option>
+                <option value="High" <?php echo ($taskpriority == 'High') ? 'selected' : ''; ?>>🔴 High</option>
+                <option value="Medium" <?php echo ($taskpriority == 'Medium') ? 'selected' : ''; ?>>🟡 Medium</option>
+                <option value="Low" <?php echo ($taskpriority == 'Low') ? 'selected' : ''; ?>>🟢 Low</option>
+            </select>
+        </div>
 
         <?php if ($is_admin): ?>
         <div style="margin-top: 10px;">

@@ -232,6 +232,10 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
         <ion-icon name="people-outline"></ion-icon> Member
       </a>
 
+      <a href="teamreport.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Team Report">
+        <ion-icon name="stats-chart-outline"></ion-icon> Report
+      </a>
+
     </div>
   <!-- </div> -->
   <div class="filter-container">
@@ -385,9 +389,12 @@ if ($result && mysqli_num_rows($result) > 0) {
      
         if ($user_role === 'Admin') {
             if ($isCompleted) {
-                // For completed tasks, only show completion date and delete button
+                // For completed tasks, show completion date, assigned user, and delete button
                 if (!empty($row['completed_at'])) {
                     echo "<span class='info' style='color: green;'><ion-icon name='checkmark-done-outline'></ion-icon> Completed on: " . date('Y-m-d H:i', strtotime($row['completed_at'])) . "</span>";
+                    if (!empty($row['assigned_username'])) {
+                        echo "<span class='info' style='margin-left: 10px;'><ion-icon name='person-outline'></ion-icon> Completed by: " . htmlspecialchars($row['assigned_username']) . "</span>";
+                    }
                 }
                 echo "<a href='#' class='delete-btn' title='Delete' data-taskid='" . $row['taskid'] . "'><ion-icon name='trash-outline'></ion-icon>Delete</a>";
             } else {
@@ -436,6 +443,9 @@ if ($result && mysqli_num_rows($result) > 0) {
                 // Show completion date for completed tasks
                 if (!empty($row['completed_at'])) {
                     echo "<span class='info' style='color: green;'><ion-icon name='checkmark-done-outline'></ion-icon> Completed on: " . date('Y-m-d H:i', strtotime($row['completed_at'])) . "</span>";
+                    if (!empty($row['assigned_username'])) {
+                        echo "<span class='info' style='margin-left: 10px;'><ion-icon name='person-outline'></ion-icon> Completed by: " . htmlspecialchars($row['assigned_username']) . "</span>";
+                    }
                 }
             } else {
                 // Show priority in read-only mode
@@ -602,8 +612,69 @@ document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
   });
 });
 </script>
- <!-- IONICONS -->
- <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+
+<script>
+function toggleDropdown(id) {
+    const dropdown = document.getElementById(id);
+    const allDropdowns = document.querySelectorAll('.priority-dropdown');
+
+    allDropdowns.forEach(el => {
+        if (el.id !== id) el.style.display = 'none';
+    });
+
+    // Toggle the selected dropdown
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+
+    // Prevent multiple listeners
+    document.removeEventListener('click', handleOutsideClick);
+    setTimeout(() => {
+        document.addEventListener('click', handleOutsideClick);
+    }, 0);
+
+    function handleOutsideClick(e) {
+        // If the click is outside any .priority-dropdown and .priority-toggle
+        if (!dropdown.contains(e.target) && !e.target.closest('.priority-toggle')) {
+            dropdown.style.display = 'none';
+            document.removeEventListener('click', handleOutsideClick);
+        }
+    }
+}
+</script>
+
+<style>
+.priority-dropdown {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+    z-index: 1000;
+    margin-top: 5px;
+}
+
+.priority-dropdown select {
+    width: 100%;
+    padding: 5px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.priority-dropdown select:focus {
+    outline: none;
+}
+
+.priority-wrapper {
+    position: relative;
+}
+
+.priority-toggle {
+    cursor: pointer;
+}
+</style>
+
+<!-- IONICONS -->
+<script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
 
 <!-- MAIN JS -->
 <script src="js/dash.js"></script>

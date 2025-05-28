@@ -76,6 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tasktime = !empty($_POST['tasktime']) ? $_POST['tasktime'] : null;
     $reminder_percentage = isset($_POST['reminder_percentage']) ? trim($_POST['reminder_percentage']) : null;
     $assigned_to = isset($_POST['assigned_to']) ? intval($_POST['assigned_to']) : null;
+    $taskpriority = isset($_POST['taskpriority']) ? $_POST['taskpriority'] : 'none';
 
     // Check if user is admin before allowing assignment
     if (!$is_admin) {
@@ -83,8 +84,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Insert Task
-    $sql = "INSERT INTO tasks (userid, teamid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, taskstatus, assigned_to) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?)";
+    $sql = "INSERT INTO tasks (userid, teamid, taskname, taskdescription, taskdate, tasktime, reminder_percentage, taskstatus, assigned_to, taskpriority) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?)";
 
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -94,7 +95,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $assigned_to = null;
         }
 
-        mysqli_stmt_bind_param($stmt, "iisssssi", $userid, $teamid, $taskname, $taskdescription, $taskdate, $tasktime, $reminder_percentage, $assigned_to);
+        // Handle null values for optional fields
+        $taskdescription = $taskdescription ?? null;
+        $taskdate = $taskdate ?? null;
+        $tasktime = $tasktime ?? null;
+        $reminder_percentage = $reminder_percentage ?? null;
+
+        mysqli_stmt_bind_param($stmt, "iisssssis", 
+            $userid, 
+            $teamid, 
+            $taskname, 
+            $taskdescription, 
+            $taskdate, 
+            $tasktime, 
+            $reminder_percentage,
+            $assigned_to,
+            $taskpriority
+        );
+        
         if (mysqli_stmt_execute($stmt)) {
             $_SESSION['success_message'] = "Task added successfully!";
             mysqli_stmt_close($stmt);
@@ -157,6 +175,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div style="display: inline-block; vertical-align: top;">
                         <label for="tasktime" style="display: block;">Select Time 🕰️</label>
                         <input type="time" id="tasktime" name="tasktime" style="width: 170px;">
+                    </div>
+
+                    <!-- Priority Section -->
+                    <div style="margin-top: 10px;">
+                        <label for="taskpriority">Priority:</label>
+                        <select id="taskpriority" name="taskpriority">
+                            <option value="none">⚫ None</option>
+                            <option value="High">🔴 High</option>
+                            <option value="Medium">🟡 Medium</option>
+                            <option value="Low">🟢 Low</option>
+                        </select>
                     </div>
 
                     <!-- <label for="reminder">Set Reminder:</label> -->

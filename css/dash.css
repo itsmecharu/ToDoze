@@ -5,12 +5,10 @@ body{
   padding: 0;
   box-sizing: border-box;
   font-family: 'Segoe UI', sans-serif;
-}
-
-body {
-  background-color: #f4f4f4;
+   background-color: #f4f4f4;
   padding-left: 180px;
 }
+
 
 .logo-container {
   position: fixed;
