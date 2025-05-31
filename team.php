@@ -132,13 +132,11 @@ $result = mysqli_stmt_get_result($stmt);
             <div class="team-info-line">
               <?php if (!empty($row['teamdescription'])): ?>
                 <div class="team-description">
-                  <strong>Description:</strong> <?php echo htmlspecialchars($row['teamdescription']); ?>
+                  <span class="info">Description: <?= htmlspecialchars($row['teamdescription']) ?></span>
                 </div>
               <?php endif; ?>
 
-
-
-              <div class="team-actions" style="  margin-right: 50px ;">
+              <div class="team-actions" style="margin-right: 50px;">
                 <?php if ($role === 'Admin'): ?>
                   <a href="team_task.php?teamid=<?php echo $row['teamid']; ?>" class="edit-btn" title="Edit">
                     <ion-icon name="add-circle-outline"></ion-icon>Task
@@ -193,7 +191,7 @@ $result = mysqli_stmt_get_result($stmt);
       <div class="modal-content">
         <span class="close-modal" id="closeModalBtn">&times;</span>
         <h2>Create New Team</h2>
-        <form method="POST">
+        <form method="POST" >
           <label for="teamname">Team Name:</label>
           <input type="text" id="teamname" name="teamname" required>
 
@@ -306,6 +304,33 @@ document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
 <?php endif; ?>
 </script>
 
+<!-- too toggll full test  -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const descriptions = document.querySelectorAll('.team-description .info');
+
+  descriptions.forEach(desc => {
+    if (desc.textContent.startsWith("Description:")) {
+      const fullText = desc.textContent.trim().replace("Description:", "").trim();
+      
+      // Set initial state to show 2 lines
+      desc.classList.add("truncated");
+      
+      // Add click handler to toggle between full and truncated view
+      desc.addEventListener("click", function () {
+        const isExpanded = desc.classList.contains("expanded");
+        if (isExpanded) {
+          desc.classList.remove("expanded");
+          desc.classList.add("truncated");
+        } else {
+          desc.classList.add("expanded");
+          desc.classList.remove("truncated");
+        }
+      });
+    }
+  });
+});
+</script>
 
 
   <!-- IONICONS -->
@@ -320,3 +345,38 @@ document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
 </html>
 
 <?php mysqli_close($conn); ?>
+
+<style>
+/* Add these styles to your existing CSS */
+.team-description {
+    display: inline-block;
+    margin-right: 15px;
+    max-width: 600px; /* Adjust this value based on your layout */
+}
+
+.team-description .info {
+    cursor: pointer;
+    color: #555;
+    font-size: 0.9em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
+    max-height: 3em; /* 2 lines × 1.5 line-height */
+}
+
+.team-description .info.expanded {
+    -webkit-line-clamp: unset;
+    max-height: none;
+}
+
+.team-info-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    gap: 20px;
+}
+</style>
