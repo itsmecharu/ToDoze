@@ -1,28 +1,25 @@
 .main-container {
-    width: 90%;
-    max-width: 900px;
+    width: 100%;
+    max-width: 1200px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
-    padding: 20px;
-    margin-left: 0;
-    margin-right: 250px;
-    position: relative;
+    gap: 40px;
+    padding: 30px;
+    margin-left: 250px;
 }
 
 /* Review Form Container */
 .review-form-container {
-    background-color: #958e8e;
+    background-color: #ffffff;
     padding: 30px;
     border-radius: 12px;
-    border-color: #343a40;
-    box-shadow: 0 4px 20px rgba(8, 8, 8, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     width: 100%;
-    max-width: 200px;
+    max-width: 400px;
     text-align: center;
     min-height: 500px;
-    position: absolute;
+    position: relative;
 }
 
 /* Requirements Display */
@@ -202,7 +199,6 @@ textarea:focus {
 @media (max-width: 900px) {
     .main-container {
         margin-left: 0;
-        margin-right: 400px;
         padding: 20px;
     }
 
@@ -210,6 +206,6 @@ textarea:focus {
     .no-reviews-container {
         width: 100%;
         max-width: 400px;
-        margin: 0 auto; 
+        margin: 0 auto;
     }
 }
