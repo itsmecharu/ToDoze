@@ -77,17 +77,66 @@ $overallProgress = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100
             max-width: 1200px;
             margin: 0 auto;
         }
+        
         .report-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
             margin-top: 20px;
         }
+        
         .chart-container {
             background: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 100%;
+            height: 400px;
+            position: relative; /* For positioning the info box */
+        }
+
+        /* Add styles for the info box */
+        .chart-info {
+            position: absolute;
+            right: 25px;
+            top: 25px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #4CAF50;
+            width: 200px;
+        }
+
+        .chart-info-item {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .chart-info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .chart-info-label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .chart-info-value {
+            float: right;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 350px;
+                padding: 15px;
+            }
+            .chart-info {
+                position: static;
+                width: 100%;
+                margin-top: 15px;
+            }
         }
         .team-table {
             width: 100%;
@@ -207,6 +256,24 @@ $overallProgress = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100
             <!-- Task Distribution Pie Chart -->
             <div class="chart-container">
                 <canvas id="taskDistributionChart"></canvas>
+                <div class="chart-info">
+                    <div class="chart-info-item">
+                        <span class="chart-info-label">Total Tasks:</span>
+                        <span class="chart-info-value"><?= $totalTasks ?></span>
+                    </div>
+                    <div class="chart-info-item">
+                        <span class="chart-info-label">Completed:</span>
+                        <span class="chart-info-value"><?= $totalCompleted ?></span>
+                    </div>
+                    <div class="chart-info-item">
+                        <span class="chart-info-label">Pending:</span>
+                        <span class="chart-info-value"><?= $totalPending ?></span>
+                    </div>
+                    <div class="chart-info-item">
+                        <span class="chart-info-label">Overdue:</span>
+                        <span class="chart-info-value"><?= $totalOverdue ?></span>
+                    </div>
+                </div>
             </div>
             
             <!-- Member Tasks Bar Graph -->
@@ -224,20 +291,39 @@ $overallProgress = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100
                 labels: ['Completed', 'Pending', 'Overdue'],
                 datasets: [{
                     data: [<?= $totalCompleted ?>, <?= $totalPending ?>, <?= $totalOverdue ?>],
-                    backgroundColor: ['#4CAF50', '#FFC107', '#F44336']
+                    backgroundColor: ['#4CAF50', '#FFC107', '#F44336'],
+                    borderWidth: 1,
+                    borderColor: '#fff'
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Task Distribution'
+                        text: 'Task Distribution',
+                        font: {
+                            size: 16,
+                            weight: '500'
+                        },
+                        padding: {
+                            bottom: 20
+                        }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
                     }
                 }
             }
         });
 
-        // Member Tasks Bar Graph (slim bars)
+        // Member Tasks Bar Graph (slimmer bars with less spacing)
         new Chart(document.getElementById('memberTasksChart'), {
             type: 'bar',
             data: {
@@ -246,38 +332,92 @@ $overallProgress = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100
                     label: 'Completed',
                     data: <?= json_encode($completedData) ?>,
                     backgroundColor: '#4CAF50',
-                    barPercentage: 0.4, // Slim bars
-                    categoryPercentage: 0.5
+                    barPercentage: 0.25, // Reduced from 0.5 to make bars slimmer
+                    categoryPercentage: 0.6, // Reduced from 0.9 to decrease spacing between groups
+                    borderWidth: 0,
+                    borderRadius: 2 // Reduced border radius for slimmer look
                 }, {
                     label: 'Pending',
                     data: <?= json_encode($pendingData) ?>,
                     backgroundColor: '#FFC107',
-                    barPercentage: 0.4,
-                    categoryPercentage: 0.5
+                    barPercentage: 0.25,
+                    categoryPercentage: 0.6,
+                    borderWidth: 0,
+                    borderRadius: 2
                 }, {
                     label: 'Overdue',
                     data: <?= json_encode($overdueData) ?>,
                     backgroundColor: '#F44336',
-                    barPercentage: 0.4,
-                    categoryPercentage: 0.5
+                    barPercentage: 0.25,
+                    categoryPercentage: 0.6,
+                    borderWidth: 0,
+                    borderRadius: 2
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Tasks by Member'
+                        text: 'Tasks by Member',
+                        font: {
+                            size: 16,
+                            weight: '500'
+                        },
+                        padding: {
+                            bottom: 20
+                        }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
                     }
                 },
                 scales: {
                     x: { 
                         stacked: true,
-                        grid: { display: false }
+                        grid: { 
+                            display: false 
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            },
+                            padding: 5, // Reduced padding
+                            maxRotation: 0, // Keep labels horizontal
+                            autoSkip: true
+                        },
+                        border: {
+                            display: false
+                        }
                     },
                     y: { 
                         stacked: true,
                         beginAtZero: true,
-                        grid: { color: '#eee' }
+                        grid: { 
+                            color: '#f0f0f0',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            },
+                            padding: 5
+                        },
+                        border: {
+                            display: false
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 10
                     }
                 }
             }
