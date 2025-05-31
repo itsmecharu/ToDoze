@@ -11,6 +11,14 @@ if (!isset($_SESSION['userid'])) {
   exit();
 }
 
+
+$alertMessage = "";
+if (isset($_SESSION['alert_message'])) {
+    $alertMessage = $_SESSION['alert_message'];
+    unset($_SESSION['alert_message']); // Clear after showing
+}
+
+
 $userid = $_SESSION['userid'];
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'admin';
 
@@ -271,6 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
+
 </script>
     <script>
 // Dropdown functionality
@@ -281,6 +290,23 @@ document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
   });
 });
 </script>
+
+
+
+<!-- for exit  -->
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+<?php if (!empty($alertMessage)): ?>
+    Swal.fire({
+        icon: '<?= (strpos($alertMessage, 'success:') === 0) ? 'success' : 'warning' ?>',
+        title: '<?= (strpos($alertMessage, 'success:') === 0) ? 'Success' : 'Notice' ?>',
+        text: "<?= str_replace('success: ', '', $alertMessage) ?>"
+    });
+<?php endif; ?>
+</script>
+
+
 
   <!-- IONICONS -->
   <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
