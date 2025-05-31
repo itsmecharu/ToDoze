@@ -123,6 +123,8 @@ mysqli_stmt_close($stmt);
 
   <div class="container">
   <div class="filter-container">
+       <a href="team_view.php?teamid=<?php echo $teamId; ?>" class="back-link">View Project</a>
+
     <button class="member-task-filter active" onclick="showSection('accepted', this)">Members</button>
     <button class="member-task-filter" onclick="showSection('ex', this)">Ex Members</button>
 
