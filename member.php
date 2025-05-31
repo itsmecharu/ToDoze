@@ -3,6 +3,9 @@ session_start();
 include 'config/database.php';
 include 'load_username.php';
 
+$invite_message = $_SESSION['invite_message'] ?? null;
+$invite_message_type = $_SESSION['invite_message_type'] ?? null;
+unset($_SESSION['invite_message'], $_SESSION['invite_message_type']);
 
 if (!isset($_SESSION['userid'])) {
     header("Location: signin.php");
@@ -220,34 +223,43 @@ mysqli_stmt_close($stmt);
   <!-- Send Invitation -->
   <div id="invite" class="add-task-form section" style="display: none;">
     <h3>Send Invitation</h3>
+    
     <form action="send_invitation.php" method="POST" class="invite-form">
-      <input type="hidden" name="teamid" value="<?= $teamId ?>">
-      <div class="form-group">
-        <label for="useremail">Member Email:</label>
-        <select name="useremail" id="useremail" required class="form-select">
-          <option value="" disabled selected>Select User</option>
-          <?php if (!empty($available_users)) {
-            foreach ($available_users as $user) { ?>
-              <option value="<?= htmlspecialchars($user['useremail']) ?>"><?= htmlspecialchars($user['useremail']) ?></option>
-          <?php }} else { ?>
-            <option value="" disabled>No users available to invite</option>
-          <?php } ?>
-        </select>
-      </div>
-      <div class="form-actions">
-        <button type="submit" class="submit-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.5.5 0 0 1-.928.086L7.5 12.5V6.707L1.793.854a.5.5 0 0 1 .108-.64l1.5-1.5A.5.5 0 0 1 3.5.5H8v5.293L15.146.146a.5.5 0 0 1 .708 0z"/>
-          </svg>
-          Send Invite
-        </button>
-        <button type="button" onclick="window.history.back();" class="back-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
-          </svg>
-          Go Back
-        </button>
-      </div>
+        <input type="hidden" name="teamid" value="<?= $teamId ?>">
+        <div class="form-group">
+            <label for="useremail">Enter User Email:</label>
+            <div class="search-container">
+                <input type="email" 
+                       name="useremail" 
+                       id="useremail" 
+                       class="form-control" 
+                       placeholder="Enter email address to invite..." 
+                       required
+                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"            
+    ></div>
+            <?php if (isset($_SESSION['invite_alert'])): ?>
+                <div class="error-message">
+                    <?php 
+                    echo $_SESSION['invite_alert'];
+                    unset($_SESSION['invite_alert']); // Clear the message after showing
+                    ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="submit-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555zM0 4.697v7.104l5.803-3.558L0 4.697zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757zm3.436-.586L16 11.801V4.697l-5.803 3.546z"/>
+                </svg>
+                Send Invite
+            </button>
+            <button type="button" onclick="window.history.back();" class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                </svg>
+                Go Back
+            </button>
+        </div>
     </form>
   </div>
   <!-- ex section -->
@@ -331,21 +343,122 @@ mysqli_stmt_close($stmt);
 .reinvite-btn ion-icon {
     font-size: 16px;
 }
+
+.search-container {
+    margin-bottom: 4px; /* Reduced margin since error message will be below */
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-control:focus {
+    border-color: #0366d6;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(3, 102, 214, 0.2);
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 8px;
+    padding: 4px 0;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.submit-btn, .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.submit-btn {
+    background-color: #0366d6;
+    color: white;
+}
+
+.submit-btn:hover {
+    background-color: #0256b4;
+}
+
+.back-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.back-btn:hover {
+    background-color: #5a6268;
+}
+
+.submit-btn svg, .back-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Add these styles for the alert message */
+.alert-message {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    font-size: 14px;
+}
+
+.alert-message:empty {
+    display: none;
+}
+
+/* Style for success message */
+.alert-message.success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+/* Style for error message */
+.alert-message.error {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
 </style>
 
 <script>
-  function showSection(id, btn) {
-    const sections = ['accepted', 'pending', 'invite','ex'];
+function showSection(id, btn) {
+    const sections = ['accepted', 'pending', 'invite', 'ex'];
     sections.forEach(sec => {
-      document.getElementById(sec).style.display = (sec === id) ? 'block' : 'none';
+        document.getElementById(sec).style.display = (sec === id) ? 'block' : 'none';
     });
-
-    document.querySelectorAll('.task-filter').forEach(button => {
-      button.classList.remove('active');
+    
+    // Update active state of buttons
+    document.querySelectorAll('.member-task-filter').forEach(b => {
+        b.classList.remove('active');
     });
-
     btn.classList.add('active');
-  }
+    
+    // Clear any existing alert when switching sections
+    const alertMessage = document.querySelector('.alert-message');
+    if (alertMessage) {
+        alertMessage.textContent = '';
+    }
+}
 </script>
 <script>
 // Dropdown functionality
@@ -359,6 +472,29 @@ document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
 <!-- Icons and Charts -->
 <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
 <script src="js/dash.js"></script>
+
+<?php if ($invite_message): ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    Swal.fire({
+        title: "<?= addslashes($invite_message) ?>",
+        icon: "<?= $invite_message_type === 'success' ? 'success' : 'error' ?>",
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        customClass: {
+            popup: 'colored-toast',
+            title: 'swal2-title-custom'
+        },
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    });
+</script>
+<?php endif; ?>
 
 </body>
 </html>
