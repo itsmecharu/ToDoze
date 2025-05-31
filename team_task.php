@@ -114,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         );
         
         if (mysqli_stmt_execute($stmt)) {
-            $_SESSION['success_message'] = "Task added successfully!";
+            $_SESSION['task_added'] = true; // Set a flag instead of the message directly
             mysqli_stmt_close($stmt);
             header("Location: team_task.php?teamid=" . $teamid);
             exit();
@@ -220,19 +220,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 
-    <?php if (isset($_SESSION['success_message'])): ?>
+    <?php if (isset($_SESSION['task_added'])): ?>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 Swal.fire({
                     title: "Task added successfully!",
-                    text: "", // Empty text since you only want "Task added successfully"
-                    // icon: "success",
+                    text: "", 
                     timer: 1000,
                     showConfirmButton: false,
                     customClass: {
-                        popup: 'small-swal', // Custom class for SweetAlert popup
-                        title: 'small-swal-title', // Custom class for the title
-                        content: 'small-swal-content' // Custom class for the content
+                        popup: 'small-swal',
+                        title: 'small-swal-title',
+                        content: 'small-swal-content'
                     }
                 });
             });
@@ -241,26 +240,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <style>
             .small-swal {
                 width: 200px;
-                /* Set the width of the card */
                 padding: 20px;
-                /* Optional: Add padding to adjust internal spacing */
             }
 
             .small-swal-title {
                 font-size: 16px;
-                /* Adjust font size of the title */
                 font-weight: bold;
-                /* Optional: Make title bold */
             }
 
             .small-swal-content {
                 font-size: 14px;
-                /* Adjust font size of the text content */
             }
         </style>
 
-
-        <?php unset($_SESSION['success_message']); ?>
+        <?php unset($_SESSION['task_added']); // Clear the flag after showing the message ?>
     <?php endif; ?>
 
     <script>

@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mysqli_stmt_bind_param($stmt, "sii", $review, $rating, $userid);
             
             if (mysqli_stmt_execute($stmt)) {
-                $_SESSION['success_message'] = "Review updated successfully!";
+                $_SESSION['review_updated'] = true;
                 header("Location: review.php");
                 exit();
             }
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             mysqli_stmt_bind_param($stmt, "isi", $userid, $review, $rating);
 
             if (mysqli_stmt_execute($stmt)) {
-                $_SESSION['success_message'] = "Review submitted successfully!";
+                $_SESSION['review_submitted'] = true;
                 header("Location: review.php");
                 exit();
             }
@@ -184,30 +184,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         });
     </script>
 
-    <?php if (isset($_SESSION['success_message'])): ?>
+    <?php if (isset($_SESSION['review_submitted']) || isset($_SESSION['review_updated'])): ?>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 Swal.fire({
                     toast: true,
                     position: 'top-center',
                     icon: 'success',
-                    title: "<?php echo $_SESSION['success_message']; ?>",
+                    title: "<?php echo isset($_SESSION['review_submitted']) ? 'Review submitted successfully!' : 'Review updated successfully!'; ?>",
                     showConfirmButton: false,
                     timer: 1500,
                     timerProgressBar: true
                 });
             });
         </script>
-            <script>
-// Dropdown functionality
-document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
-  button.addEventListener('click', () => {
-    const dropdown = button.closest('.nav__dropdown');
-    dropdown.classList.toggle('active');
-  });
-});
-</script>
-        <?php unset($_SESSION['success_message']); ?>
+        <?php 
+        // Clear both flags
+        unset($_SESSION['review_submitted']);
+        unset($_SESSION['review_updated']);
+        ?>
     <?php endif; ?>
 
     
