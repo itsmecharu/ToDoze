@@ -138,9 +138,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <?php if ($existingReview): ?>
                 <div class="no-reviews-container">
+                <!-- 
                     <div class="no-reviews-image">
                         <img src="img/review.svg" alt="Your review">
-                    </div>
+                    </div> -->
                     <h3>Your Current Review</h3>
                     <p>Rating: <?= str_repeat('⭐', $existingReview['rating']) ?></p>
                     <p style="white-space: pre-wrap;"><?= htmlspecialchars($existingReview['review']) ?></p>
@@ -209,6 +210,7 @@ document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
         <?php unset($_SESSION['success_message']); ?>
     <?php endif; ?>
 
+    
     <?php if (isset($_SESSION['error_message'])): ?>
         <script>
             document.addEventListener("DOMContentLoaded", function () {

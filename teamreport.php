@@ -8,10 +8,18 @@ if (!isset($_SESSION['userid'])) {
 }
 $teamid = $_GET['teamid'];
 
+$team_sql = "SELECT teamname FROM teams WHERE teamid = ?";
+$team_stmt = mysqli_prepare($conn, $team_sql);
+mysqli_stmt_bind_param($team_stmt, "i", $teamid);
+mysqli_stmt_execute($team_stmt);
+$team_result = mysqli_stmt_get_result($team_stmt);
+$team = mysqli_fetch_assoc($team_result);
+
 $sql = "SELECT 
             u.userid,
             u.username,
             u.useremail,
+            tm.role,
             COUNT(t.taskid) AS total_tasks,
             SUM(t.taskstatus = 'Completed') AS completed_tasks,
             SUM(t.taskstatus = 'Pending' AND t.is_overdue = 0) AS pending_tasks,
@@ -23,7 +31,8 @@ $sql = "SELECT
             AND t.is_deleted = 0
         WHERE tm.teamid = ?
           AND tm.status = 'Accepted'
-        GROUP BY u.userid, u.username, u.useremail";
+          AND tm.has_exited = 0
+        GROUP BY u.userid, u.username, u.useremail, tm.role";
 
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "i", $teamid);
@@ -59,7 +68,7 @@ $overallProgress = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Report</title>
+    <title>Team Report - <?php echo htmlspecialchars($team['teamname']); ?></title>
     <link rel="stylesheet" href="css/dash.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -82,40 +91,68 @@ $overallProgress = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100
         }
         .team-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             margin-bottom: 20px;
-            background: white;
-            border-radius: 8px;
+            background: #fff;
+            border-radius: 12px;
             overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
         .team-table th, .team-table td {
-            padding: 12px;
+            padding: 14px 16px;
             text-align: left;
-            border-bottom: 1px solid #eee;
         }
         .team-table th {
-            background: #f5f5f5;
-            font-weight: bold;
+            background: #f0f4f8;
+            font-weight: 700;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
         }
-        .overall-progress {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
+        .team-table tbody tr {
+            transition: background 0.2s;
         }
-        .progress-circle {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto;
-            position: relative;
+        .team-table tbody tr:hover {
+            background: #f9fafb;
+        }
+        .team-table td {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .report-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            margin-bottom: 20px;
         }
-        .progress-text {
-            font-size: 24px;
-            font-weight: bold;
+        .export-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .export-btn:hover {
+            background: #388e3c;
+        }
+        .role-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+        .role-admin {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .role-member {
+            background: #f5f5f5;
+            color: #616161;
         }
     </style>
 </head>
@@ -125,22 +162,19 @@ $overallProgress = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100
 
 <body>
     <div class="report-container">
-        <h2>Team Report</h2>
-        
-        <!-- Overall Progress -->
-        <div class="overall-progress">
-            <h3>Overall Team Progress</h3>
-            <div class="progress-circle">
-                <canvas id="progressChart"></canvas>
-                <div class="progress-text"><?= $overallProgress ?>%</div>
-            </div>
+        <div class="report-header">
+            <h2>Team Report: <?php echo htmlspecialchars($team['teamname']); ?></h2>
+            <button class="export-btn" onclick="exportReport()">
+                <ion-icon name="download-outline"></ion-icon> Export Report
+            </button>
         </div>
-
+        
         <!-- Team Members Table -->
         <table class="team-table">
             <thead>
                 <tr>
                     <th>Member</th>
+                    <th>Role</th>
                     <th>Email</th>
                     <th>Total Tasks</th>
                     <th>Completed</th>
@@ -153,6 +187,11 @@ $overallProgress = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100
                 <?php foreach ($memberData as $member): ?>
                 <tr>
                     <td><?= htmlspecialchars($member['username']) ?></td>
+                    <td>
+                        <span class="role-badge role-<?= strtolower($member['role']) ?>">
+                            <?= htmlspecialchars($member['role']) ?>
+                        </span>
+                    </td>
                     <td><?= htmlspecialchars($member['useremail']) ?></td>
                     <td><?= $member['total_tasks'] ?></td>
                     <td><?= $member['completed_tasks'] ?></td>
@@ -178,21 +217,6 @@ $overallProgress = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100
     </div>
 
     <script>
-        // Progress Chart
-        new Chart(document.getElementById('progressChart'), {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [<?= $overallProgress ?>, <?= 100 - $overallProgress ?>],
-                    backgroundColor: ['#4CAF50', '#f0f0f0']
-                }]
-            },
-            options: {
-                cutout: '80%',
-                plugins: { legend: { display: false } }
-            }
-        });
-
         // Task Distribution Pie Chart
         new Chart(document.getElementById('taskDistributionChart'), {
             type: 'pie',
@@ -213,7 +237,7 @@ $overallProgress = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100
             }
         });
 
-        // Member Tasks Bar Graph
+        // Member Tasks Bar Graph (slim bars)
         new Chart(document.getElementById('memberTasksChart'), {
             type: 'bar',
             data: {
@@ -221,15 +245,21 @@ $overallProgress = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100
                 datasets: [{
                     label: 'Completed',
                     data: <?= json_encode($completedData) ?>,
-                    backgroundColor: '#4CAF50'
+                    backgroundColor: '#4CAF50',
+                    barPercentage: 0.4, // Slim bars
+                    categoryPercentage: 0.5
                 }, {
                     label: 'Pending',
                     data: <?= json_encode($pendingData) ?>,
-                    backgroundColor: '#FFC107'
+                    backgroundColor: '#FFC107',
+                    barPercentage: 0.4,
+                    categoryPercentage: 0.5
                 }, {
                     label: 'Overdue',
                     data: <?= json_encode($overdueData) ?>,
-                    backgroundColor: '#F44336'
+                    backgroundColor: '#F44336',
+                    barPercentage: 0.4,
+                    categoryPercentage: 0.5
                 }]
             },
             options: {
@@ -240,11 +270,53 @@ $overallProgress = $totalTasks > 0 ? round(($totalCompleted / $totalTasks) * 100
                     }
                 },
                 scales: {
-                    x: { stacked: true },
-                    y: { stacked: true }
+                    x: { 
+                        stacked: true,
+                        grid: { display: false }
+                    },
+                    y: { 
+                        stacked: true,
+                        beginAtZero: true,
+                        grid: { color: '#eee' }
+                    }
                 }
             }
         });
+
+        function exportReport() {
+            // Create a table element for export
+            const table = document.querySelector('.team-table').cloneNode(true);
+            
+            // Create CSV content
+            let csv = [];
+            const rows = table.querySelectorAll('tr');
+            
+            for (const row of rows) {
+                const cells = row.querySelectorAll('th, td');
+                const rowData = Array.from(cells).map(cell => {
+                    // Remove role badge HTML and get just the text
+                    if (cell.querySelector('.role-badge')) {
+                        return cell.querySelector('.role-badge').textContent.trim();
+                    }
+                    return cell.textContent.trim();
+                });
+                csv.push(rowData.join(','));
+            }
+            
+            // Create and download CSV file
+            const csvContent = csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'team_report_<?= $team['teamname'] ?>_<?= date('Y-m-d') ?>.csv');
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     </script>
 
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
