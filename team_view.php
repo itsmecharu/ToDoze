@@ -359,7 +359,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         echo "<div class='task-content'>";
     
         // Show tick box only if the user is assigned to this task and not completed
-        if (!$isCompleted && $assignedTo == $currentUserId) {
+        if (!$isCompleted && ($assignedTo == $currentUserId)) {
             echo "<form action='task_completion.php' method='POST' class='complete-form'>";
             echo "<input type='hidden' name='taskid' value='" . $row['taskid'] . "'>";
             echo "<button type='submit' name='complete-box' class='complete-box' title='Tick to complete'></button>";
