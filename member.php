@@ -124,10 +124,8 @@ mysqli_stmt_close($stmt);
   <div class="container">
   <div class="filter-container">
        <a href="team_view.php?teamid=<?php echo $teamId; ?>" class="back-link">View Project</a>
-
     <button class="member-task-filter active" onclick="showSection('accepted', this)">Members</button>
-    <button class="member-task-filter" onclick="showSection('ex', this)">Ex Members</button>
-
+    <!-- <button class="member-task-filter" onclick="showSection('ex', this)">Ex Members</button>     -->
     <?php if ($user_role === 'Admin'): ?>
     <button class="member-task-filter" onclick="showSection('pending', this)">Pending Invitations</button>
     <button class="member-task-filter" onclick="showSection('invite', this)">Send Invitation</button>
@@ -264,40 +262,7 @@ mysqli_stmt_close($stmt);
         </div>
     </form>
   </div>
-  <!-- ex section -->
-<div id="ex" class="ex_members-list section" style="display: none;">
-    <h3>Ex Members</h3>
-    <?php if (!empty($ex_members)) { ?>
-      <ul class="member-cards">
-        <?php foreach ($ex_members as $member) { ?>
-          <li class="member-card">
-            <div class="member-info">
-              <span class="member-email"><?= htmlspecialchars($member['useremail']) ?></span>
-              <span class="exit-date">Left on: <?= date('Y-m-d', strtotime($member['exited_at'])) ?></span>
-            </div>
-            <?php if ($user_role === 'Admin'): ?>
-              <div class="member-actions">
-                <a href="send_invitation.php?teamid=<?= $teamId ?>&useremail=<?= urlencode($member['useremail']) ?>" 
-                   class="reinvite-btn" title="Re-invite member">
-                   <ion-icon name="person-add-outline"></ion-icon> Re-invite
-                </a>
-              </div>
-            <?php endif; ?>
-          </li>
-        <?php } ?>
-      </ul>
-    <?php } else { ?>
-      <div class="empty-state">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-          <circle cx="9" cy="7" r="4"></circle>
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-        </svg>
-        <p>No Ex members yet.</p>
-      </div>
-    <?php } ?>
-  </div>
+ 
 
 </div>
 <?php endif; ?>
