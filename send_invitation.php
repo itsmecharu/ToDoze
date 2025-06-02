@@ -75,7 +75,8 @@ if (!$teamid || !$user_email) {
                         $sql = "UPDATE team_members 
                                 SET status = 'Pending', 
                                     has_exited = 0, 
-                                    exited_at = NULL, 
+                                    exited_at = NULL,
+                                    removed_at = NULL,
                                     invited_at = NOW() 
                                 WHERE teamid = ? AND userid = ?";
                         $stmt = mysqli_prepare($conn, $sql);

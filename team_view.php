@@ -105,6 +105,13 @@ switch ($filter) {
         break;
 }
 
+// Add search functionality
+$search = $_GET['search'] ?? '';
+if (!empty($search)) {
+    $search = '%' . mysqli_real_escape_string($conn, $search) . '%';
+    $sql .= " AND (t.taskname LIKE ? OR t.taskdescription LIKE ?)";
+}
+
 // Add sorting to the query
 $sort_by = $_GET['sort_by'] ?? '';
 switch ($sort_by) {
@@ -158,16 +165,15 @@ switch ($sort_by) {
         break;
 }
 
+// Prepare and execute the query
 $stmt = mysqli_prepare($conn, $sql);
-if ($stmt) {
-    // Adjusted to bind only the teamId, not the userId
-    mysqli_stmt_bind_param($stmt, "i", $teamId);  // Bind only the teamId
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+if (!empty($search)) {
+    mysqli_stmt_bind_param($stmt, "iss", $teamId, $search, $search);
 } else {
-    echo "Error preparing filtered task statement: " . mysqli_error($conn);
-    exit();
+    mysqli_stmt_bind_param($stmt, "i", $teamId);
 }
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 
 
 // fetching role 
@@ -258,18 +264,31 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
   <!-- </div> -->
   <div class="filter-container">
   <div style="display: flex; justify-content: center; margin-bottom: 10px;">
-</div>
-<a href="team_view.php?teamid=<?= $teamId ?>&filter=pending" class="task-filter <?= $filter == 'pending' ? 'active' : '' ?>">🕒 Pending Tasks</a>
-<a href="team_view.php?teamid=<?= $teamId ?>&filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed Tasks</a>
-<a href="team_view.php?teamid=<?= $teamId ?>&filter=overdue" class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue Tasks</a>
+  </div>
+  <a href="team_view.php?teamid=<?= $teamId ?>&filter=pending" class="task-filter <?= $filter == 'pending' ? 'active' : '' ?>">🕒 Pending Tasks</a>
+  <a href="team_view.php?teamid=<?= $teamId ?>&filter=completed" class="task-filter <?= $filter == 'completed' ? 'active' : '' ?>">✅ Completed Tasks</a>
+  <a href="team_view.php?teamid=<?= $teamId ?>&filter=overdue" class="task-filter <?= $filter == 'overdue' ? 'active' : '' ?>">⏰ Overdue Tasks</a>
 
-<!-- Add sorting dropdown -->
-<div style="display: flex; justify-content: flex-end; align-items: center; margin: 10px;">
-  <form id="sortForm" method="GET" action="team_view.php" style="margin: 0;">
-    <input type="hidden" name="teamid" value="<?= $teamId ?>">
-    <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
-    <select name="sort_by" id="sort_by" onchange="document.getElementById('sortForm').submit();"
-      style="padding: 5px; border-radius: 4px; font-size: 14px;">
+  <!-- Add search and sort container -->
+  <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin: 10px;">
+    <form id="searchForm" method="GET" action="team_view.php" style="margin: 0; display: flex; align-items: center;">
+      <input type="hidden" name="teamid" value="<?= $teamId ?>">
+      <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
+      <input type="hidden" name="sort_by" value="<?= htmlspecialchars($_GET['sort_by'] ?? '') ?>">
+      <input type="text" name="search" placeholder="Search tasks..." 
+             value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
+             style="padding: 5px 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; min-width: 150px;">
+      <button type="submit" style="padding: 2px 4px; margin-left: 5px; border-radius: 4px; border: 1px solid #ccc; background: #fff; cursor: pointer; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+        🔍
+      </button>
+    </form>
+
+    <form id="sortForm" method="GET" action="team_view.php" style="margin: 0;">
+      <input type="hidden" name="teamid" value="<?= $teamId ?>">
+      <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
+      <input type="hidden" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+      <select name="sort_by" id="sort_by" onchange="document.getElementById('sortForm').submit();"
+        style="padding: 5px; border-radius: 4px; font-size: 14px;">
       <option value="" <?= empty($_GET['sort_by']) ? 'selected' : '' ?>>Sort By</option>
       <option value="priority_high" <?= ($_GET['sort_by'] ?? '') == 'priority_high' ? 'selected' : '' ?>>Priority (High → Low)</option>
       <option value="priority_low" <?= ($_GET['sort_by'] ?? '') == 'priority_low' ? 'selected' : '' ?>>Priority (Low → High)</option>
@@ -278,8 +297,8 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
       <option value="created_new" <?= ($_GET['sort_by'] ?? '') == 'created_new' ? 'selected' : '' ?>>Created (Newest)</option>
       <option value="created_old" <?= ($_GET['sort_by'] ?? '') == 'created_old' ? 'selected' : '' ?>>Created (Oldest)</option>
     </select>
-  </form>
-</div>
+    </form>
+  </div>
 </div>
 </div>
 <style>

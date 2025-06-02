@@ -67,6 +67,13 @@ if ($update_stmt) {
 // Base SQL query
 $sql = "SELECT * FROM tasks WHERE userid = ? AND is_deleted = 0 AND teamid IS NULL";
 
+// Add search functionality
+$search = $_GET['search'] ?? '';
+if (!empty($search)) {
+    $search = '%' . mysqli_real_escape_string($conn, $search) . '%';
+    $sql .= " AND (taskname LIKE ? OR taskdescription LIKE ?)";
+}
+
 // --- Apply the filter first ---
 if ($filter === 'completed') {
   $sql .= " AND taskstatus = 'completed'"; // filter completed tasks
@@ -136,7 +143,11 @@ case 'duedate_desc':
 
 // Prepare and execute the query
 $stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "i", $userid);
+if (!empty($search)) {
+    mysqli_stmt_bind_param($stmt, "iss", $userid, $search, $search);
+} else {
+    mysqli_stmt_bind_param($stmt, "i", $userid);
+}
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 ?>
@@ -172,7 +183,18 @@ $result = mysqli_stmt_get_result($stmt);
 
   <!-- sorting -->
 
-<div style="display: flex; justify-content: flex-end; align-items: center; margin-top : 0px; margin: buttom 5px;">
+<div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 0px; margin-bottom: 5px;">
+  <form id="searchForm" method="GET" action="task.php" style="margin: 0; display: flex; align-items: center;">
+    <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
+    <input type="hidden" name="sort_by" value="<?= htmlspecialchars($sort_by) ?>">
+    <input type="text" name="search" placeholder="Search tasks..." 
+           value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
+           style="padding: 3px 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 12px; min-width: 150px;">
+    <button type="submit" style="padding: 2px 4px; margin-left: 5px; border-radius: 4px; border: 1px solid #ccc; background: #fff; cursor: pointer; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+      🔍
+    </button>
+  </form>
+
   <form id="sortForm" method="GET" action="task.php" style="margin: 0;">
     <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
     <!-- <label for="sort_by" style="font-size: 14px; margin-right: 5px;">Sort By:</label> -->
