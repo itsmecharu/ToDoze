@@ -738,7 +738,7 @@ body{
   }
 
   .team-box {
-    background-color: #f9f9f9;
+    background-color: #efeeee;
     padding: 15px;
     margin-bottom: 15px;
     width:1000 px;
@@ -757,7 +757,7 @@ body{
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap; /* Allows responsiveness */
-    gap: 8px;
+    gap: 5px;
     font-size: 14px;
     color: #444;
   }

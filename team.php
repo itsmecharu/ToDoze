@@ -356,8 +356,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 .team-description .info {
     cursor: pointer;
-    color: #555;
-    font-size: 0.9em;
+    color: black;
+    font-size: 1 em;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;

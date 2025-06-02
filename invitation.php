@@ -47,7 +47,7 @@ mysqli_stmt_close($stmt);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pending Invitations</title>
+    <title>Notification</title>
     <link rel="stylesheet" href="css/dash.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -118,7 +118,7 @@ mysqli_stmt_close($stmt);
 
     <div class="container">
         <div class="box">
-            <h2>Invitations</h2>
+            <h2>Notifications</h2>
 
             <?php if (!empty($invitations)) { ?>
                 <ul>
