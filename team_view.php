@@ -225,30 +225,6 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
   <a href="team_task.php?teamid=<?= $teamId; ?>" class="edit-btn" title="Add Task">
     <ion-icon name="add-circle-outline"></ion-icon> Task
   </a>
-
-<?php elseif ($user_role === 'Member'): ?>
-  <div style="display: inline-block;">
-    <?php 
-      $has_exited = isset($row['has_exited']) ? $row['has_exited'] : 0;
-      $status = isset($row['status']) ? $row['status'] : 'Accepted';
-
-      if ($has_exited == 1 && $status == 'Removed'): ?>
-        <!-- Member exited voluntarily -->
-        <span style="color: black; font-size: 14px;">You have exited</span>
-
-      <?php elseif ($has_exited == 0 && $status == 'Removed'): ?>
-        <!-- Member was removed by Admin -->
-        <span style="color: black; font-size: 14px;">You are removed from the team</span>
-
-      <?php elseif ($status == 'Accepted' && $has_exited == 0): ?>
-        <!-- Active Member sees Exit option -->
-        <a href="#" 
-           class="edit-btn exit-team" 
-           data-teamid="<?= $row['teamid']; ?>">
-          <ion-icon name="log-out-outline"></ion-icon> Exit
-        </a>
-    <?php endif; ?>
-  </div>
 <?php endif; ?>
 
 

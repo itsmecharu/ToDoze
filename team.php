@@ -22,6 +22,8 @@ if (isset($_SESSION['alert_message'])) {
 $userid = $_SESSION['userid'];
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'admin';
 
+$params = []; // Initialize an empty array for additional parameters
+$types = "i"; // Initialize types string with 'i' for the $userid parameter
 
 // Handle team creation
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -55,30 +57,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 }
 
-// fettching for filters
+// Base query for fetching teams
 $baseQuery = "
-SELECT t.*, tm.role, tm.status, tm.has_exited 
+SELECT t.*, tm.role, tm.status, tm.has_exited, tm.removed_at, tm.exited_at 
 FROM teams t
 JOIN team_members tm ON t.teamid = tm.teamid
-WHERE tm.userid = ? AND t.is_teamdeleted = 0 
-AND tm.status IN ('Accepted', 'Removed')
-AND tm.status NOT IN ('Rejected', 'Pending')
-";
+WHERE tm.userid = ? AND t.is_teamdeleted = 0";
 
-// Apply filter
+// Apply filter based on role and status
 if ($filter === 'admin') {
-  $baseQuery .= " AND tm.role = 'Admin'";
+  $baseQuery .= " AND tm.role = 'Admin' AND tm.status = 'Accepted' AND tm.has_exited = 0";
 } elseif ($filter === 'member') {
-  $baseQuery .= " AND tm.role != 'Admin'";
+  $baseQuery .= " AND tm.role != 'Admin' AND tm.status = 'Accepted' AND tm.has_exited = 0";
+} elseif ($filter === 'ex_members') {
+  $baseQuery .= " AND (tm.status = 'Removed' OR tm.has_exited = 1)";
 }
 
+// Add search condition
+if (!empty($_GET['search'])) {
+    $search_term = '%' . $_GET['search'] . '%';
+    $baseQuery .= " AND t.teamname LIKE ?";
+    $params[] = $search_term; // Add search term to parameters
+    $types .= "s"; // Add 's' for the search term string
+}
+
+// Add grouping and ordering
+$baseQuery .= " GROUP BY t.teamid ORDER BY t.teamcreated_at DESC";
 
 $stmt = mysqli_prepare($conn, $baseQuery);
 if ($stmt === false) {
     die("Error preparing statement: " . mysqli_error($conn));
 }
 
-mysqli_stmt_bind_param($stmt, "i", $userid);
+// Bind parameters
+mysqli_stmt_bind_param($stmt, $types, $userid, ...$params);
+
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
@@ -113,8 +126,15 @@ $result = mysqli_stmt_get_result($stmt);
       title="Teams where you are the administrator">👑 Managed Teams</a>
     <a href="team.php?filter=member" class="task-filter <?= $filter == 'member' ? 'active' : '' ?>"
       title="Teams you have joined as a member">👥 Joined Teams</a>
+    <a href="team.php?filter=ex_members" class="task-filter <?= $filter == 'ex_members' ? 'active' : '' ?>"
+      title="Teams you have exited or been removed from">👻 Ex Teams</a>
 
-
+      <!-- Search Form -->
+      <form method="GET" action="team.php" class="search-form" style="display: flex; align-items: center; gap: 5px;">
+            <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
+            <input type="text" name="search" placeholder="Search teams..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>" style="width: 180px;">
+            <button type="submit" style="padding: 2px 4px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 1px solid #ccc; border-radius: 4px; background-color: #f8f9fa; cursor: pointer;">🔍</button>
+      </form>
   </div>
 
 
@@ -158,33 +178,61 @@ $result = mysqli_stmt_get_result($stmt);
                     <ion-icon name="trash-outline"></ion-icon> Delete
                   </a>
                 <?php else: ?>
-                  <div style="display: flex; gap: 45px; align-items: center;">
-                  <span class="view-only-msg">🔒 View Only</span>
-                <?php endif; ?>
+                  <?php 
+                  // Display status for non-admin members, including exited/removed
+                  $has_exited = isset($row['has_exited']) ? $row['has_exited'] : 0;
+                  $status = isset($row['status']) ? $row['status'] : 'Accepted';
 
-                <?php if ($role === 'Member'): ?>
-                  <div style="display: inline-block;">
-                    <?php 
-                    $has_exited = isset($row['has_exited']) ? $row['has_exited'] : 0;
-                    $status = isset($row['status']) ? $row['status'] : 'Accepted';
-                    
-                    if ($has_exited == 1 && $status == 'Removed'): ?>
-                      <span style="color: black; font: size 14px;">You have exited</span>
-                    <?php elseif ($has_exited == 0 &&$status == 'Removed'): ?>
-                      <span style="color: black; font: size 14px;">You are removed from the team</span>
-                    <?php elseif ($status == 'Accepted' && $has_exited == 0): ?>
-                      <a href="#" 
-                         class="edit-btn exit-team" 
-                         data-teamid="<?= $row['teamid'] ?>">
-                         <ion-icon name="log-out-outline"></ion-icon>Exit
-                      </a>
-                    <?php endif; ?>
-                  </div>
+                  if ($role === 'Member') {
+                      echo '<div style="display: flex; gap: 45px; align-items: center;">'; // Use flex to align content
+                      
+                      if ($status === 'Accepted' && $has_exited == 0) {
+                          // Display Exit button only for active members in 'Joined Teams' view
+                          if ($filter !== 'ex_members') {
+                              echo '<span class="view-only-msg">🔒 View Only</span>'; // Keep view only for active members
+                              echo '<a href="#" class="edit-btn exit-team" data-teamid="'. $row['teamid'] .'">';
+                              echo '<ion-icon name="log-out-outline"></ion-icon>Exit';
+                              echo '</a>';
+                          }
+                      } elseif ($filter === 'ex_members') {
+                          // This block is now moved outside the .team-actions div
+                          // The display logic is handled below the .team-info-line div
+                      }
+                      echo '</div>';
+                  }
+                  ?>
                 <?php endif; ?>
 
               </div>
 
             </div>
+            <?php 
+            // Display status and date for ex-members below team info if filter is ex_members
+            $has_exited = isset($row['has_exited']) ? $row['has_exited'] : 0;
+            $status = isset($row['status']) ? $row['status'] : 'Accepted';
+
+            if ($filter === 'ex_members' && $role === 'Member') {
+                echo '<div style="color: red; font-size: 14px; margin-top: 5px;">';
+                
+                $status_date = null;
+                $status_text = '';
+
+                if ($has_exited == 1 && $status == 'Removed') {
+                    $status_text = 'Left on:';
+                    $status_date = $row['exited_at'];
+                } elseif ($has_exited == 0 && $status == 'Removed') {
+                    $status_text = 'Removed on:';
+                    $status_date = $row['removed_at'];
+                }
+                
+                if ($status_date) {
+                    // Format the date
+                    $formatted_date = date('Y-m-d', strtotime($status_date));
+                    echo $status_text . ' ' . htmlspecialchars($formatted_date);
+                }
+                echo '</div>';
+            }
+            ?>
 
           </div>
         <?php endwhile; ?>
@@ -192,7 +240,7 @@ $result = mysqli_stmt_get_result($stmt);
     <?php else: ?>
       <div class="centered-content">
         <div class="content-wrapper">
-          <img src="img/notask.svg" alt="No tasks yet" />
+          <img src="img/notask.svg" alt="No teams yet" />
           <h3>
             <p>Nothing yet! 🚀</p>
           </h3>
