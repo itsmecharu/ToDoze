@@ -57,12 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // fettching for filters
 $baseQuery = "
-SELECT t.*, tm.role, tm.has_exited, tm.status, 
-       COALESCE(tm.has_exited, 0) as has_exited,
-       COALESCE(tm.status, 'Accepted') as status
+SELECT t.*, tm.role, tm.status, tm.has_exited 
 FROM teams t
 JOIN team_members tm ON t.teamid = tm.teamid
 WHERE tm.userid = ? AND t.is_teamdeleted = 0 
+AND tm.status IN ('Accepted', 'Removed')
+AND tm.status NOT IN ('Rejected', 'Pending')
 ";
 
 // Apply filter
@@ -71,6 +71,7 @@ if ($filter === 'admin') {
 } elseif ($filter === 'member') {
   $baseQuery .= " AND tm.role != 'Admin'";
 }
+
 
 $stmt = mysqli_prepare($conn, $baseQuery);
 if ($stmt === false) {

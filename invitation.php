@@ -3,7 +3,6 @@ session_start();
 include 'config/database.php';
 include 'load_username.php';
 
-
 if (!isset($_SESSION['userid'])) {
     header("Location: signin.php");
     exit();
@@ -11,14 +10,13 @@ if (!isset($_SESSION['userid'])) {
 
 $userid = $_SESSION['userid'];
 
-// Fetch all invitations (Pending/Accepted/Rejected)
+// Fetch all invitations
 $sql = "SELECT 
     p.teamid,
     p.teamname,
     u_admin.username AS adminname,
     pm_user.status,
     pm_user.invited_at
-
 FROM 
     team_members pm_user
 JOIN 
@@ -38,7 +36,17 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $invitations = mysqli_fetch_all($result, MYSQLI_ASSOC);
 mysqli_stmt_close($stmt);
+
+// 🔴 Check for pending invitations
+$_SESSION['has_pending_invites'] = false;
+foreach ($invitations as $inv) {
+    if ($inv['status'] === 'Pending') {
+        $_SESSION['has_pending_invites'] = true;
+        break;
+    }
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -173,6 +181,7 @@ document.querySelectorAll('.nav__dropdown-btn').forEach(button => {
     <!-- IONICONS -->
     <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
     <script src="js/dash.js"></script>
+    
 </body>
 
 </html>
