@@ -147,16 +147,20 @@ $result = mysqli_stmt_get_result($stmt);
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
           <?php $role = $row['role']; ?>
 
-          <div class="team-box">
+          <div class="team-box" style="padding: 8px;">
             <!-- Project Name on its own line -->
-            <div class="team-title">
-              <a href="team_view.php?teamid=<?php echo $row['teamid']; ?>">
-                <h3><?php echo htmlspecialchars($row['teamname']); ?></h3>
-              </a>
+            <div class="team-title" style="margin-bottom: 3px;">
+              <?php if ($filter === 'ex_members'): ?>
+                <h3 style="margin-top: 0; margin-bottom: 0; font-size: 16px;"><?php echo htmlspecialchars($row['teamname']); ?></h3>
+              <?php else: ?>
+                <a href="team_view.php?teamid=<?php echo $row['teamid']; ?>">
+                  <h3 style="margin-top: 0; margin-bottom: 0; font-size: 16px;"><?php echo htmlspecialchars($row['teamname']); ?></h3>
+                </a>
+              <?php endif; ?>
             </div>
 
             <!-- All other info in a single line -->
-            <div class="team-info-line">
+            <div class="team-info-line" style="margin-top: 0;">
               <?php if (!empty($row['teamdescription'])): ?>
                 <div class="team-description">
                   <span class="info">Description: <?= htmlspecialchars($row['teamdescription']) ?></span>
@@ -212,7 +216,7 @@ $result = mysqli_stmt_get_result($stmt);
             $status = isset($row['status']) ? $row['status'] : 'Accepted';
 
             if ($filter === 'ex_members' && $role === 'Member') {
-                echo '<div style="color: red; font-size: 14px; margin-top: 5px;">';
+                echo '<div style="color: red; font-size: 12px; margin-top: 3px;">';
                 
                 $status_date = null;
                 $status_text = '';
