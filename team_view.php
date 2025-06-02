@@ -214,19 +214,37 @@ $user_role = $user_role_data['role'] ?? 'Member'; // default to Member if role n
     <!-- Team actions section -->
   <!-- <div class="icons" > -->
     <div class="tea-actions" style="justify-content: flex-start;">
+<?php if ($user_role === 'Admin'): ?>
+  <!-- Admin sees the Add Task button -->
+  <a href="team_task.php?teamid=<?= $teamId; ?>" class="edit-btn" title="Add Task">
+    <ion-icon name="add-circle-outline"></ion-icon> Task
+  </a>
 
-      <?php if ($user_role === 'Admin'): ?>
-        <a href="team_task.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Add Task">
-          <ion-icon name="add-circle-outline"></ion-icon> Task
+<?php elseif ($user_role === 'Member'): ?>
+  <div style="display: inline-block;">
+    <?php 
+      $has_exited = isset($row['has_exited']) ? $row['has_exited'] : 0;
+      $status = isset($row['status']) ? $row['status'] : 'Accepted';
+
+      if ($has_exited == 1 && $status == 'Removed'): ?>
+        <!-- Member exited voluntarily -->
+        <span style="color: black; font-size: 14px;">You have exited</span>
+
+      <?php elseif ($has_exited == 0 && $status == 'Removed'): ?>
+        <!-- Member was removed by Admin -->
+        <span style="color: black; font-size: 14px;">You are removed from the team</span>
+
+      <?php elseif ($status == 'Accepted' && $has_exited == 0): ?>
+        <!-- Active Member sees Exit option -->
+        <a href="#" 
+           class="edit-btn exit-team" 
+           data-teamid="<?= $row['teamid']; ?>">
+          <ion-icon name="log-out-outline"></ion-icon> Exit
         </a>
-      <?php else: ?>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <!-- <span class="view-only-msg">🔒 View Only</span> -->
-          <a href="#" class="edit-btn exit-team" data-teamid="<?= $teamId ?>">
-            <ion-icon name="log-out-outline"></ion-icon> Exit
-          </a>
-        </div>
-      <?php endif; ?>
+    <?php endif; ?>
+  </div>
+<?php endif; ?>
+
 
       <a href="member.php?teamid=<?php echo $teamId; ?>" class="edit-btn" title="Add Member">
         <ion-icon name="people-outline"></ion-icon> Member
