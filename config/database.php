@@ -81,9 +81,12 @@ $sql = "CREATE TABLE IF NOT EXISTS team_members (
     has_exited TINYINT(1) DEFAULT 0,
     exited_at TIMESTAMP NULL DEFAULT NULL,
     FOREIGN KEY (teamid) REFERENCES teams(teamid) ON DELETE CASCADE,
-    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE
+    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
+    is_hidden TINYINT(1) DEFAULT 0
    
 )";
+
+
 
 if (mysqli_query($conn, $sql)) {
     // echo "Table 'users' created successfully.";

@@ -57,7 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // fettching for filters
 $baseQuery = "
-SELECT t.*, tm.role 
+SELECT t.*, tm.role, tm.has_exited, tm.status, 
+       COALESCE(tm.has_exited, 0) as has_exited,
+       COALESCE(tm.status, 'Accepted') as status
 FROM teams t
 JOIN team_members tm ON t.teamid = tm.teamid
 WHERE tm.userid = ? AND t.is_teamdeleted = 0 
@@ -67,10 +69,14 @@ WHERE tm.userid = ? AND t.is_teamdeleted = 0
 if ($filter === 'admin') {
   $baseQuery .= " AND tm.role = 'Admin'";
 } elseif ($filter === 'member') {
-  $baseQuery .= " AND tm.role != 'Admin' AND tm.status = 'Accepted' AND tm.has_exited = 0";
+  $baseQuery .= " AND tm.role != 'Admin'";
 }
 
 $stmt = mysqli_prepare($conn, $baseQuery);
+if ($stmt === false) {
+    die("Error preparing statement: " . mysqli_error($conn));
+}
+
 mysqli_stmt_bind_param($stmt, "i", $userid);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
@@ -156,13 +162,23 @@ $result = mysqli_stmt_get_result($stmt);
                 <?php endif; ?>
 
                 <?php if ($role === 'Member'): ?>
-                  <a href="#" 
-   class="edit-btn exit-team" 
-   data-teamid="<?= $row['teamid'] ?>">
-   <ion-icon name="log-out-outline"></ion-icon>Exit
-</a>
-</div>
-
+                  <div style="display: inline-block;">
+                    <?php 
+                    $has_exited = isset($row['has_exited']) ? $row['has_exited'] : 0;
+                    $status = isset($row['status']) ? $row['status'] : 'Accepted';
+                    
+                    if ($has_exited == 1 && $status == 'Removed'): ?>
+                      <span style="color: black; font: size 14px;">You have exited</span>
+                    <?php elseif ($has_exited == 0 &&$status == 'Removed'): ?>
+                      <span style="color: black; font: size 14px;">You are removed from the team</span>
+                    <?php elseif ($status == 'Accepted' && $has_exited == 0): ?>
+                      <a href="#" 
+                         class="edit-btn exit-team" 
+                         data-teamid="<?= $row['teamid'] ?>">
+                         <ion-icon name="log-out-outline"></ion-icon>Exit
+                      </a>
+                    <?php endif; ?>
+                  </div>
                 <?php endif; ?>
 
               </div>
