@@ -144,18 +144,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $params[] = $teamId;
         $types .= "ii";
 
-        // Prepare and execute the statement
-        $stmt = mysqli_prepare($conn, $sql);
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, $types, ...$params);
-            if (mysqli_stmt_execute($stmt)) {
+        $update_stmt = mysqli_prepare($conn, $sql);
+        if ($update_stmt) {
+            mysqli_stmt_bind_param($update_stmt, $types, ...$params);
+            
+            if (mysqli_stmt_execute($update_stmt)) {
+                // If task was assigned to someone, create a notification
+                if ($is_admin && isset($new_assigned_to) && $new_assigned_to !== $assigned_to) {
+                    // Get task name for the notification message
+                    $task_name = $taskname;
+                    
+                    // Create notification for the assigned member
+                    $notif_sql = "INSERT INTO notifications (userid, teamid, taskid, message, type) 
+                                 VALUES (?, ?, ?, ?, 'task_assignment')";
+                    $notif_stmt = mysqli_prepare($conn, $notif_sql);
+                    
+                    if ($notif_stmt) {
+                        $message = "You have been assigned to task: " . $task_name;
+                        mysqli_stmt_bind_param($notif_stmt, "iiis", $new_assigned_to, $teamId, $taskid, $message);
+                        mysqli_stmt_execute($notif_stmt);
+                        mysqli_stmt_close($notif_stmt);
+                    }
+                }
+                
+                $_SESSION['success_message'] = "Task updated successfully!";
                 header("Location: team_view.php?teamid=" . $teamId);
                 exit();
             } else {
                 echo "Error updating task: " . mysqli_error($conn);
             }
-        } else {
-            echo "Error preparing statement: " . mysqli_error($conn);
+            mysqli_stmt_close($update_stmt);
         }
     } else {
         // No fields to update

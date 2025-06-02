@@ -180,6 +180,25 @@ if (mysqli_query($conn, $sql)) {
     echo "Error creating 'reviews' table: " . mysqli_error($conn) . "<br>";
 }
 
+// Create notifications table
+$sql = "CREATE TABLE IF NOT EXISTS notifications (
+    notificationid INT PRIMARY KEY AUTO_INCREMENT,
+    userid INT NOT NULL,
+    teamid INT,
+    taskid INT,
+    message TEXT NOT NULL,
+    type ENUM('task_assignment', 'invitation', 'removal') NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
+    FOREIGN KEY (teamid) REFERENCES teams(teamid) ON DELETE CASCADE,
+    FOREIGN KEY (taskid) REFERENCES tasks(taskid) ON DELETE CASCADE
+)";
+
+if (!mysqli_query($conn, $sql)) {
+    die("Error creating notifications table: " . mysqli_error($conn));
+}
+
 // $sql="DROP DATABASE todoze";
 // if (mysqli_query($conn, $sql)) {
 //     // echo "'reviews' table created successfully.<br>";
